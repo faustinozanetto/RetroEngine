@@ -34,7 +34,8 @@ project "EngineCore"
   }
 
   includedirs {
-    "%{prj.name}/Source"
+    "%{prj.name}/Source",
+    "%{wks.location}/Engine/Renderer/Source",
   }
 
   filter "system:windows"
@@ -71,9 +72,15 @@ project "EngineRenderer"
 
   includedirs {
     "%{prj.name}/Source",
+    "%{wks.location}/Engine/Core/Source",
     "%{IncludeDir.GLFW}",
     "%{IncludeDir.GLAD}",
-    "%{IncludeDir.GLM}",
+    "%{IncludeDir.GLM}",      
+    "%{IncludeDir.SPDLOG}",
+  }
+
+  links {
+    "EngineCore"
   }
 
   filter "system:windows"
