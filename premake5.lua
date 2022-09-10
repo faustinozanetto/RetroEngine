@@ -14,13 +14,14 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "%{wks.location}/ThirdParty/GLFW/include"
 IncludeDir["GLAD"] = "%{wks.location}/ThirdParty/GLAD/include"
 IncludeDir["GLM"] = "%{wks.location}/ThirdParty/GLM"
+IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 
 project "EngineCore"
   location "Engine/Core"
   kind "SharedLib"
   language "C++"
   cppdialect "C++20"
-  staticruntime "on"
+  staticruntime "off"
 
   targetdir ("Binaries/" .. outputDir .. "/%{prj.name}")
   objdir ("Intermediates/" .. outputDir .. "/%{prj.name}")
@@ -29,13 +30,17 @@ project "EngineCore"
   pchsource "Engine/Core/Source/pch.cpp"
 
   files {
-    "Engine/Core/Source/**.h",
-    "Engine/Core/Source/**.cpp"
+    "%{wks.location}/Engine/Core/Source/**.h",
+    "%{wks.location}/Engine/Core/Source/**.cpp"
   }
 
   includedirs {
-    "%{prj.name}/Source",
+    "%{wks.location}/Engine/Core/Source",
     "%{wks.location}/Engine/Renderer/Source",
+    "%{IncludeDir.GLFW}",
+    "%{IncludeDir.GLAD}",
+    "%{IncludeDir.GLM}",  
+    "%{IncludeDir.SPDLOG}"  
   }
 
   filter "system:windows"
@@ -57,7 +62,7 @@ project "EngineRenderer"
   kind "SharedLib"
   language "C++"
   cppdialect "C++20"
-  staticruntime "on"
+  staticruntime "off"
 
   targetdir ("Binaries/" .. outputDir .. "/%{prj.name}")
   objdir ("Intermediates/" .. outputDir .. "/%{prj.name}")
@@ -66,21 +71,14 @@ project "EngineRenderer"
   pchsource "Engine/Renderer/Source/pch.cpp"
 
   files {
-    "Engine/Renderer/Source/**.h",
-    "Engine/Renderer/Source/**.cpp"
+    "%{wks.location}/Engine/Renderer/Source/**.h",
+    "%{wks.location}/Engine/Renderer/Source/**.cpp"
   }
 
   includedirs {
-    "%{prj.name}/Source",
+    "%{wks.location}/Engine/Renderer/Source",
     "%{wks.location}/Engine/Core/Source",
-    "%{IncludeDir.GLFW}",
-    "%{IncludeDir.GLAD}",
-    "%{IncludeDir.GLM}",      
-    "%{IncludeDir.SPDLOG}",
-  }
-
-  links {
-    "EngineCore"
+    "%{IncludeDir.SPDLOG}"  
   }
 
   filter "system:windows"

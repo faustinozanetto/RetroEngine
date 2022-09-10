@@ -16,10 +16,12 @@ namespace Retro::Renderer
     class Window
     {
     public:
+        /* Destructor */
         virtual ~Window() = default;
 
-
-        
+        /* Instantiate */
         static Core::Scope<Window> Create(const FWindowSpecification& specification = FWindowSpecification());
+    protected:
+        FWindowSpecification m_WindowSpecification;
     };
 }
