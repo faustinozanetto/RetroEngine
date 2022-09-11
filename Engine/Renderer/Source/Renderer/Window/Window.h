@@ -21,6 +21,9 @@ namespace Retro
         
         /* Getters */
         const FWindowSpecification& GetWindowSpecification();
+        virtual void* GetNativeWindow() const = 0;
+
+        virtual void WindowLoop() = 0;
 
         /* Instantiate */
         static Scope<Window> Create(const FWindowSpecification& specification = FWindowSpecification());

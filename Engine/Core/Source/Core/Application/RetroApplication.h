@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Base.h"
+#include "Renderer/Window/Window.h"
 
 int main(int argc, char** argv);
 
@@ -25,7 +26,7 @@ namespace Retro
         
     private:
         FRetroApplicationSpecification m_ApplicationSpecification;
-        //Scope<Window> m_Window;
+        Scope<Window> m_Window;
         static RetroApplication* s_Instance;
     };
     

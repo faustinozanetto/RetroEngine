@@ -2,6 +2,7 @@
 
 #include "RetroApplication.h"
 #include "Logger/Logger.h"
+#include "Renderer/Renderer/Renderer.h"
 
 namespace Retro {
 	RetroApplication* RetroApplication::s_Instance = nullptr;
@@ -10,15 +11,22 @@ namespace Retro {
 		// Update variables.
 		s_Instance = this;
 		m_ApplicationSpecification = applicationSpecification;
+		// Initialize Logger.
+		Logger::Initialize();
+		Logger::Line();
 		// Create window.
-		//FWindowSpecification windowSpecification = {};
-		//m_Window = Window::Create(windowSpecification);
+		FWindowSpecification windowSpecification = FWindowSpecification();
+		m_Window = Window::Create(windowSpecification);
+		// Initialize Renderer
+		Renderer::Initialize(RenderingAPIType::OpenGL);
 	}
 
 	RetroApplication::~RetroApplication() = default;
 
 	void RetroApplication::RunApplication()
 	{
-		while (true) {}
+		while (true) {
+			m_Window->WindowLoop();
+		}
 	}
 }

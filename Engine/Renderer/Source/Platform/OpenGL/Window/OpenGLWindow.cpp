@@ -15,7 +15,7 @@ namespace Retro {
 
 	OpenGLWindow::~OpenGLWindow() {
 
-	};
+	}
 
 	bool OpenGLWindow::InitializeWindow()
 	{
@@ -55,5 +55,18 @@ namespace Retro {
 		// Glad initialize
 		gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 		return true;
+	}
+
+	void* OpenGLWindow::GetNativeWindow() const
+	{
+		return m_OpenGLWindow;
+	}
+
+	void OpenGLWindow::WindowLoop()
+	{
+		glfwSwapBuffers(m_OpenGLWindow);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glfwPollEvents();
 	}
 }

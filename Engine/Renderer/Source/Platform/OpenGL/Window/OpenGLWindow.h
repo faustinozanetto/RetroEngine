@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Window/Window.h"
+#include "Renderer/Window/Window.h"
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -12,6 +12,11 @@ namespace Retro {
 		OpenGLWindow() = default;
 		OpenGLWindow(const FWindowSpecification& specification);
 		~OpenGLWindow() override;
+
+		/* Getters */
+		void* GetNativeWindow() const override;
+
+		void WindowLoop() override;
 
 	private:
 		bool InitializeWindow();
