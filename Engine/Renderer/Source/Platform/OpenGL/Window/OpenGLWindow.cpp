@@ -1,20 +1,21 @@
 #include "pch.h"
 
 #include "OpenGLWindow.h"
-#include "Window/Window.h"
 
-namespace Retro::Renderer {
+namespace Retro {
 	OpenGLWindow::OpenGLWindow(const FWindowSpecification& specification) {
 		// Update window specification.
 		m_WindowSpecification = m_WindowSpecification;
 		// Initialize.
 		if (!InitializeWindow())
 		{
-			Core::Logger::Error("Initialized | Could not initialize window.");
+			Logger::Error("Initialized | Could not initialize window.");
 		}
 	}
 
-	OpenGLWindow::~OpenGLWindow() = default;
+	OpenGLWindow::~OpenGLWindow() {
+
+	};
 
 	bool OpenGLWindow::InitializeWindow()
 	{
@@ -23,14 +24,14 @@ namespace Retro::Renderer {
 		if (glfwState == GLFW_FALSE) {
 			return false;
 		}
-		Core::Logger::Info("Initialization | GLFW Success");
-		Core::Logger::Line();
+		Logger::Info("Initialization | GLFW Success");
+		Logger::Line();
 		// Create OpenGL Window.
-		Core::Logger::Info("Initialization | Creating OpenGL Window");
-		Core::Logger::Info("Window Title: " + GetWindowSpecification().windowTitle);
-		Core::Logger::Info("Window Width: " + std::to_string(GetWindowSpecification().width));
-		Core::Logger::Info("Window Height: " + std::to_string(GetWindowSpecification().height));
-		Core::Logger::Line();
+		Logger::Info("Initialization | Creating OpenGL Window");
+		Logger::Info("Window Title: " + GetWindowSpecification().windowTitle);
+		Logger::Info("Window Width: " + std::to_string(GetWindowSpecification().width));
+		Logger::Info("Window Height: " + std::to_string(GetWindowSpecification().height));
+		Logger::Line();
 
 		// Setup window hints
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -43,7 +44,7 @@ namespace Retro::Renderer {
 										  nullptr, nullptr);
 		if (!m_OpenGLWindow)
 		{
-			Core::Logger::Error("Initialization | Failed to create OpenGL Window.");
+			Logger::Error("Initialization | Failed to create OpenGL Window.");
 			return false;
 		}
 

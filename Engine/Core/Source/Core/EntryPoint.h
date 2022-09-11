@@ -4,11 +4,11 @@
 #include "Core/Base.h"
 
 #ifdef RETRO_PLATFORM_WINDOWS
-extern Retro::Core::RetroApplication* Retro::Core::CreateRetroApplication();
+extern Retro::RetroApplication* Retro::CreateRetroApplication();
 
 int main(int argc, char** argv)
 {
-    auto application = Retro::Core::CreateRetroApplication();
+    auto application = Retro::CreateRetroApplication();
     application->RunApplication();
     delete application;
 }

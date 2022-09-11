@@ -5,10 +5,11 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-namespace Retro::Renderer {
+namespace Retro {
 	class OpenGLWindow : public Window {
 	public:
 		/* Constructor & Destructor */
+		OpenGLWindow() = default;
 		OpenGLWindow(const FWindowSpecification& specification);
 		~OpenGLWindow() override;
 

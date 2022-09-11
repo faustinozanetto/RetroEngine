@@ -3,7 +3,7 @@
 #include "EngineCore.h"
 #include "Core/EntryPoint.h"
 
-class SandboxApplication : public Retro::Core::RetroApplication
+class SandboxApplication : public Retro::RetroApplication
 {
 public:
 	SandboxApplication() : RetroApplication({ "Sandbox" }) {
@@ -13,7 +13,7 @@ public:
 	~SandboxApplication() {}
 };
 
-Retro::Core::RetroApplication* Retro::Core::CreateRetroApplication()
+Retro::RetroApplication* Retro::CreateRetroApplication()
 {
 	return new SandboxApplication();
 }

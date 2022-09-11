@@ -31,6 +31,7 @@ project "EngineCore"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
+  defines "DLL_EXPORT"
   staticruntime "off"
 
   targetdir ("Binaries/" .. outputDir .. "/%{prj.name}")
@@ -53,10 +54,6 @@ project "EngineCore"
     "%{IncludeDir.SPDLOG}"  
   }
 
-  links {
-    "EngineRenderer"
-  }
-
   filter "system:windows"
 		cppdialect "C++latest"
 		systemversion "latest"
@@ -76,6 +73,7 @@ project "EngineRenderer"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
+  defines "DLL_EXPORT"
   staticruntime "off"
 
   targetdir ("Binaries/" .. outputDir .. "/%{prj.name}")
@@ -99,6 +97,7 @@ project "EngineRenderer"
   }
 
   links {
+    "EngineCore",
     "GLFW",
     "GLAD",
   }

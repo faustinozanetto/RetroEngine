@@ -1,13 +1,13 @@
 #include "pch.h"
 
 #include "Logger.h"
-#include "spdlog/spdlog.h"
+
 #include "spdlog/sinks/stdout_sinks.h"
 #include "spdlog/sinks/base_sink.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/ostream_sink.h"
 
-namespace Retro::Core
+namespace Retro
 {
     std::shared_ptr<spdlog::logger> Logger::s_EngineLogger;
 
@@ -17,7 +17,7 @@ namespace Retro::Core
         sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
         sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("Logs/Engine.log", true));
 
-        s_EngineLogger = std::make_shared<spdlog::logger>("MechaEngine", begin(sinks), end(sinks));
+        s_EngineLogger = std::make_shared<spdlog::logger>("Retro Engine", begin(sinks), end(sinks));
         register_logger(s_EngineLogger);
         // Customization
         s_EngineLogger->set_level(spdlog::level::trace);

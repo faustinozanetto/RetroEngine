@@ -1,12 +1,10 @@
 ﻿#pragma once
 
-#include "pch.h"
-
 #include "Core/Base.h"
 
 int main(int argc, char** argv);
 
-namespace Retro::Core
+namespace Retro
 {
     struct FRetroApplicationSpecification {
         std::string name;
@@ -27,8 +25,8 @@ namespace Retro::Core
         
     private:
         FRetroApplicationSpecification m_ApplicationSpecification;
+        //Scope<Window> m_Window;
         static RetroApplication* s_Instance;
-
     };
     
     RetroApplication* CreateRetroApplication();

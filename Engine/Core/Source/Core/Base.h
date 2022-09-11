@@ -6,26 +6,26 @@
 
 #ifdef RETRO_DEBUG
 #if defined(RETRO__PLATFORM_WINDOWS)
-#define RETRO__DEBUGBREAK() __debugbreak()
+#define RETRO_DEBUGBREAK() __debugbreak()
 #elif defined(RETRO__PLATFORM_LINUX)
 #include <signal.h>
-#define RETRO__DEBUGBREAK() raise(SIGTRAP)
+#define RETRO_DEBUGBREAK() raise(SIGTRAP)
 #else
 #error "Platform doesn't support debugbreak yet!"
 #endif
-#define RETRO__ENABLE_ASSERTS
+#define RETRO_ENABLE_ASSERTS
 #else
-#define RETRO__DEBUGBREAK()
+#define RETRO_DEBUGBREAK()
 #endif
 
-#define RETRO__EXPAND_MACRO(x) x
-#define RETRO__STRINGIFY_MACRO(x) #x
+#define RETRO_EXPAND_MACRO(x) x
+#define RETRO_STRINGIFY_MACRO(x) #x
 
 #define BIT(x) (1 << x)
 
 #define RETRO_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
-namespace Retro::Core {
+namespace Retro {
 
 	template<typename T>
 	using Scope = std::unique_ptr<T>;
@@ -46,3 +46,4 @@ namespace Retro::Core {
 }
 
 #include "Logger/Logger.h"
+#include "Core/Assert.h"

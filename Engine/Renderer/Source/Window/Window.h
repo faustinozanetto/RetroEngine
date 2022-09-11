@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "EngineCore.h"
+#include "Core/Base.h"
 
-namespace Retro::Renderer
+namespace Retro
 {
     struct FWindowSpecification {
         std::string windowTitle;
@@ -23,7 +23,7 @@ namespace Retro::Renderer
         const FWindowSpecification& GetWindowSpecification();
 
         /* Instantiate */
-        static Core::Scope<Window> Create(const FWindowSpecification& specification = FWindowSpecification());
+        static Scope<Window> Create(const FWindowSpecification& specification = FWindowSpecification());
     protected:
         FWindowSpecification m_WindowSpecification;
     };
