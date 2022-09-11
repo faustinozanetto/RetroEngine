@@ -18,6 +18,9 @@ namespace Retro::Renderer
     public:
         /* Destructor */
         virtual ~Window() = default;
+        
+        /* Getters */
+        const FWindowSpecification& GetWindowSpecification();
 
         /* Instantiate */
         static Core::Scope<Window> Create(const FWindowSpecification& specification = FWindowSpecification());

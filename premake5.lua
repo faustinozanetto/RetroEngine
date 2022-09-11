@@ -16,9 +16,14 @@ IncludeDir["GLAD"] = "%{wks.location}/ThirdParty/GLAD/include"
 IncludeDir["GLM"] = "%{wks.location}/ThirdParty/GLM"
 IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 
+group "Dependencies"
+  include "ThirdParty/GLFW"
+  include "ThirdParty/GLAD"
+group ""
+
 project "EngineCore"
   location "Engine/Core"
-  kind "SharedLib"
+  kind "StaticLib"
   language "C++"
   cppdialect "C++20"
   staticruntime "off"
@@ -59,7 +64,7 @@ project "EngineCore"
 
 project "EngineRenderer"
   location "Engine/Renderer"
-  kind "SharedLib"
+  kind "StaticLib"
   language "C++"
   cppdialect "C++20"
   staticruntime "off"
@@ -78,7 +83,16 @@ project "EngineRenderer"
   includedirs {
     "%{wks.location}/Engine/Renderer/Source",
     "%{wks.location}/Engine/Core/Source",
+    "%{IncludeDir.GLFW}",
+    "%{IncludeDir.GLAD}",
+    "%{IncludeDir.GLM}",  
     "%{IncludeDir.SPDLOG}"  
+  }
+
+  links {
+    "EngineCore",
+    "GLFW",
+    "GLAD",
   }
 
   filter "system:windows"

@@ -6,6 +6,11 @@
 #endif
 
 namespace Retro::Renderer {
+	const FWindowSpecification& Window::GetWindowSpecification()
+	{
+		return m_WindowSpecification;
+	}
+
 	Core::Scope<Window> Window::Create(const FWindowSpecification& specification)
 	{
 #ifdef RETRO_PLATFORM_WINDOWS
