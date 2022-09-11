@@ -8,6 +8,11 @@ workspace "Retro"
     "Release",
   }
 
+  flags
+	{
+		"MultiProcessorCompile"
+	}
+
 outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
@@ -46,6 +51,10 @@ project "EngineCore"
     "%{IncludeDir.GLAD}",
     "%{IncludeDir.GLM}",  
     "%{IncludeDir.SPDLOG}"  
+  }
+
+  links {
+    "EngineRenderer"
   }
 
   filter "system:windows"
@@ -90,7 +99,6 @@ project "EngineRenderer"
   }
 
   links {
-    "EngineCore",
     "GLFW",
     "GLAD",
   }
@@ -108,3 +116,48 @@ project "EngineRenderer"
     
   filter "configurations:Dist"
 		optimize "Full"
+
+project "Sandbox"
+  location "Sandbox"
+  kind "ConsoleApp"
+  language "C++"
+  cppdialect "C++20"
+  staticruntime "off"
+
+  targetdir ("Binaries/" .. outputDir .. "/%{prj.name}")
+  objdir ("Intermediates/" .. outputDir .. "/%{prj.name}")
+
+  files {
+    "%{wks.location}/Sandbox/Source/**.h",
+    "%{wks.location}/Sandbox/Source/**.cpp"
+  }
+
+  includedirs {
+    "%{wks.location}/Engine/Core/Source",
+    "%{wks.location}/Engine/Renderer/Source",
+    "%{IncludeDir.GLFW}",
+    "%{IncludeDir.GLAD}",
+    "%{IncludeDir.GLM}",  
+    "%{IncludeDir.SPDLOG}",  
+  }
+
+  links {
+    "EngineCore",
+    "EngineRenderer"
+  }
+
+  filter "system:windows"
+    staticruntime "off"
+    systemversion "latest"
+
+  filter "configurations:Debug"
+    defines { "MECHA_DEBUG", "WIN32_LEAN_AND_MEAN" }
+    symbols "on"
+  
+  filter "configurations:release"
+    defines { "MECHA_RELEASE", "WIN32_LEAN_AND_MEAN" }
+    optimize "on"	
+  
+  filter "configurations:Dist"
+    defines { "MECHA_DIST", "WIN32_LEAN_AND_MEAN" }
+    optimize "on"

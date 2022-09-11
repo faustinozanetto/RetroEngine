@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
+
 #include "RetroApplication.h"
+#include "Logger/Logger.h"
 
 namespace Retro::Core {
 	RetroApplication* RetroApplication::s_Instance = nullptr;
@@ -11,4 +13,9 @@ namespace Retro::Core {
 	}
 
 	RetroApplication::~RetroApplication() = default;
+
+	void RetroApplication::RunApplication()
+	{
+		while (true) {}
+	}
 }

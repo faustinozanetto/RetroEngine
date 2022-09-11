@@ -2,6 +2,10 @@
 
 #include "pch.h"
 
+#include "Core/Base.h"
+
+int main(int argc, char** argv);
+
 namespace Retro::Core
 {
     struct FRetroApplicationSpecification {
@@ -17,6 +21,9 @@ namespace Retro::Core
         RetroApplication() = default;
         RetroApplication(const FRetroApplicationSpecification& applicationSpecification);
         virtual ~RetroApplication();
+
+        /* Methods */
+        void RunApplication();
         
     private:
         FRetroApplicationSpecification m_ApplicationSpecification;
