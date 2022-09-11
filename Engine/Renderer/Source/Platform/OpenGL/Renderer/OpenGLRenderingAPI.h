@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer/Renderer/RendererAPI.h"
+#include "glm/glm.hpp"
 
 namespace Retro {
 	class OpenGLRenderingAPI : public RenderingAPI {
@@ -11,5 +12,6 @@ namespace Retro {
 
 		/* Methods */
 		bool Initialize() override;
+		void SetClearColor(glm::vec4 color);
 	};
 }

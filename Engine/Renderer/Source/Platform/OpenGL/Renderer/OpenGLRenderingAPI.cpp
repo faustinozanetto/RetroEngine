@@ -22,4 +22,9 @@ namespace Retro {
 
 		return true;
 	}
+
+	void OpenGLRenderingAPI::SetClearColor(glm::vec4 color)
+	{
+		glClearColor(color.r, color.g, color.b, color.a);
+	}
 }

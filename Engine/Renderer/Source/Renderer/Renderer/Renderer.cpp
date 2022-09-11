@@ -12,4 +12,9 @@ namespace Retro {
 		s_RenderingAPI = RenderingAPI::Create(renderingAPIType);
 		return true;
 	}
+
+	void Renderer::SetClearColor(glm::vec4 color)
+	{
+		s_RenderingAPI->SetClearColor(color);
+	}
 }

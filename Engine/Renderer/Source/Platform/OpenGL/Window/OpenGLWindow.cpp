@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "OpenGLWindow.h"
+#include "Renderer/Renderer/Renderer.h"
 
 namespace Retro {
 	OpenGLWindow::OpenGLWindow(const FWindowSpecification& specification) {
@@ -65,7 +66,7 @@ namespace Retro {
 	void OpenGLWindow::WindowLoop()
 	{
 		glfwSwapBuffers(m_OpenGLWindow);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		Renderer::SetClearColor({ 1.0f, 0.0f, 1.0f, 1.0f });
 		glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
 	}

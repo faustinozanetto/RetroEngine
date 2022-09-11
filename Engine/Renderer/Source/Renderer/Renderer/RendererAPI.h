@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Base.h"
+#include "glm/glm.hpp"
 
 namespace Retro {
 	enum class RenderingAPIType {
@@ -15,6 +16,7 @@ namespace Retro {
 
 		/* Methods */
 		virtual bool Initialize() = 0;
+		virtual void SetClearColor(glm::vec4 color) = 0;
 
 		/* Instantiate */
 		static Scope<RenderingAPI> Create(RenderingAPIType renderingAPIType);
