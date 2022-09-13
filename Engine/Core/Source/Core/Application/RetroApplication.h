@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Base.h"
+#include "Renderer/Buffers/VBO/VertexBuffer.h"
 #include "Renderer/Window/Window.h"
 
 int main(int argc, char** argv);
@@ -30,6 +31,7 @@ namespace Retro
     private:
         FRetroApplicationSpecification m_ApplicationSpecification;
         Scope<Renderer::Window> m_Window;
+        Ref<Renderer::VertexBuffer> m_VBO;
         static RetroApplication* s_Instance;
     };
     

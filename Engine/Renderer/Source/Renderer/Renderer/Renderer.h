@@ -1,5 +1,8 @@
 #pragma once
 
+#include <queue>
+
+#include "RenderCommand.h"
 #include "Core/Base.h"
 #include "Renderer/Renderer/RendererAPI.h"
 #include "Renderer/Renderer/RendererContext.h"
@@ -16,6 +19,11 @@ namespace Retro::Renderer {
 		static void ClearScreen();
 		static void SwapBuffers();
 		static void PollInput();
+		
+		static void Begin();
+		static void End();
+		
+		static void SubmitCommand(const RenderCommand& command);
 
 		/* Getters */
 		static RenderingAPIType GetRenderingAPIType();
@@ -23,5 +31,7 @@ namespace Retro::Renderer {
 	private:
 		static Scope<RenderingAPI> s_RenderingAPI;
 		static Scope<RendererContext> s_Context;
+
+		static std::queue<RenderCommand> s_CommandQueue;
 	};
 }

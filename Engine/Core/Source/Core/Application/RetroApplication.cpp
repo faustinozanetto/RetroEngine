@@ -23,6 +23,12 @@ namespace Retro
         m_Window = Renderer::Window::Create(windowSpecification);
         // Initialize Renderer
         Renderer::Renderer::Initialize(Renderer::RenderingAPIType::OpenGL, *m_Window.get());
+        float vertices[] = {
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.0f, 0.5f, 0.0f
+        };
+        m_VBO = Renderer::VertexBuffer::Create(vertices, sizeof(vertices));
     }
 
     RetroApplication::~RetroApplication() = default;
@@ -31,10 +37,14 @@ namespace Retro
     {
         while (!glfwWindowShouldClose(static_cast<GLFWwindow*>(m_Window->GetNativeWindow())))
         {
-            const float time = glfwGetTime();
-            const glm::vec4 color = {glm::sin(time), glm::cos(time), glm::sin(time) + glm::cos(time) ,1.0f};
+            const float time = static_cast<float>(glfwGetTime());
+            const glm::vec4 color = {glm::sin(time), glm::cos(time), glm::sin(time) + glm::cos(time), 1.0f};
             Renderer::Renderer::ClearScreen();
             Renderer::Renderer::SetClearColor(color);
+
+            Renderer::RenderCommand command = {m_VBO};
+            Renderer::Renderer::SubmitCommand(command);
+
             Renderer::Renderer::PollInput();
             Renderer::Renderer::SwapBuffers();
         }

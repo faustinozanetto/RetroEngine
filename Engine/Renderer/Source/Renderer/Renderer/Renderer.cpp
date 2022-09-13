@@ -5,6 +5,7 @@
 namespace Retro::Renderer {
 	Scope<RenderingAPI> Renderer::s_RenderingAPI  = nullptr;
 	Scope<RendererContext> Renderer::s_Context = nullptr;
+	std::queue<RenderCommand> Renderer::s_CommandQueue = {};
 
 	bool Renderer::Initialize(RenderingAPIType renderingAPIType, const Window& window)
 	{
@@ -41,6 +42,25 @@ namespace Retro::Renderer {
 	void Renderer::PollInput()
 	{
 		s_Context->PollInput();
+	}
+
+	void Renderer::Begin()
+	{
+		
+	}
+
+	void Renderer::End()
+	{
+		while (!s_CommandQueue.empty())
+		{
+			RenderCommand command = s_CommandQueue.front();
+			commn
+		}
+	}
+
+	void Renderer::SubmitCommand(const RenderCommand& command)
+	{
+		s_CommandQueue.push(command);
 	}
 
 	RenderingAPIType Renderer::GetRenderingAPIType()
