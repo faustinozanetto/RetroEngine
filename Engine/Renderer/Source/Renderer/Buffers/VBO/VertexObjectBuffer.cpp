@@ -1,28 +1,28 @@
 ﻿#include "pch.h"
-#include "VertexBuffer.h"
+#include "VertexObjectBuffer.h"
 
-#include "Platform/OpenGL/Buffers/VBO/OpenGLVertexBuffer.h"
+#include "Platform/OpenGL/Buffers/VBO/OpenGLVertexObjectBuffer.h"
 #include "Renderer/Renderer/RendererContext.h"
 #include "Renderer/Renderer/Renderer.h"
 
 namespace Retro::Renderer
 {
-    VertexBuffer::~VertexBuffer()
+    VertexObjectBuffer::~VertexObjectBuffer()
     {
     }
 
-    Ref<VertexBuffer> VertexBuffer::Create(float* data, uint32_t size)
+    Ref<VertexObjectBuffer> VertexObjectBuffer::Create(float* data, uint32_t size)
     {
         switch (Renderer::GetRenderingAPIType())
         {
         case RenderingAPIType::None:
             {
-                Logger::Error("VertexBuffer::Create | Unknown rendering api!.");
+                Logger::Error("VertexObjectBuffer::Create | Unknown rendering api!.");
                 return nullptr;
             }
         case RenderingAPIType::OpenGL:
             {
-                return CreateScope<OpenGLVertexBuffer>(data, size);
+                return CreateRef<OpenGLVertexObjectBuffer>(data, size);
             }
         }
         return {};

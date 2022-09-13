@@ -5,13 +5,13 @@
 
 namespace Retro::Renderer
 {
-    class VertexBuffer : public GraphicsObject
+    class VertexObjectBuffer : public GraphicsObject
     {
     public:
         /* Destructor */
-        ~VertexBuffer() override;
+        ~VertexObjectBuffer() override;
         
         /* Instantiate */
-        static Ref<VertexBuffer> Create(float* data, uint32_t size);
+        static Ref<VertexObjectBuffer> Create(float* data, uint32_t size);
     };
 }

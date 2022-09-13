@@ -1,28 +1,28 @@
 ﻿#include "pch.h"
-#include "OpenGLVertexBuffer.h"
+#include "OpenGLVertexObjectBuffer.h"
 
 #include "glad/glad.h"
 
 namespace Retro::Renderer
 {
-    OpenGLVertexBuffer::OpenGLVertexBuffer(const float* vertices, uint32_t size)
+    OpenGLVertexObjectBuffer::OpenGLVertexObjectBuffer(const float* vertices, uint32_t size)
     {
         glGenBuffers(1, &m_ObjectHandle);
         glBindBuffer(GL_ARRAY_BUFFER, m_ObjectHandle);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
     }
 
-    OpenGLVertexBuffer::~OpenGLVertexBuffer()
+    OpenGLVertexObjectBuffer::~OpenGLVertexObjectBuffer()
     {
         glDeleteBuffers(1, &m_ObjectHandle);
     }
 
-    void OpenGLVertexBuffer::Bind()
+    void OpenGLVertexObjectBuffer::Bind()
     {
         glBindBuffer(GL_ARRAY_BUFFER, m_ObjectHandle);
     }
 
-    void OpenGLVertexBuffer::UnBind()
+    void OpenGLVertexObjectBuffer::UnBind()
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }

@@ -54,7 +54,10 @@ namespace Retro::Renderer {
 		while (!s_CommandQueue.empty())
 		{
 			RenderCommand command = s_CommandQueue.front();
-			commn
+	
+
+			// Remove command from the queue.
+			s_CommandQueue.pop();
 		}
 	}
 

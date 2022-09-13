@@ -31,7 +31,6 @@ project "EngineCore"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
-  defines "DLL_EXPORT"
   staticruntime "off"
 
   targetdir ("Binaries/" .. outputDir .. "/%{prj.name}")
@@ -73,7 +72,6 @@ project "EngineRenderer"
   kind "StaticLib"
   language "C++"
   cppdialect "C++20"
-  defines "DLL_EXPORT"
   staticruntime "off"
 
   targetdir ("Binaries/" .. outputDir .. "/%{prj.name}")
@@ -138,6 +136,11 @@ project "Sandbox"
     "%{IncludeDir.GLAD}",
     "%{IncludeDir.GLM}",  
     "%{IncludeDir.SPDLOG}",  
+  }
+
+  libdirs {
+    "Binaries/Debug-windows-x86_64/EngineCore",
+    "Binaries/Debug-windows-x86_64/EngineRenderer",
   }
 
   links {
