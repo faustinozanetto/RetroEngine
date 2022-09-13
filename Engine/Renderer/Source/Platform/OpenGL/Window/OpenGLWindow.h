@@ -16,7 +16,9 @@ namespace Retro {
 		/* Getters */
 		void* GetNativeWindow() const override;
 
+		/* Methods */
 		void WindowLoop() override;
+		void SetEnableVSync(bool useVSync) override;
 
 	private:
 		bool InitializeWindow();

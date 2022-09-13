@@ -29,4 +29,9 @@ namespace Retro {
 			m_Window->WindowLoop();
 		}
 	}
+
+	const Window& RetroApplication::GetWindow() const
+	{
+		return *m_Window;
+	}
 }

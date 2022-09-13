@@ -4,6 +4,13 @@
 #include "Platform/OpenGL/Renderer/OpenGLRenderingAPI.h"
 
 namespace Retro {
+	RenderingAPIType RenderingAPI::s_RenderingAPIType = RenderingAPIType::OpenGL;
+
+	RenderingAPIType RenderingAPI::GetRenderingAPIType()
+	{
+		return s_RenderingAPIType;
+	}
+
 	Scope<RenderingAPI> RenderingAPI::Create(RenderingAPIType renderingAPITYpe)
 	{
 		switch (renderingAPITYpe) {
@@ -15,5 +22,6 @@ namespace Retro {
 			return CreateScope<OpenGLRenderingAPI>();
 		}
 		}
+		return {};
 	}
 }

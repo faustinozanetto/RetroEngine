@@ -12,6 +12,11 @@ namespace Retro {
 		return m_WindowSpecification;
 	}
 
+	bool Window::IsVSyncEnabled() const
+	{
+		return m_WindowSpecification.vSync;
+	}
+
 	Scope<Window> Window::Create(const FWindowSpecification& specification)
 	{
 #ifdef RETRO_PLATFORM_WINDOWS

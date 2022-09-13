@@ -8,9 +8,10 @@ namespace Retro
         std::string windowTitle;
         uint32_t width;
         uint32_t height;
+        bool vSync;
 
         FWindowSpecification(const std::string& windowTitle = "Retro Engine", uint32_t width = 1920,
-            uint32_t height = 1080) : windowTitle(windowTitle), width(width), height(height) {}
+            uint32_t height = 1080, bool vSync = true) : windowTitle(windowTitle), width(width), height(height), vSync(vSync) {}
     };
 
     class Window
@@ -18,12 +19,15 @@ namespace Retro
     public:
         /* Destructor */
         virtual ~Window() = default;
-        
+
+        /* Methods */
+        virtual void WindowLoop() = 0;
+        virtual void SetEnableVSync(bool useVSync) = 0;
+
         /* Getters */
         const FWindowSpecification& GetWindowSpecification();
         virtual void* GetNativeWindow() const = 0;
-
-        virtual void WindowLoop() = 0;
+        bool IsVSyncEnabled() const;
 
         /* Instantiate */
         static Scope<Window> Create(const FWindowSpecification& specification = FWindowSpecification());

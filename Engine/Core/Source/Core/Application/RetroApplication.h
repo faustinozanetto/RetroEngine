@@ -23,6 +23,9 @@ namespace Retro
 
         /* Methods */
         void RunApplication();
+
+        /* Getters */
+        const Window& GetWindow() const;
         
     private:
         FRetroApplicationSpecification m_ApplicationSpecification;

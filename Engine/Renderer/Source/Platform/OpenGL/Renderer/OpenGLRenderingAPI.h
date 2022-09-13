@@ -12,6 +12,7 @@ namespace Retro {
 
 		/* Methods */
 		bool Initialize() override;
-		void SetClearColor(glm::vec4 color);
+		void SetClearColor(glm::vec4 color) override;
+		void ClearScreen() override;
 	};
 }
