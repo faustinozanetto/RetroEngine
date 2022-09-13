@@ -3,7 +3,7 @@
 #include "OpenGLWindow.h"
 #include "Renderer/Renderer/Renderer.h"
 
-namespace Retro {
+namespace Retro::Renderer {
 	OpenGLWindow::OpenGLWindow(const FWindowSpecification& specification) {
 		// Update window specification.
 		m_WindowSpecification.windowTitle = specification.windowTitle;
@@ -24,12 +24,13 @@ namespace Retro {
 	bool OpenGLWindow::InitializeWindow()
 	{
 		// Initializing GLFW
-		uint32_t glfwState = glfwInit();
+		const uint32_t glfwState = glfwInit();
 		if (glfwState == GLFW_FALSE) {
 			return false;
 		}
 		Logger::Info("Initialization | GLFW Success");
 		Logger::Line();
+		
 		// Create OpenGL Window.
 		Logger::Info("Initialization | Creating OpenGL Window");
 		Logger::Info("Window Title: " + GetWindowSpecification().windowTitle);
@@ -55,12 +56,6 @@ namespace Retro {
 
 		// Set user pointer, used in callbacks.
 		glfwSetWindowUserPointer(m_OpenGLWindow, &m_WindowSpecification);
-		
-		// Create Rendering Context.
-		const auto rendererContext = RendererContext::Create(m_OpenGLWindow);
-		rendererContext->Initialize();
-		// Set context to renderer.
-		Renderer::SetRendererContext(rendererContext.get());
 
 		// Handle Initial VSync.
 		SetEnableVSync(m_WindowSpecification.vSync);
@@ -71,13 +66,6 @@ namespace Retro {
 	void* OpenGLWindow::GetNativeWindow() const
 	{
 		return m_OpenGLWindow;
-	}
-
-	void OpenGLWindow::WindowLoop()
-	{
-		glfwSwapBuffers(m_OpenGLWindow);
-		Renderer::SetClearColor({ 1.0f, 1.0f, 0.25f, 1.0f });
-		Renderer::ClearScreen();
 	}
 
 	void OpenGLWindow::SetEnableVSync(bool useVSync)

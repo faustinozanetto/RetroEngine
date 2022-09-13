@@ -6,9 +6,9 @@
 #ifdef RETRO_PLATFORM_WINDOWS
 extern Retro::RetroApplication* Retro::CreateRetroApplication();
 
-int main(int argc, char** argv)
+inline int main(int argc, char** argv)
 {
-    auto application = Retro::CreateRetroApplication();
+    const auto application = Retro::CreateRetroApplication();
     application->RunApplication();
     delete application;
 }

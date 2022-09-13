@@ -2,7 +2,7 @@
 
 #include "Core/Base.h"
 
-namespace Retro
+namespace Retro::Renderer
 {
     struct FWindowSpecification {
         std::string windowTitle;
@@ -11,7 +11,7 @@ namespace Retro
         bool vSync;
 
         FWindowSpecification(const std::string& windowTitle = "Retro Engine", uint32_t width = 1920,
-            uint32_t height = 1080, bool vSync = true) : windowTitle(windowTitle), width(width), height(height), vSync(vSync) {}
+            uint32_t height = 1080, bool vSync = false) : windowTitle(windowTitle), width(width), height(height), vSync(vSync) {}
     };
 
     class Window
@@ -21,7 +21,6 @@ namespace Retro
         virtual ~Window() = default;
 
         /* Methods */
-        virtual void WindowLoop() = 0;
         virtual void SetEnableVSync(bool useVSync) = 0;
 
         /* Getters */

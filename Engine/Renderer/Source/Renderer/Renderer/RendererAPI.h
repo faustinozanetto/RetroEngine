@@ -3,7 +3,7 @@
 #include "Core/Base.h"
 #include "glm/glm.hpp"
 
-namespace Retro {
+namespace Retro::Renderer {
 	enum class RenderingAPIType {
 		None = 0,
 		OpenGL = 1

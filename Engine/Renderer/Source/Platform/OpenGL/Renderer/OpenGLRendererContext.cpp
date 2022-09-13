@@ -2,9 +2,10 @@
 
 #include "Platform/OpenGL/Renderer/OpenGLRendererContext.h"
 
-namespace Retro {
+namespace Retro::Renderer {
 	OpenGLRendererContext::OpenGLRendererContext(GLFWwindow* windowHandle)
 	{
+		RETRO_ASSERT(windowHandle, "OpenGLRendererContext::OpenGLRendererContext | Window handle invalid!.")
 		m_WindowHandle = windowHandle;
 	}
 

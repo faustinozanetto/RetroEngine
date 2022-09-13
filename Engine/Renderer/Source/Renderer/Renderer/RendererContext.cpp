@@ -5,10 +5,10 @@
 #include "Renderer/Renderer/Renderer.h"
 #include "GLFW/glfw3.h"
 
-namespace Retro {
+namespace Retro::Renderer {
 	Scope<RendererContext> RendererContext::Create(void* windowHandle)
 	{
-		switch (Renderer::GetRenderingAPI()->GetRenderingAPIType()) {
+		switch (Renderer::GetRenderingAPIType()) {
 		case RenderingAPIType::None: {
 			Logger::Error("RendererContext::Create | Unknown rendering api!.");
 			return nullptr;

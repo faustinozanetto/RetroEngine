@@ -3,7 +3,7 @@
 #include "Renderer/Renderer/RendererAPI.h"
 #include "Platform/OpenGL/Renderer/OpenGLRenderingAPI.h"
 
-namespace Retro {
+namespace Retro::Renderer {
 	RenderingAPIType RenderingAPI::s_RenderingAPIType = RenderingAPIType::OpenGL;
 
 	RenderingAPIType RenderingAPI::GetRenderingAPIType()

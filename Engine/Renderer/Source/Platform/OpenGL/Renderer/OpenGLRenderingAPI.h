@@ -3,7 +3,7 @@
 #include "Renderer/Renderer/RendererAPI.h"
 #include "glm/glm.hpp"
 
-namespace Retro {
+namespace Retro::Renderer {
 	class OpenGLRenderingAPI : public RenderingAPI {
 	public:
 		/* Constructor & Destructor */

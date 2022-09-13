@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-namespace Retro {
+namespace Retro::Renderer {
 	class OpenGLWindow : public Window {
 	public:
 		/* Constructor & Destructor */
@@ -17,14 +17,13 @@ namespace Retro {
 		void* GetNativeWindow() const override;
 
 		/* Methods */
-		void WindowLoop() override;
 		void SetEnableVSync(bool useVSync) override;
 
 	private:
 		bool InitializeWindow();
 
 	private:
-		GLFWwindow* m_OpenGLWindow;
+		GLFWwindow* m_OpenGLWindow{};
 	};
 
 }

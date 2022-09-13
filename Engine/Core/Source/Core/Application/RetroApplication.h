@@ -22,14 +22,14 @@ namespace Retro
         virtual ~RetroApplication();
 
         /* Methods */
-        void RunApplication();
+        void RunApplication() const;
 
         /* Getters */
-        const Window& GetWindow() const;
+        const Renderer::Window& GetWindow() const;
         
     private:
         FRetroApplicationSpecification m_ApplicationSpecification;
-        Scope<Window> m_Window;
+        Scope<Renderer::Window> m_Window;
         static RetroApplication* s_Instance;
     };
     

@@ -6,7 +6,7 @@
 #include "Platform/OpenGL/Window/OpenGLWindow.h"
 #endif
 
-namespace Retro {
+namespace Retro::Renderer {
 	const FWindowSpecification& Window::GetWindowSpecification()
 	{
 		return m_WindowSpecification;

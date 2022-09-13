@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 
-namespace Retro {
+namespace Retro::Renderer {
 	class OpenGLRendererContext : public RendererContext {
 	public:
 		/* Constructor */
