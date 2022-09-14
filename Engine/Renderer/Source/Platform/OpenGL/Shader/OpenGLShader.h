@@ -23,9 +23,9 @@ namespace Retro::Renderer {
 		void SetFloat(const std::string& uniform, float value) override;
 		void SetVecFloat2(const std::string& uniform, glm::vec2 value) override;
 		void SetVecFloat3(const std::string& uniform, glm::vec3 value) override;
-		void SetVecFloat4(const std::string& uniform, glm::vec3 value) override;
+		void SetVecFloat4(const std::string& uniform, glm::vec4 value) override;
 
-		uint32_t GetUniformLocation(const std::string& uniform) override;
+		unsigned int GetUniformLocation(const std::string& uniform) override;
 
 	private:
 		std::string ParseShaderContentsFromFile(const std::string& shaderSource);
@@ -34,6 +34,7 @@ namespace Retro::Renderer {
 		void CompileShader();
 
 		std::map<ShaderType, std::string> m_ShaderSources;
+		std::unordered_map<std::string, unsigned int> m_UniformLocations;
 
 	};
 }

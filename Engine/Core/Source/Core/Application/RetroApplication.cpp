@@ -52,7 +52,7 @@ namespace Retro
 			Renderer::Renderer::SetClearColor(color);
 
 			Renderer::Renderer::Begin();
-
+			
 			Renderer::RenderCommand command = { m_Shader, m_VBO, m_VAO };
 			Renderer::Renderer::SubmitCommand(command);
 
