@@ -5,9 +5,15 @@
 
 namespace Retro::Renderer {
 	OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath) {
+		Logger::Line();
 		// Parse both vertex and fragment shaders sources from file.
 		auto vertexSource = ParseShaderContentsFromFile(vertexPath);
 		auto fragmentSource = ParseShaderContentsFromFile(fragmentPath);
+		// Assign shader sources.
+		m_ShaderSources = ProcessShaderSources(vertexSource, fragmentSource);
+		// Compile shader.
+		CompileShader();
+		Logger::Line();
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -48,5 +54,101 @@ namespace Retro::Renderer {
 			Logger::Error("OpenGLShader::ParseShaderContentsFromFile | An error occurred.");
 		}
 		return parsedContents;
+	}
+
+	std::map<ShaderType, std::string> OpenGLShader::ProcessShaderSources(const std::string& vertexSource, const std::string& fragmentSource)
+	{
+		std::map<ShaderType, std::string> shaderSources = {};
+		shaderSources[ShaderType::Fragment] = fragmentSource;
+		shaderSources[ShaderType::Vertex] = vertexSource;
+
+		return shaderSources;
+	}
+
+	void OpenGLShader::CompileShader()
+	{
+		uint32_t shaderProgram = glCreateProgram();
+		std::array<GLenum, 2> glShaderIDs{};
+		int shaderIndex = 0;
+		// Iterate through the shader sources.
+		for (auto& shader : m_ShaderSources) {
+			const ShaderType shaderType = shader.first;
+			const std::string& shaderSource = shader.second;
+
+			// Creating the program
+			const GLuint shader = glCreateShader(shaderType);
+			// Assigning source
+			const GLchar* sourceCStr = shaderSource.c_str();
+			glShaderSource(shader, 1, &sourceCStr, 0);
+
+			// Compiling the shader
+			glCompileShader(shader);
+
+			// Error handling
+			GLint success = 0;
+			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+			if (success == GL_FALSE)
+			{
+				GLint maxLength = 0;
+				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+				// Get error log.
+				std::vector<GLchar> infoLog(maxLength);
+				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+
+				// Delete the shader.
+				glDeleteShader(shader);
+
+				// Print error log.
+				Logger::Error("OpenGLShader::CompileShader | Shader compilation failed: " + std::string(infoLog.begin(), infoLog.end()));
+				break;
+			}
+
+			// Attach
+			glAttachShader(shaderProgram, shader);
+			glShaderIDs[shaderIndex] = shader;
+			shaderIndex++;
+		}
+		// Assign program ID
+		m_ObjectHandle = shaderProgram;
+
+		// Link the program
+		glLinkProgram(m_ObjectHandle);
+
+		// Error handling
+		GLint success = 0;
+		glGetProgramiv(m_ObjectHandle, GL_LINK_STATUS, &success);
+		if (success == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetProgramiv(m_ObjectHandle, GL_INFO_LOG_LENGTH, &maxLength);
+
+			// Getting the error
+			std::vector<GLchar> infoLog(maxLength);
+			glGetProgramInfoLog(m_ObjectHandle, maxLength, &maxLength, &infoLog[0]);
+
+			// Delete the program
+			glDeleteProgram(m_ObjectHandle);
+
+			// Delete shaders.
+			for (const auto id : glShaderIDs)
+			{
+				glDeleteShader(id);
+			}
+
+			// Print error log.
+			Logger::Error("OpenGLShader::Compile | Shader linking failed: " + std::string(infoLog.begin(), infoLog.end()));
+
+			return;
+		}
+
+		Logger::Info("OpenGLShader::Compile | Shader Compiled Successfully!");
+
+		// Cleanup.
+		for (const auto id : glShaderIDs)
+		{
+			glDetachShader(m_ObjectHandle, id);
+			glDeleteShader(id);
+		}
 	}
 }

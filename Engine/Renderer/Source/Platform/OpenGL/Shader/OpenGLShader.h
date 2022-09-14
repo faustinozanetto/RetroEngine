@@ -1,8 +1,14 @@
 #pragma once
 
+#include "map"
 #include "Renderer/Shader/Shader.h"
 
 namespace Retro::Renderer {
+	enum ShaderType {
+		Vertex = GL_VERTEX_SHADER,
+		Fragment = GL_FRAGMENT_SHADER,
+	};
+
 	class OpenGLShader : public Shader {
 	public:
 		/* Constructor & Destructor */
@@ -20,6 +26,13 @@ namespace Retro::Renderer {
 
 		uint32_t GetUniformLocation(const std::string& uniform) override;
 
+	private:
+		std::string ParseShaderContentsFromFile(const std::string& shaderSource);
+		std::map<ShaderType, std::string> ProcessShaderSources(const std::string& vertexSource, const std::string& fragmentSource);
+
+		void CompileShader();
+
+		std::map<ShaderType, std::string> m_ShaderSources;
 
 	};
 }
