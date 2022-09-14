@@ -2,6 +2,8 @@
 
 #include "Renderer/Renderer/Renderer.h"
 
+#include "glad/glad.h"
+
 namespace Retro::Renderer {
 	Scope<RenderingAPI> Renderer::s_RenderingAPI  = nullptr;
 	Scope<RendererContext> Renderer::s_Context = nullptr;
@@ -53,9 +55,12 @@ namespace Retro::Renderer {
 	{
 		while (!s_CommandQueue.empty())
 		{
-			RenderCommand command = s_CommandQueue.front();
-	
-
+			const RenderCommand command = s_CommandQueue.front();
+			command.shader->Bind();
+			command.vao->Bind();
+			glDrawArrays(GL_TRIANGLES, 0, 3);
+			command.shader->UnBind();
+			command.vao->UnBind();
 			// Remove command from the queue.
 			s_CommandQueue.pop();
 		}

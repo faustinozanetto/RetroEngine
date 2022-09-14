@@ -2,6 +2,7 @@
 
 #include "RetroApplication.h"
 
+#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Logger/Logger.h"
 #include "Renderer/Renderer/Renderer.h"
@@ -12,6 +13,7 @@ namespace Retro
 
 	RetroApplication::RetroApplication(const FRetroApplicationSpecification& applicationSpecification)
 	{
+		std::filesystem::current_path("../");
 		// Update variables.
 		s_Instance = this;
 		m_ApplicationSpecification = applicationSpecification;
@@ -28,8 +30,14 @@ namespace Retro
 			0.5f, -0.5f, 0.0f,
 			0.0f, 0.5f, 0.0f
 		};
-		m_VBO = Renderer::VertexObjectBuffer::Create(vertices, sizeof(vertices));
 		m_VAO = Renderer::VertexArrayBuffer::Create();
+		m_VBO = Renderer::VertexObjectBuffer::Create(vertices, sizeof(vertices));
+		m_VAO->Bind();
+		
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);  
+
+		m_Shader = Renderer::Shader::Create("Assets/Shaders/Basic/Basic.vert", "Assets/Shaders/Basic/Basic.frag");
 	}
 
 	RetroApplication::~RetroApplication() = default;
@@ -45,7 +53,7 @@ namespace Retro
 
 			Renderer::Renderer::Begin();
 
-			Renderer::RenderCommand command = { m_VBO, m_VAO };
+			Renderer::RenderCommand command = { m_Shader, m_VBO, m_VAO };
 			Renderer::Renderer::SubmitCommand(command);
 
 			Renderer::Renderer::End();

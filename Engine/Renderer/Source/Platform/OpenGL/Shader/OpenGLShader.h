@@ -1,6 +1,7 @@
 #pragma once
 
 #include "map"
+#include "glad/glad.h"
 #include "Renderer/Shader/Shader.h"
 
 namespace Retro::Renderer {

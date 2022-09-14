@@ -7,8 +7,8 @@ namespace Retro::Renderer {
 	OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath) {
 		Logger::Line();
 		// Parse both vertex and fragment shaders sources from file.
-		auto vertexSource = ParseShaderContentsFromFile(vertexPath);
-		auto fragmentSource = ParseShaderContentsFromFile(fragmentPath);
+		const std::string& vertexSource = ParseShaderContentsFromFile(vertexPath);
+		const std::string& fragmentSource = ParseShaderContentsFromFile(fragmentPath);
 		// Assign shader sources.
 		m_ShaderSources = ProcessShaderSources(vertexSource, fragmentSource);
 		// Compile shader.
@@ -29,6 +29,27 @@ namespace Retro::Renderer {
 	void OpenGLShader::UnBind()
 	{
 		glUseProgram(0);
+	}
+
+	void OpenGLShader::SetFloat(const std::string& uniform, float value)
+	{
+	}
+
+	void OpenGLShader::SetVecFloat2(const std::string& uniform, glm::vec2 value)
+	{
+	}
+
+	void OpenGLShader::SetVecFloat3(const std::string& uniform, glm::vec3 value)
+	{
+	}
+
+	void OpenGLShader::SetVecFloat4(const std::string& uniform, glm::vec3 value)
+	{
+	}
+
+	uint32_t OpenGLShader::GetUniformLocation(const std::string& uniform)
+	{
+		return 0;
 	}
 
 	std::string OpenGLShader::ParseShaderContentsFromFile(const std::string& shaderFilePath)
@@ -76,28 +97,28 @@ namespace Retro::Renderer {
 			const std::string& shaderSource = shader.second;
 
 			// Creating the program
-			const GLuint shader = glCreateShader(shaderType);
+			const GLuint openGLShader = glCreateShader(shaderType);
 			// Assigning source
 			const GLchar* sourceCStr = shaderSource.c_str();
-			glShaderSource(shader, 1, &sourceCStr, 0);
+			glShaderSource(openGLShader, 1, &sourceCStr, 0);
 
 			// Compiling the shader
-			glCompileShader(shader);
+			glCompileShader(openGLShader);
 
 			// Error handling
 			GLint success = 0;
-			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+			glGetShaderiv(openGLShader, GL_COMPILE_STATUS, &success);
 			if (success == GL_FALSE)
 			{
 				GLint maxLength = 0;
-				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+				glGetShaderiv(openGLShader, GL_INFO_LOG_LENGTH, &maxLength);
 
 				// Get error log.
 				std::vector<GLchar> infoLog(maxLength);
-				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+				glGetShaderInfoLog(openGLShader, maxLength, &maxLength, &infoLog[0]);
 
 				// Delete the shader.
-				glDeleteShader(shader);
+				glDeleteShader(openGLShader);
 
 				// Print error log.
 				Logger::Error("OpenGLShader::CompileShader | Shader compilation failed: " + std::string(infoLog.begin(), infoLog.end()));
@@ -105,8 +126,8 @@ namespace Retro::Renderer {
 			}
 
 			// Attach
-			glAttachShader(shaderProgram, shader);
-			glShaderIDs[shaderIndex] = shader;
+			glAttachShader(shaderProgram, openGLShader);
+			glShaderIDs[shaderIndex] = openGLShader;
 			shaderIndex++;
 		}
 		// Assign program ID
