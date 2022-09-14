@@ -84,16 +84,16 @@ namespace Retro::Renderer
     void OpenGLWindow::SetupWindowCallbacks()
     {
         glfwSetWindowSizeCallback(m_OpenGLWindow, [](GLFWwindow* window, int width, int height)
-            {
-                FWindowSpecification& windowSpecification = *(FWindowSpecification*)glfwGetWindowUserPointer(window);
-                windowSpecification.width = width;
-                windowSpecification.height = height;
+        {
+            FWindowSpecification& windowSpecification = *static_cast<FWindowSpecification*>(
+                glfwGetWindowUserPointer(window));
+            windowSpecification.width = width;
+            windowSpecification.height = height;
 
-                std::stringstream ss;
-                ss << "WindowResizeEvent: " << width << ", " << height;
-                Renderer::SetViewport(0, 0, width, height);
-                Logger::Info(ss.str());
-            });
-
+            std::stringstream ss;
+            ss << "WindowResizeEvent: " << width << ", " << height;
+            Renderer::SetViewport(0, 0, width, height);
+            Logger::Info(ss.str());
+        });
     }
 }

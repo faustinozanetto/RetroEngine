@@ -20,6 +20,7 @@ namespace Retro::Renderer {
 		static void SwapBuffers();
 		static void PollInput();
 		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		static bool ShouldClose();
 		
 		static void Begin();
 		static void End();

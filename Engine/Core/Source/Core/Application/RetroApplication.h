@@ -1,10 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Base.h"
-#include "Renderer/Buffers/VAO/VertexArrayBuffer.h"
-#include "Renderer/Buffers/VBO/VertexObjectBuffer.h"
-#include "Renderer/Renderables/Renderable.h"
-#include "Renderer/Shader/Shader.h"
+#include "Core/Layers/LayerManager.h"
 #include "Renderer/Window/Window.h"
 
 int main(int argc, char** argv);
@@ -30,12 +27,12 @@ namespace Retro
 
 		/* Getters */
 		const Renderer::Window& GetWindow() const;
+		const Scope<LayerManager>& GetLayersManager() const;
 
 	private:
 		FRetroApplicationSpecification m_ApplicationSpecification;
 		Scope<Renderer::Window> m_Window;
-		Ref<Renderer::Shader> m_Shader;
-		Ref<Renderer::Renderable> m_Renderable;
+		Scope<LayerManager> m_LayersManager;
 		static RetroApplication* s_Instance;
 	};
 

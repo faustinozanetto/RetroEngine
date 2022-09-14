@@ -5,11 +5,15 @@
 
 namespace Retro::Renderer
 {
-	struct RenderCommand
-	{
-		Ref<Shader> shader;
-		Ref<VertexArrayBuffer> vao;
+    struct RenderCommand
+    {
+        Ref<Shader> shader;
+        Ref<VertexArrayBuffer> vao;
+        glm::mat4 transform;
 
-		RenderCommand(const Ref<Shader>& shader, const Ref<VertexArrayBuffer>& vao) : shader(shader), vao(vao) {}
-	};
+        RenderCommand(const Ref<Shader>& shader, const Ref<VertexArrayBuffer>& vao,
+                      const glm::mat4& transform) : shader(shader), vao(vao), transform(transform)
+        {
+        }
+    };
 }

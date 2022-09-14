@@ -33,4 +33,9 @@ namespace Retro::Renderer {
 	{
 		glViewport(x, y, width, height);
 	}
+
+	bool OpenGLRendererContext::ShouldClose()
+	{
+		return glfwWindowShouldClose(m_WindowHandle);
+	}
 }
