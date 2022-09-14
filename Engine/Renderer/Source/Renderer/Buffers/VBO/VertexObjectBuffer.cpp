@@ -7,7 +7,7 @@
 
 namespace Retro::Renderer
 {
-    int VBOElement::CalculateElementSize() const
+    uint32_t VBOElement::CalculateElementSize() const
     {
         switch (type)
         {
@@ -19,7 +19,7 @@ namespace Retro::Renderer
         return 0;
     }
 
-    int VBOElement::CalculateElementCount() const
+    uint32_t VBOElement::CalculateElementCount() const
     {
         switch (type)
         {

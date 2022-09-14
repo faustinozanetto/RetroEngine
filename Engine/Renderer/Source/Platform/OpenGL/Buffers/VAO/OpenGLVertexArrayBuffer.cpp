@@ -77,4 +77,16 @@ namespace Retro::Renderer
     {
         return m_VBOs;
     }
+
+    const Ref<IndexBuffer>& OpenGLVertexArrayBuffer::GetIndexBuffer() const
+    {
+        return m_IBO;
+    }
+
+    void OpenGLVertexArrayBuffer::SetIndexBuffer(const Ref<IndexBuffer>& ibo)
+    {
+        Bind();
+        ibo->Bind();
+        m_IBO = ibo;
+    }
 }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Renderer/Buffers/IBO/IndexBuffer.h"
 #include "Renderer/Buffers/VAO/VertexArrayBuffer.h"
 
 namespace Retro::Renderer
@@ -17,7 +18,11 @@ namespace Retro::Renderer
 		
 		void AddVertexObjectBuffer(const Ref<VertexObjectBuffer>& vbo) override;
 		const std::vector<Ref<VertexObjectBuffer>>& GetVertexObjectBuffers() const override;
+		const Ref<IndexBuffer>& GetIndexBuffer() const override;
+		void SetIndexBuffer(const Ref<IndexBuffer>& ibo) override;
+		
 	private:
 		std::vector<Ref<VertexObjectBuffer>> m_VBOs;
+		Ref<IndexBuffer> m_IBO;
 	};
 }

@@ -33,7 +33,6 @@ namespace Retro
 	private:
 		FRetroApplicationSpecification m_ApplicationSpecification;
 		Scope<Renderer::Window> m_Window;
-		Ref<Renderer::VertexObjectBuffer> m_VBO;
 		Ref<Renderer::VertexArrayBuffer> m_VAO;
 		Ref<Renderer::Shader> m_Shader;
 		static RetroApplication* s_Instance;

@@ -15,22 +15,23 @@ namespace Retro::Renderer
 
     struct VBOElement
     {
+        VBOElementType type;
         std::string name;
         uint32_t size;
         uint32_t offset;
-        VBOElementType type;
 
         /* Constructors */
         VBOElement() = default;
 
-        VBOElement(const std::string& name, VBOElementType type) : name(name), type(type), size(CalculateElementSize()),
-                                                                   offset(0)
+        VBOElement(VBOElementType type, std::string name) : type(type), name(std::move(name)),
+                                                            size(CalculateElementSize()),
+                                                            offset(0)
         {
         }
 
         /* Methods */
-        int CalculateElementSize() const;
-        int CalculateElementCount() const;
+        uint32_t CalculateElementSize() const;
+        uint32_t CalculateElementCount() const;
         static std::string GetVBOElementTypeName(VBOElementType vboElementType);
     };
 
