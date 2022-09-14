@@ -2,6 +2,7 @@
 
 #include "Platform/OpenGL/Shader/OpenGLShader.h"
 #include "glad/glad.h"
+#include "glm/gtc/type_ptr.hpp"
 
 namespace Retro::Renderer
 {
@@ -38,19 +39,49 @@ namespace Retro::Renderer
         glUniform1f(GetUniformLocation(uniform), value);
     }
 
-    void OpenGLShader::SetVecFloat2(const std::string& uniform, glm::vec2 value)
+    void OpenGLShader::SetVecFloat2(const std::string& uniform, const glm::vec2& value)
     {
         glUniform2f(GetUniformLocation(uniform), value.x, value.y);
     }
 
-    void OpenGLShader::SetVecFloat3(const std::string& uniform, glm::vec3 value)
+    void OpenGLShader::SetVecFloat3(const std::string& uniform, const glm::vec3& value)
     {
         glUniform3f(GetUniformLocation(uniform), value.x, value.y, value.z);
     }
 
-    void OpenGLShader::SetVecFloat4(const std::string& uniform, glm::vec4 value)
+    void OpenGLShader::SetVecFloat4(const std::string& uniform, const glm::vec4& value)
     {
         glUniform4f(GetUniformLocation(uniform), value.x, value.y, value.z, value.w);
+    }
+
+    void OpenGLShader::SetInt(const std::string& uniform, int value)
+    {
+        glUniform1i(GetUniformLocation(uniform), value);
+    }
+
+    void OpenGLShader::SetVecInt2(const std::string& uniform, const glm::ivec2& value)
+    {
+        glUniform2i(GetUniformLocation(uniform), value.x, value.y);
+    }
+
+    void OpenGLShader::SetVecInt3(const std::string& uniform, const glm::ivec3& value)
+    {
+        glUniform3i(GetUniformLocation(uniform), value.x, value.y, value.z);
+    }
+
+    void OpenGLShader::SetVecInt4(const std::string& uniform, const glm::ivec4& value)
+    {
+        glUniform4i(GetUniformLocation(uniform), value.x, value.y, value.z, value.w);
+    }
+
+    void OpenGLShader::SetMat3(const std::string& uniform, const glm::mat3& value)
+    {
+        glUniformMatrix3fv(GetUniformLocation(uniform), 1, GL_FALSE, value_ptr(value));
+    }
+
+    void OpenGLShader::SetMat4(const std::string& uniform, const glm::mat4& value)
+    {
+        glUniformMatrix4fv(GetUniformLocation(uniform), 1, GL_FALSE, value_ptr(value));
     }
 
     unsigned int OpenGLShader::GetUniformLocation(const std::string& uniform)

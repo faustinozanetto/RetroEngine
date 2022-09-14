@@ -3,80 +3,83 @@
 #include "OpenGLWindow.h"
 #include "Renderer/Renderer/Renderer.h"
 
-namespace Retro::Renderer {
-	OpenGLWindow::OpenGLWindow(const FWindowSpecification& specification) {
-		// Update window specification.
-		m_WindowSpecification.windowTitle = specification.windowTitle;
-		m_WindowSpecification.width = specification.width;
-		m_WindowSpecification.height = specification.height;
-		m_WindowSpecification.vSync = specification.vSync;
-		// Initialize.
-		if (!InitializeWindow())
-		{
-			Logger::Error("Initialized | Could not initialize window.");
-		}
-	}
+namespace Retro::Renderer
+{
+    OpenGLWindow::OpenGLWindow(const FWindowSpecification& specification)
+    {
+        // Update window specification.
+        m_WindowSpecification.windowTitle = specification.windowTitle;
+        m_WindowSpecification.width = specification.width;
+        m_WindowSpecification.height = specification.height;
+        m_WindowSpecification.vSync = specification.vSync;
+        // Initialize.
+        if (!InitializeWindow())
+        {
+            Logger::Error("Initialized | Could not initialize window.");
+        }
+    }
 
-	OpenGLWindow::~OpenGLWindow() {
+    OpenGLWindow::~OpenGLWindow()
+    {
+        glfwDestroyWindow(m_OpenGLWindow);
+    }
 
-	}
+    bool OpenGLWindow::InitializeWindow()
+    {
+        // Initializing GLFW
+        const uint32_t glfwState = glfwInit();
+        if (glfwState == GLFW_FALSE)
+        {
+            return false;
+        }
+        Logger::Info("Initialization | GLFW Success");
+        Logger::Line();
 
-	bool OpenGLWindow::InitializeWindow()
-	{
-		// Initializing GLFW
-		const uint32_t glfwState = glfwInit();
-		if (glfwState == GLFW_FALSE) {
-			return false;
-		}
-		Logger::Info("Initialization | GLFW Success");
-		Logger::Line();
-		
-		// Create OpenGL Window.
-		Logger::Info("Initialization | Creating OpenGL Window");
-		Logger::Info("Window Title: " + GetWindowSpecification().windowTitle);
-		Logger::Info("Window Width: " + std::to_string(GetWindowSpecification().width));
-		Logger::Info("Window Height: " + std::to_string(GetWindowSpecification().height));
-		Logger::Info("Window VSync: " + GetWindowSpecification().vSync ? "Enabled" : "Disabled");
-		Logger::Line();
+        // Create OpenGL Window.
+        Logger::Info("Initialization | Creating OpenGL Window");
+        Logger::Info("Window Title: " + GetWindowSpecification().windowTitle);
+        Logger::Info("Window Width: " + std::to_string(GetWindowSpecification().width));
+        Logger::Info("Window Height: " + std::to_string(GetWindowSpecification().height));
+        Logger::Info("Window VSync: " + GetWindowSpecification().vSync ? "Enabled" : "Disabled");
+        Logger::Line();
 
-		// Setup window hints
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        // Setup window hints
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		// Creating the window
-		m_OpenGLWindow = glfwCreateWindow(m_WindowSpecification.width,
-										  m_WindowSpecification.height, m_WindowSpecification.windowTitle.c_str(),
-										  nullptr, nullptr);
-		if (!m_OpenGLWindow)
-		{
-			Logger::Error("Initialization | Failed to create OpenGL Window.");
-			return false;
-		}
+        // Creating the window
+        m_OpenGLWindow = glfwCreateWindow(m_WindowSpecification.width,
+                                          m_WindowSpecification.height, m_WindowSpecification.windowTitle.c_str(),
+                                          nullptr,
+                                          nullptr);
+        RETRO_ASSERT(m_OpenGLWindow, "Initialization | Failed to create OpenGL Window.");
 
-		// Set user pointer, used in callbacks.
-		glfwSetWindowUserPointer(m_OpenGLWindow, &m_WindowSpecification);
+        // Set user pointer, used in callbacks.
+        glfwSetWindowUserPointer(m_OpenGLWindow, &m_WindowSpecification);
 
-		// Handle Initial VSync.
-		SetEnableVSync(m_WindowSpecification.vSync);
+        // Handle Initial VSync.
+        SetEnableVSync(m_WindowSpecification.vSync);
 
-		return true;
-	}
+        return true;
+    }
 
-	void* OpenGLWindow::GetNativeWindow() const
-	{
-		return m_OpenGLWindow;
-	}
+    void* OpenGLWindow::GetNativeWindow() const
+    {
+        return m_OpenGLWindow;
+    }
 
-	void OpenGLWindow::SetEnableVSync(bool useVSync)
-	{
-		// OpenGL Vsync implementation.
-		if (useVSync) {
-			glfwSwapInterval(1);
-		}
-		else {
-			glfwSwapInterval(0);
-		}
-		m_WindowSpecification.vSync = useVSync;
-	}
+    void OpenGLWindow::SetEnableVSync(bool useVSync)
+    {
+        // OpenGL Vsync implementation.
+        if (useVSync)
+        {
+            glfwSwapInterval(1);
+        }
+        else
+        {
+            glfwSwapInterval(0);
+        }
+        m_WindowSpecification.vSync = useVSync;
+    }
 }

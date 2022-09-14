@@ -3,6 +3,7 @@
 #include "Core/Base.h"
 #include "Renderer/Buffers/VAO/VertexArrayBuffer.h"
 #include "Renderer/Buffers/VBO/VertexObjectBuffer.h"
+#include "Renderer/Renderables/Renderable.h"
 #include "Renderer/Shader/Shader.h"
 #include "Renderer/Window/Window.h"
 
@@ -33,8 +34,8 @@ namespace Retro
 	private:
 		FRetroApplicationSpecification m_ApplicationSpecification;
 		Scope<Renderer::Window> m_Window;
-		Ref<Renderer::VertexArrayBuffer> m_VAO;
 		Ref<Renderer::Shader> m_Shader;
+		Ref<Renderer::Renderable> m_Renderable;
 		static RetroApplication* s_Instance;
 	};
 
