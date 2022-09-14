@@ -22,13 +22,13 @@ namespace Retro::Renderer
     OpenGLWindow::~OpenGLWindow()
     {
         glfwDestroyWindow(m_OpenGLWindow);
+        glfwTerminate();
     }
 
     bool OpenGLWindow::InitializeWindow()
     {
         // Initializing GLFW
-        const uint32_t glfwState = glfwInit();
-        if (glfwState == GLFW_FALSE)
+        if (glfwInit() == GLFW_FALSE)
         {
             return false;
         }
@@ -37,16 +37,18 @@ namespace Retro::Renderer
 
         // Create OpenGL Window.
         Logger::Info("Initialization | Creating OpenGL Window");
-        Logger::Info("Window Title: " + GetWindowSpecification().windowTitle);
-        Logger::Info("Window Width: " + std::to_string(GetWindowSpecification().width));
-        Logger::Info("Window Height: " + std::to_string(GetWindowSpecification().height));
-        Logger::Info("Window VSync: " + GetWindowSpecification().vSync ? "Enabled" : "Disabled");
+        Logger::Info("Window Title: " + m_WindowSpecification.windowTitle);
+        Logger::Info("Window Width: " + std::to_string(m_WindowSpecification.width));
+        Logger::Info("Window Height: " + std::to_string(m_WindowSpecification.height));
+        Logger::Info("Window VSync: " + m_WindowSpecification.vSync ? "Enabled" : "Disabled");
         Logger::Line();
 
         // Setup window hints
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
         // Creating the window
         m_OpenGLWindow = glfwCreateWindow(m_WindowSpecification.width,
@@ -61,6 +63,9 @@ namespace Retro::Renderer
         // Handle Initial VSync.
         SetEnableVSync(m_WindowSpecification.vSync);
 
+        // Setup callbacks.
+        SetupWindowCallbacks();
+
         return true;
     }
 
@@ -72,14 +77,23 @@ namespace Retro::Renderer
     void OpenGLWindow::SetEnableVSync(bool useVSync)
     {
         // OpenGL Vsync implementation.
-        if (useVSync)
-        {
-            glfwSwapInterval(1);
-        }
-        else
-        {
-            glfwSwapInterval(0);
-        }
+        glfwSwapInterval(useVSync ? 1 : 0);
         m_WindowSpecification.vSync = useVSync;
+    }
+
+    void OpenGLWindow::SetupWindowCallbacks()
+    {
+        glfwSetWindowSizeCallback(m_OpenGLWindow, [](GLFWwindow* window, int width, int height)
+            {
+                FWindowSpecification& windowSpecification = *(FWindowSpecification*)glfwGetWindowUserPointer(window);
+                windowSpecification.width = width;
+                windowSpecification.height = height;
+
+                std::stringstream ss;
+                ss << "WindowResizeEvent: " << width << ", " << height;
+                Renderer::SetViewport(0, 0, width, height);
+                Logger::Info(ss.str());
+            });
+
     }
 }

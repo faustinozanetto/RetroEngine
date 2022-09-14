@@ -46,6 +46,11 @@ namespace Retro::Renderer {
 		s_Context->PollInput();
 	}
 
+	void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	{
+		s_Context->SetViewport(x, y, width, height);
+	}
+
 	void Renderer::Begin()
 	{
 		
