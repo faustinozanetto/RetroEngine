@@ -6,14 +6,14 @@
 
 namespace Retro::Renderer {
 	OpenGLRenderingAPI::OpenGLRenderingAPI() {
-		Logger::Info("OpenGLRenderingAPI::OpenGLRenderingAPI | Created RenderingAPI.");
+		Logger::Info("OpenGLRenderingAPI::OpenGLRenderingAPI | Created rendering API.");
 	}
 
 	OpenGLRenderingAPI::~OpenGLRenderingAPI() = default;
 
 	bool OpenGLRenderingAPI::Initialize()
 	{
-		Logger::Info("OpenGLRenderingAPI::Initialize | Initialzing RenderingAPI.");
+		Logger::Info("OpenGLRenderingAPI::Initialize | Initializing rendering API.");
 		// Initialize OpenGL configuration.
 		glEnable(GL_BLEND);
 		glFrontFace(GL_CW);

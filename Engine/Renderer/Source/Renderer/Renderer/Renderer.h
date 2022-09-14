@@ -32,6 +32,8 @@ namespace Retro::Renderer {
 		static Scope<RenderingAPI> s_RenderingAPI;
 		static Scope<RendererContext> s_Context;
 
+		static void ProcessRenderCommand(const RenderCommand& command);
+
 		static std::queue<RenderCommand> s_CommandQueue;
 	};
 }

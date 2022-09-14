@@ -26,4 +26,26 @@ namespace Retro::Renderer
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+
+    const VBOLayout& OpenGLVertexObjectBuffer::GetVBOLayout() const
+    {
+        return m_VBOLayout;
+    }
+
+    void OpenGLVertexObjectBuffer::SetVBOLayout(const VBOLayout& layout)
+    {
+        m_VBOLayout = layout;
+    }
+
+    uint32_t OpenGLVertexObjectBuffer::GetOpenGLVBOElementType(VBOElementType vboElementType)
+    {
+        switch (vboElementType)
+        {
+        case Float: return GL_FLOAT;
+        case FloatVec2: return GL_FLOAT;
+        case FloatVec3: return GL_FLOAT;
+        case FloatVec4: return GL_FLOAT;
+        }
+        return NULL;
+    }
 }

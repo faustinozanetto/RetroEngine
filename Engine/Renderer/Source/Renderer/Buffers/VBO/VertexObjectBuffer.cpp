@@ -7,6 +7,69 @@
 
 namespace Retro::Renderer
 {
+    int VBOElement::CalculateElementSize() const
+    {
+        switch (type)
+        {
+        case Float: return 4;
+        case FloatVec2: return 8;
+        case FloatVec3: return 12;
+        case FloatVec4: return 16;
+        }
+        return 0;
+    }
+
+    int VBOElement::CalculateElementCount() const
+    {
+        switch (type)
+        {
+        case Float: return 1;
+        case FloatVec2: return 2;
+        case FloatVec3: return 3;
+        case FloatVec4: return 4;
+        }
+        return 0;
+    }
+
+    std::string VBOElement::GetVBOElementTypeName(VBOElementType vboElementType)
+    {
+        switch (vboElementType)
+        {
+        case Float:return "Float";
+        case FloatVec2: return "FloatVec2";
+        case FloatVec3: return "FloatVec3";
+        case FloatVec4: return "FloatVec4";
+        }
+        return "Unknown!";
+    }
+
+    VBOLayout::VBOLayout(std::initializer_list<VBOElement> elements)
+    {
+        m_VBOElements = elements;
+        CalculateOffsetAndStride();
+    }
+
+    void VBOLayout::CalculateOffsetAndStride()
+    {
+        int offset = 0;
+        m_Stride = 0;
+        for (auto& vboElement : m_VBOElements) {
+            vboElement.offset = offset;
+            offset += vboElement.size;
+            m_Stride += vboElement.size;
+        }
+    }
+
+    const std::vector<VBOElement>& VBOLayout::GetVBOElements() const
+    {
+        return m_VBOElements;
+    }
+
+    uint32_t VBOLayout::GetStride() const
+    {
+        return m_Stride;
+    }
+
     VertexObjectBuffer::~VertexObjectBuffer()
     {
     }

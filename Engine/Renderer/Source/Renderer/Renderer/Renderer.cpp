@@ -56,11 +56,7 @@ namespace Retro::Renderer {
 		while (!s_CommandQueue.empty())
 		{
 			const RenderCommand command = s_CommandQueue.front();
-			command.shader->Bind();
-			command.vao->Bind();
-			glDrawArrays(GL_TRIANGLES, 0, 3);
-			command.shader->UnBind();
-			command.vao->UnBind();
+			ProcessRenderCommand(command);
 			// Remove command from the queue.
 			s_CommandQueue.pop();
 		}
@@ -74,5 +70,15 @@ namespace Retro::Renderer {
 	RenderingAPIType Renderer::GetRenderingAPIType()
 	{
 		return s_RenderingAPI->GetRenderingAPIType();
+	}
+
+	void Renderer::ProcessRenderCommand(const RenderCommand& command)
+	{
+		command.shader->Bind();
+		command.vao->Bind();
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		command.shader->UnBind();
+		command.vao->UnBind();
+
 	}
 }

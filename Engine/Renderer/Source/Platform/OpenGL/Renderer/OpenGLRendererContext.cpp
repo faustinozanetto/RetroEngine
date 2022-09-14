@@ -7,10 +7,12 @@ namespace Retro::Renderer {
 	{
 		RETRO_ASSERT(windowHandle, "OpenGLRendererContext::OpenGLRendererContext | Window handle invalid!.")
 		m_WindowHandle = windowHandle;
+		Logger::Info("OpenGLRendererContext::OpenGLRendererContext | Created renderer context.");
 	}
 
 	void OpenGLRendererContext::Initialize()
 	{
+		Logger::Info("OpenGLRendererContext::OpenGLRendererContext | Initializing renderer context.");
 		// Set glfw context
 		glfwMakeContextCurrent(m_WindowHandle);
 		// Glad initialize
