@@ -19,11 +19,13 @@ IncludeDir["GLAD"] = "%{wks.location}/ThirdParty/GLAD/include"
 IncludeDir["GLM"] = "%{wks.location}/ThirdParty/GLM"
 IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 IncludeDir["IMGUI"] = "%{wks.location}/ThirdParty/IMGUI"
+IncludeDir["STB"] = "%{wks.location}/ThirdParty/STB"
 
 group "Dependencies"
     include "ThirdParty/GLFW"
     include "ThirdParty/GLAD"
     include "ThirdParty/IMGUI"
+    include "ThirdParty/STB"
 group ""
 
 project "EngineCore"
@@ -41,6 +43,8 @@ project "EngineCore"
     files {
         "%{wks.location}/Engine/Core/Source/**.h",
         "%{wks.location}/Engine/Core/Source/**.cpp",
+        "%{wks.location}/ThirdParty/STB/**.h",
+        "%{wks.location}/ThirdParty/STB/**.cpp",
     }
 
     libdirs {
@@ -55,6 +59,7 @@ project "EngineCore"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.GLM}",
+        "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}"
     }
@@ -87,7 +92,9 @@ project "EngineRenderer"
 
     files {
         "%{wks.location}/Engine/Renderer/Source/**.h",
-        "%{wks.location}/Engine/Renderer/Source/**.cpp"
+        "%{wks.location}/Engine/Renderer/Source/**.cpp",
+        "%{wks.location}/ThirdParty/STB/**.h",
+        "%{wks.location}/ThirdParty/STB/**.cpp",
     }
 
     includedirs {
@@ -95,7 +102,8 @@ project "EngineRenderer"
         "%{wks.location}/Engine/Core/Source",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
-        "%{IncludeDir.GLM}",
+        "%{IncludeDir.GLM}",    
+        "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}"
     }
@@ -104,7 +112,8 @@ project "EngineRenderer"
         "EngineCore",
         "GLFW",
         "GLAD",
-        "IMGUI"
+        "IMGUI",
+        "STB"
     }
 
     filter "system:windows"
@@ -142,6 +151,7 @@ project "Sandbox"
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.SPDLOG}",
+        "%{IncludeDir.STB}",
         "%{IncludeDir.IMGUI}"
     }
 

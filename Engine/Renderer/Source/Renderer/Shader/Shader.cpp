@@ -14,7 +14,7 @@ namespace Retro::Renderer {
 			return nullptr;
 		}
 		case RenderingAPIType::OpenGL: {
-			return CreateScope<OpenGLShader>(vertexPath, fragmentPath);
+			return CreateRef<OpenGLShader>(vertexPath, fragmentPath);
 		}
 		}
 		return {};

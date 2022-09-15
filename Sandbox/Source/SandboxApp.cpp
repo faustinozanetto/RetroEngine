@@ -9,6 +9,7 @@
 #include "Renderer/Renderer/RenderCommand.h"
 #include "Renderer/Renderer/Renderer.h"
 #include "Renderer/Shader/Shader.h"
+#include "Renderer/Textures/Texture.h"
 
 class SandboxLayer : public Retro::Layer
 {
@@ -64,6 +65,10 @@ public:
 
         m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Basic/Basic.vert",
                                                    "Assets/Shaders/Basic/Basic.frag");
+
+        m_Texture = Retro::Renderer::Texture::Create({
+            "Assets/Textures/texture.jpg"
+        });
     }
 
     void OnLayerRegistered() override
@@ -82,6 +87,7 @@ public:
         for (int i = 0; i < 10; i++)
         {
             transform = glm::translate(transform, {glm::sin(time * i), 0.0f, glm::sin(time * i)});
+            m_Texture->Bind(0);
             Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Renderable->GetVertexArrayBuffer(), transform});
         }
     }
@@ -90,6 +96,7 @@ private:
     Retro::Ref<Retro::Renderer::Shader> m_Shader;
     Retro::Ref<Retro::Renderer::Renderable> m_Renderable;
     Retro::Ref<Retro::Renderer::Renderable> m_Square;
+    Retro::Ref<Retro::Renderer::Texture> m_Texture;
 };
 
 class SandboxApplication : public Retro::RetroApplication
