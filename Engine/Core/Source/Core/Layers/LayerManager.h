@@ -11,7 +11,7 @@ namespace Retro
     {
     public:
         /* Constructor & Destructor */
-        LayerManager();
+        LayerManager(const std::string& layerManagerName);
         ~LayerManager() override;
 
         /* Methods */
@@ -19,7 +19,7 @@ namespace Retro
         const std::deque<Ref<Layer>>& GetLayerStack() const;
 
         /* Instantiate */
-        static Scope<LayerManager> Create();
+        static Scope<LayerManager> Create(const std::string& layerManagerName);
     private:
         std::deque<Ref<Layer>> m_LayerStack;
     };

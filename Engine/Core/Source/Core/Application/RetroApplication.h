@@ -28,11 +28,13 @@ namespace Retro
 		/* Getters */
 		const Renderer::Window& GetWindow() const;
 		const Scope<LayerManager>& GetLayersManager() const;
+		const Scope<LayerManager>& GetInterfaceLayersManager() const;
 
 	private:
 		FRetroApplicationSpecification m_ApplicationSpecification;
 		Scope<Renderer::Window> m_Window;
 		Scope<LayerManager> m_LayersManager;
+		Scope<LayerManager> m_InterfaceLayersManager;
 		static RetroApplication* s_Instance;
 	};
 

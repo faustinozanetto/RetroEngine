@@ -25,7 +25,8 @@ namespace Retro
         m_Window = Renderer::Window::Create(windowSpecification);
         // Initialize Renderer
         Renderer::Renderer::Initialize(Renderer::RenderingAPIType::OpenGL, *m_Window.get());
-        m_LayersManager = LayerManager::Create();
+        m_LayersManager = LayerManager::Create("LayersManager");
+        m_InterfaceLayersManager = LayerManager::Create("InterfaceLayersManager");
     }
 
     RetroApplication::~RetroApplication() = default;
@@ -41,12 +42,20 @@ namespace Retro
 
             Renderer::Renderer::Begin();
 
+            // Update layers.
             for (auto it = m_LayersManager->GetLayerStack().begin(); it <
                  m_LayersManager->GetLayerStack().end(); ++it)
             {
                 it->get()->OnLayerUpdated();
             }
-            
+
+            // Update interface layer.
+            for (auto it = m_InterfaceLayersManager->GetLayerStack().begin(); it <
+                 m_InterfaceLayersManager->GetLayerStack().end(); ++it)
+            {
+                it->get()->OnLayerUpdated();
+            }
+
             Renderer::Renderer::End();
 
             Renderer::Renderer::PollInput();
@@ -62,5 +71,10 @@ namespace Retro
     const Scope<LayerManager>& RetroApplication::GetLayersManager() const
     {
         return m_LayersManager;
+    }
+
+    const Scope<LayerManager>& RetroApplication::GetInterfaceLayersManager() const
+    {
+        return m_InterfaceLayersManager;
     }
 }

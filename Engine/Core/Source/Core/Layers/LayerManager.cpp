@@ -3,7 +3,7 @@
 
 namespace Retro
 {
-    LayerManager::LayerManager() : Manager("LayersManager")
+    LayerManager::LayerManager(const std::string& layerManagerName): Manager(layerManagerName)
     {
     }
 
@@ -31,8 +31,8 @@ namespace Retro
         return m_LayerStack;
     }
 
-    Scope<LayerManager> LayerManager::Create()
+    Scope<LayerManager> LayerManager::Create(const std::string& layerManagerName)
     {
-        return CreateScope<LayerManager>();
+        return CreateScope<LayerManager>(layerManagerName);
     }
 }
