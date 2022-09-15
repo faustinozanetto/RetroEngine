@@ -86,8 +86,12 @@ namespace Retro::Renderer
     {
         command.shader->Bind();
         command.shader->SetMat4("uTransform", command.transform);
+        if (command.texture)
+        {
+            command.texture->Bind();
+        }
         command.vao->Bind();
-        uint32_t size = command.vao->GetIndexBuffer()->GetSize();
+        const uint32_t size = command.vao->GetIndexBuffer()->GetSize();
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
         command.vao->UnBind();
         command.shader->UnBind();

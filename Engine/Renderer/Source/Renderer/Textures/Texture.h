@@ -59,6 +59,9 @@ namespace Retro::Renderer
         virtual void Bind(uint32_t slot) = 0;
         void UnBind() override = 0;
 
+        static std::string GetTextureFilteringToString(TextureFiltering textureFiltering);
+        static std::string GetTextureWrappingToString(TextureWrapping textureWrapping);
+
         /* Instantiate */
         static Ref<Texture> Create(const FTextureSpecification& textureSpecification);
     };

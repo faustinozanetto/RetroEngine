@@ -67,7 +67,9 @@ public:
                                                    "Assets/Shaders/Basic/Basic.frag");
 
         m_Texture = Retro::Renderer::Texture::Create({
-            "Assets/Textures/texture.jpg"
+            "Assets/Textures/texture.jpeg",
+            Retro::Renderer::TextureFiltering::Linear,
+            Retro::Renderer::TextureWrapping::ClampBorder,
         });
     }
 
@@ -87,8 +89,9 @@ public:
         for (int i = 0; i < 10; i++)
         {
             transform = glm::translate(transform, {glm::sin(time * i), 0.0f, glm::sin(time * i)});
-            m_Texture->Bind(0);
-            Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Renderable->GetVertexArrayBuffer(), transform});
+            Retro::Renderer::Renderer::SubmitCommand({
+                m_Shader, m_Renderable->GetVertexArrayBuffer(), m_Texture, transform
+            });
         }
     }
 
