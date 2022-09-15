@@ -10,7 +10,13 @@ namespace Retro::Renderer
         Float = 0,
         FloatVec2 = 1,
         FloatVec3 = 2,
-        FloatVec4 = 3
+        FloatVec4 = 3,
+        Int = 4,
+        IntVec2 =5,
+        IntVec3 = 6,
+        IntVec4 = 7,
+        Mat3 = 8,
+        Mat4 = 9
     };
 
     struct VBOElement

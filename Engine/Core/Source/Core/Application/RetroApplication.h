@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Base.h"
+#include "Core/Interfaces/InterfacesSubSystem.h"
 #include "Core/Layers/LayerManager.h"
 #include "Renderer/Window/Window.h"
 
@@ -30,11 +31,14 @@ namespace Retro
 		const Scope<LayerManager>& GetLayersManager() const;
 		const Scope<LayerManager>& GetInterfaceLayersManager() const;
 
+		static RetroApplication& GetApplication();
+
 	private:
 		FRetroApplicationSpecification m_ApplicationSpecification;
 		Scope<Renderer::Window> m_Window;
 		Scope<LayerManager> m_LayersManager;
 		Scope<LayerManager> m_InterfaceLayersManager;
+		Scope<InterfacesSubSystem> m_InterfacesSubSystem;
 		static RetroApplication* s_Instance;
 	};
 

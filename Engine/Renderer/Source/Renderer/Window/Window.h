@@ -22,6 +22,7 @@ namespace Retro::Renderer
 
         /* Methods */
         virtual void SetEnableVSync(bool useVSync) = 0;
+        virtual void SetWindowTitle(const std::string& title) = 0;
         virtual void SetupWindowCallbacks() = 0;
 
         /* Getters */

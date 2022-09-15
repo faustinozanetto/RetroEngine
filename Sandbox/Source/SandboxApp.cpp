@@ -78,10 +78,12 @@ public:
     {
         const auto time = static_cast<float>(glfwGetTime());
         glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::translate(transform, glm::vec3(glm::cos(time), 0.0f, glm::sin(time)));
-        Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Renderable->GetVertexArrayBuffer(), transform});
-        transform = glm::translate(transform, glm::vec3(glm::cos(time) / 2.0f, 0.0f, 0.0f));
-        Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Square->GetVertexArrayBuffer(), transform});
+        transform = glm::scale(transform, glm::vec3(0.5f));
+        for (int i = 0; i < 10; i++)
+        {
+            transform = glm::translate(transform, {glm::sin(time * i), 0.0f, glm::sin(time * i)});
+            Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Renderable->GetVertexArrayBuffer(), transform});
+        }
     }
 
 private:

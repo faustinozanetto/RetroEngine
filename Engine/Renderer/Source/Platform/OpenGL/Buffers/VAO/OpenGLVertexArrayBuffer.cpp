@@ -65,6 +65,40 @@ namespace Retro::Renderer
                     index++;
                     break;
                 }
+            case Int:
+            case IntVec2:
+            case IntVec3:
+            case IntVec4:
+                {
+                    glEnableVertexAttribArray(index);
+                    glVertexAttribIPointer(index,
+                                           vboElement.CalculateElementCount(),
+                                           OpenGLVertexObjectBuffer::GetOpenGLVBOElementType(vboElement.type),
+                                           vboLayout.GetStride(),
+                                           reinterpret_cast<const void*>(vboElement.offset));
+                    // Increment the index
+                    index++;
+                    break;
+                }
+            case Mat3:
+            case Mat4:
+                {
+                    // Get count and loop
+                    const uint32_t size = vboElement.CalculateElementCount();
+                    for (uint8_t i = 0; i < size; i++)
+                    {
+                        // Enable the attribute
+                        glEnableVertexAttribArray(index);
+                        glVertexAttribPointer(index, size,
+                                              OpenGLVertexObjectBuffer::GetOpenGLVBOElementType(vboElement.type),
+                                              GL_FALSE, vboLayout.GetStride(),
+                                              reinterpret_cast<const void*>(sizeof(float) * size * i));
+                        glVertexAttribDivisor(index, 1);
+                        // Increment the index
+                        index++;
+                    }
+                    break;
+                }
             }
         }
 

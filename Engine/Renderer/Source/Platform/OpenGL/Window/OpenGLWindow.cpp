@@ -7,6 +7,7 @@ namespace Retro::Renderer
 {
     OpenGLWindow::OpenGLWindow(const FWindowSpecification& specification)
     {
+        Logger::Line();
         // Update window specification.
         m_WindowSpecification.windowTitle = specification.windowTitle;
         m_WindowSpecification.width = specification.width;
@@ -33,7 +34,6 @@ namespace Retro::Renderer
             return false;
         }
         Logger::Info("Initialization | GLFW Success");
-        Logger::Line();
 
         // Create OpenGL Window.
         Logger::Info("Initialization | Creating OpenGL Window");
@@ -61,11 +61,11 @@ namespace Retro::Renderer
         glfwSetWindowUserPointer(m_OpenGLWindow, &m_WindowSpecification);
 
         // Handle Initial VSync.
-        SetEnableVSync(m_WindowSpecification.vSync);
+        SetEnableVSync(true);
 
         // Setup callbacks.
         SetupWindowCallbacks();
-
+        Logger::Line();
         return true;
     }
 
@@ -79,6 +79,12 @@ namespace Retro::Renderer
         // OpenGL Vsync implementation.
         glfwSwapInterval(useVSync ? 1 : 0);
         m_WindowSpecification.vSync = useVSync;
+    }
+
+    void OpenGLWindow::SetWindowTitle(const std::string& title)
+    {
+        glfwSetWindowTitle(m_OpenGLWindow, title.c_str());
+        m_WindowSpecification.windowTitle = title;
     }
 
     void OpenGLWindow::SetupWindowCallbacks()

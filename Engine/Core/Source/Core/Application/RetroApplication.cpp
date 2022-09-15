@@ -2,7 +2,6 @@
 
 #include "RetroApplication.h"
 
-#include "GLFW/glfw3.h"
 #include "Logger/Logger.h"
 #include "Renderer/Renderer/Renderer.h"
 
@@ -25,8 +24,11 @@ namespace Retro
         m_Window = Renderer::Window::Create(windowSpecification);
         // Initialize Renderer
         Renderer::Renderer::Initialize(Renderer::RenderingAPIType::OpenGL, *m_Window.get());
+        // Initialize Layers and SubSystems.
         m_LayersManager = LayerManager::Create("LayersManager");
         m_InterfaceLayersManager = LayerManager::Create("InterfaceLayersManager");
+        m_InterfacesSubSystem = InterfacesSubSystem::Create();
+        m_InterfacesSubSystem->OnSubSystemStart();
     }
 
     RetroApplication::~RetroApplication() = default;
@@ -35,28 +37,32 @@ namespace Retro
     {
         while (!Renderer::Renderer::ShouldClose())
         {
-            const auto time = static_cast<float>(glfwGetTime());
-            const glm::vec4 color = {glm::sin(time), glm::cos(time), glm::sin(time) + glm::cos(time), 1.0f};
             Renderer::Renderer::ClearScreen();
-            Renderer::Renderer::SetClearColor(color);
-
-            Renderer::Renderer::Begin();
-
-            // Update layers.
-            for (auto it = m_LayersManager->GetLayerStack().begin(); it <
-                 m_LayersManager->GetLayerStack().end(); ++it)
+            Renderer::Renderer::SetClearColor({1.0f, 1.0f, 1.0f, 1.0f});
+            
+            // Main Render Loop.
             {
-                it->get()->OnLayerUpdated();
+                Renderer::Renderer::Begin();
+                // Update layers.
+                for (auto it = m_LayersManager->GetLayerStack().begin(); it <
+                     m_LayersManager->GetLayerStack().end(); ++it)
+                {
+                    it->get()->OnLayerUpdated();
+                }
+                Renderer::Renderer::End();
             }
 
-            // Update interface layer.
-            for (auto it = m_InterfaceLayersManager->GetLayerStack().begin(); it <
-                 m_InterfaceLayersManager->GetLayerStack().end(); ++it)
+            // Main Interfaces Loop.
             {
-                it->get()->OnLayerUpdated();
+                m_InterfacesSubSystem->InitializeImGui();
+                // Update interface layer.
+                for (auto it = m_InterfaceLayersManager->GetLayerStack().begin(); it <
+                     m_InterfaceLayersManager->GetLayerStack().end(); ++it)
+                {
+                    it->get()->OnLayerUpdated();
+                }
+                m_InterfacesSubSystem->TerminateImGui();
             }
-
-            Renderer::Renderer::End();
 
             Renderer::Renderer::PollInput();
             Renderer::Renderer::SwapBuffers();
@@ -76,5 +82,10 @@ namespace Retro
     const Scope<LayerManager>& RetroApplication::GetInterfaceLayersManager() const
     {
         return m_InterfaceLayersManager;
+    }
+
+    RetroApplication& RetroApplication::GetApplication()
+    {
+        return *s_Instance;
     }
 }

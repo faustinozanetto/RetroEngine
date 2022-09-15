@@ -18,6 +18,7 @@ namespace Retro::Renderer {
 
 		/* Methods */
 		void SetEnableVSync(bool useVSync) override;
+		void SetWindowTitle(const std::string& title) override;
 		void SetupWindowCallbacks() override;
 
 	private:
