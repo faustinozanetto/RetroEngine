@@ -56,8 +56,6 @@ project "EngineCore"
     includedirs {
         "%{wks.location}/Engine/Core/Source",
         "%{wks.location}/Engine/Renderer/Source",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.GLAD}",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
@@ -147,8 +145,6 @@ project "Sandbox"
     includedirs {
         "%{wks.location}/Engine/Core/Source",
         "%{wks.location}/Engine/Renderer/Source",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.GLAD}",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.STB}",

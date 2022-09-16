@@ -3,8 +3,9 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include "EngineCore.h"
+#include "imgui.h"
 #include "Core/EntryPoint.h"
-#include "GLFW/glfw3.h"
+#include "Core/Interfaces/InterfaceLayer.h"
 #include "Renderer/Renderables/Renderable.h"
 #include "Renderer/Renderer/RenderCommand.h"
 #include "Renderer/Renderer/Renderer.h"
@@ -83,16 +84,16 @@ public:
 
     void OnLayerUpdated() override
     {
-        const auto time = static_cast<float>(glfwGetTime());
         glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::scale(transform, glm::vec3(0.5f));
-        for (int i = 0; i < 10; i++)
+        transform = glm::scale(transform, abs(glm::vec3(glm::sin(Retro::Renderer::Renderer::GetTime()) * 2.0f)));
+        Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Square->GetVertexArrayBuffer(), m_Texture, transform});
+        /*for (int i = 0; i < 10; i++)
         {
             transform = glm::translate(transform, {glm::sin(time * i), 0.0f, glm::sin(time * i)});
             Retro::Renderer::Renderer::SubmitCommand({
                 m_Shader, m_Renderable->GetVertexArrayBuffer(), m_Texture, transform
             });
-        }
+        }*/
     }
 
 private:
@@ -102,12 +103,32 @@ private:
     Retro::Ref<Retro::Renderer::Texture> m_Texture;
 };
 
+class SandboxInterfaceLayer : public Retro::InterfaceLayer
+{
+public:
+    SandboxInterfaceLayer() : InterfaceLayer("SandboxInterfaceLayer")
+    {
+    }
+
+    void OnInterfaceRenderer() override
+    {
+        ImGui::Begin("Sandbox");
+        ImGui::Button("Welcome");
+        ImGui::End();
+    }
+
+    void OnLayerRegistered() override {}
+    void OnLayerUnregistered() override {}
+    void OnLayerUpdated() override {}
+};
+
 class SandboxApplication : public Retro::RetroApplication
 {
 public:
     SandboxApplication() : RetroApplication({"Sandbox"})
     {
         GetLayersManager()->RegisterLayer(Retro::CreateRef<SandboxLayer>());
+        GetInterfaceLayersManager()->RegisterLayer(Retro::CreateRef<SandboxInterfaceLayer>());
     }
 
     ~SandboxApplication() override

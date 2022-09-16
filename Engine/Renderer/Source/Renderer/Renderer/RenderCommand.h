@@ -13,6 +13,11 @@ namespace Retro::Renderer
         Ref<Texture> texture;
         glm::mat4 transform;
 
+        RenderCommand(const Ref<Shader>& shader, const Ref<VertexArrayBuffer>& vao) : shader(shader), vao(vao),
+            transform(1.0f)
+        {
+        }
+
         RenderCommand(const Ref<Shader>& shader, const Ref<VertexArrayBuffer>& vao, const Ref<Texture>& texture,
                       const glm::mat4& transform) : shader(shader), vao(vao), texture(texture), transform(transform)
         {

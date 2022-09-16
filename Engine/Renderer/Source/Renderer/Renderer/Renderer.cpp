@@ -82,17 +82,21 @@ namespace Retro::Renderer
         return s_RenderingAPI->GetRenderingAPIType();
     }
 
+    double Renderer::GetTime()
+    {
+        return s_RenderingAPI->GetTime();
+    }
+
     void Renderer::ProcessRenderCommand(const RenderCommand& command)
     {
         command.shader->Bind();
         command.shader->SetMat4("uTransform", command.transform);
         if (command.texture)
-        {
             command.texture->Bind();
-        }
         command.vao->Bind();
-        const uint32_t size = command.vao->GetIndexBuffer()->GetSize();
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
+        // Pass the data to the rendering api and perform the actual rendering.
+        s_RenderingAPI->ProcessRendereable(command.vao->GetIndexBuffer()->GetSize());
+        // Unbind after usage.
         command.vao->UnBind();
         command.shader->UnBind();
     }

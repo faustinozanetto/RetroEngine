@@ -14,5 +14,7 @@ namespace Retro::Renderer {
 		bool Initialize() override;
 		void SetClearColor(glm::vec4 color) override;
 		void ClearScreen() override;
+		void ProcessRendereable(uint32_t size) override;
+		double GetTime() override;
 	};
 }

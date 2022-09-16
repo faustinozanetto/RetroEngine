@@ -29,6 +29,7 @@ namespace Retro::Renderer {
 
 		/* Getters */
 		static RenderingAPIType GetRenderingAPIType();
+		static double GetTime();
 
 	private:
 		static Scope<RenderingAPI> s_RenderingAPI;
