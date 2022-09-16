@@ -25,7 +25,7 @@ namespace Retro::Renderer
         virtual void SetMat3(const std::string& uniform, const glm::mat3& value) = 0;
         virtual void SetMat4(const std::string& uniform, const glm::mat4& value) = 0;
 
-        virtual unsigned int GetUniformLocation(const std::string& uniform) = 0;
+        virtual int GetUniformLocation(const std::string& uniform) = 0;
 
         /* Instaintiate */
         static Ref<Shader> Create(const std::string& vertexPath, const std::string& fragmentPath);

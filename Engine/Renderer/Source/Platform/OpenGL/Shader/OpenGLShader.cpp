@@ -84,14 +84,14 @@ namespace Retro::Renderer
         glUniformMatrix4fv(GetUniformLocation(uniform), 1, GL_FALSE, value_ptr(value));
     }
 
-    unsigned int OpenGLShader::GetUniformLocation(const std::string& uniform)
+    int OpenGLShader::GetUniformLocation(const std::string& uniform)
     {
         if (m_UniformLocations.contains(uniform))
         {
             return m_UniformLocations[uniform];
         }
         // Get uniform location.
-        const uint32_t location = glGetUniformLocation(m_ObjectHandle, uniform.c_str());
+        const int location = glGetUniformLocation(m_ObjectHandle, uniform.c_str());
         // Store uniform location in map.
         m_UniformLocations[uniform] = location;
         return location;
@@ -111,7 +111,7 @@ namespace Retro::Renderer
             {
                 parsedContents.resize(size);
                 in.seekg(0, std::ios::beg);
-                in.read(&parsedContents[0], size);
+                in.read(parsedContents.data(), size);
                 in.close();
             }
             else
@@ -151,7 +151,7 @@ namespace Retro::Renderer
             const GLuint openGLShader = glCreateShader(shaderType);
             // Assigning source
             const GLchar* sourceCStr = shaderSource.c_str();
-            glShaderSource(openGLShader, 1, &sourceCStr, 0);
+            glShaderSource(openGLShader, 1, &sourceCStr, nullptr);
 
             // Compiling the shader
             glCompileShader(openGLShader);
@@ -166,7 +166,7 @@ namespace Retro::Renderer
 
                 // Get error log.
                 std::vector<GLchar> infoLog(maxLength);
-                glGetShaderInfoLog(openGLShader, maxLength, &maxLength, &infoLog[0]);
+                glGetShaderInfoLog(openGLShader, maxLength, &maxLength, infoLog.data());
 
                 // Delete the shader.
                 glDeleteShader(openGLShader);
@@ -199,7 +199,7 @@ namespace Retro::Renderer
 
             // Getting the error
             std::vector<GLchar> infoLog(maxLength);
-            glGetProgramInfoLog(m_ObjectHandle, maxLength, &maxLength, &infoLog[0]);
+            glGetProgramInfoLog(m_ObjectHandle, maxLength, &maxLength, infoLog.data());
 
             // Delete the program
             glDeleteProgram(m_ObjectHandle);

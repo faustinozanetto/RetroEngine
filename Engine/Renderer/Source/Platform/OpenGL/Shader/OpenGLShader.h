@@ -34,7 +34,7 @@ namespace Retro::Renderer
         void SetMat3(const std::string& uniform, const glm::mat3& value) override;
         void SetMat4(const std::string& uniform, const glm::mat4& value) override;
         
-        unsigned int GetUniformLocation(const std::string& uniform) override;
+        int GetUniformLocation(const std::string& uniform) override;
 
     private:
         std::string ParseShaderContentsFromFile(const std::string& shaderSource);
@@ -45,6 +45,6 @@ namespace Retro::Renderer
 
     private:
         std::map<ShaderType, std::string> m_ShaderSources;
-        std::unordered_map<std::string, unsigned int> m_UniformLocations;
+        std::unordered_map<std::string, int> m_UniformLocations;
     };
 }

@@ -86,6 +86,7 @@ public:
     {
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::scale(transform, abs(glm::vec3(glm::sin(Retro::Renderer::Renderer::GetTime()) * 2.0f)));
+        transform = glm::rotate(transform, static_cast<float>(Retro::Renderer::Renderer::GetTime()) * 5.0f,  glm::vec3(0.0f, 0.0f, 0.1f));
         Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Square->GetVertexArrayBuffer(), m_Texture, transform});
         /*for (int i = 0; i < 10; i++)
         {
@@ -113,7 +114,9 @@ public:
     void OnInterfaceRenderer() override
     {
         ImGui::Begin("Sandbox");
-        ImGui::Button("Welcome");
+        const float frameTime = 1000.0f / ImGui::GetIO().Framerate;
+        ImGui::Text("Frame time: %.3f ms", frameTime, ImGui::GetIO().Framerate);
+        ImGui::Text("Frame rate: %.3f FPS", ImGui::GetIO().Framerate);
         ImGui::End();
     }
 

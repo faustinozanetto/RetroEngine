@@ -2,6 +2,7 @@
 
 #include "RetroApplication.h"
 
+#include "Core/Interfaces/InterfaceLayer.h"
 #include "Logger/Logger.h"
 #include "Renderer/Renderer/Renderer.h"
 
@@ -59,7 +60,9 @@ namespace Retro
                 for (auto it = m_InterfaceLayersManager->GetLayerStack().begin(); it <
                      m_InterfaceLayersManager->GetLayerStack().end(); ++it)
                 {
-                    it->get()->OnLayerUpdated();
+                    const auto interfaceLayer = dynamic_cast<InterfaceLayer*>(it->get());
+                    interfaceLayer->OnLayerUpdated();
+                    interfaceLayer->OnInterfaceRenderer();
                 }
                 m_InterfacesSubSystem->TerminateImGui();
             }
