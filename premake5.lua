@@ -20,6 +20,7 @@ IncludeDir["GLM"] = "%{wks.location}/ThirdParty/GLM"
 IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 IncludeDir["IMGUI"] = "%{wks.location}/ThirdParty/IMGUI"
 IncludeDir["STB"] = "%{wks.location}/ThirdParty/STB"
+IncludeDir["ASSIMP"] = "%{wks.location}/ThirdParty/ASSIMP/include"
 
 group "Dependencies"
     include "ThirdParty/GLFW"
@@ -51,6 +52,7 @@ project "EngineCore"
         "%{wks.location}/Binaries/Debug-windows-x86_64/IMGUI",
         "%{wks.location}/Binaries/Debug-windows-x86_64/GLFW",
         "%{wks.location}/Binaries/Debug-windows-x86_64/GLAD",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
     }
 
     includedirs {
@@ -59,7 +61,8 @@ project "EngineCore"
         "%{IncludeDir.GLM}",
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
-        "%{IncludeDir.IMGUI}"
+        "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.ASSIMP}"
     }
 
     filter "system:windows"
@@ -94,7 +97,11 @@ project "EngineRenderer"
         "%{wks.location}/ThirdParty/STB/**.h",
         "%{wks.location}/ThirdParty/STB/**.cpp",
     }
-
+    
+    libdirs {
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Debug"
+    }
+    
     includedirs {
         "%{wks.location}/Engine/Renderer/Source",
         "%{wks.location}/Engine/Core/Source",
@@ -103,7 +110,8 @@ project "EngineRenderer"
         "%{IncludeDir.GLM}",    
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
-        "%{IncludeDir.IMGUI}"
+        "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.ASSIMP}"
     }
 
     links {
@@ -111,22 +119,25 @@ project "EngineRenderer"
         "GLFW",
         "GLAD",
         "IMGUI",
-        "STB"
+        "STB",
     }
 
     filter "system:windows"
-    cppdialect "C++latest"
-    systemversion "latest"
+        cppdialect "C++latest"
+        systemversion "latest"
 
     filter "configurations:Debug"
-    symbols "on"
-    optimize "Off"
+        symbols "on"
+        optimize "Off"
+        links {
+            "assimp-vc143-mtd.dll"
+        }
 
     filter "configurations:release"
-    optimize "Speed"
+        optimize "Speed"
 
     filter "configurations:Dist"
-    optimize "Full"
+        optimize "Full"
 
 project "Sandbox"
     location "Sandbox"
@@ -148,7 +159,8 @@ project "Sandbox"
         "%{IncludeDir.GLM}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.STB}",
-        "%{IncludeDir.IMGUI}"
+        "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.ASSIMP}"
     }
 
     links {
@@ -157,17 +169,17 @@ project "Sandbox"
     }
 
     filter "system:windows"
-    staticruntime "off"
-    systemversion "latest"
+        staticruntime "off"
+        systemversion "latest"
 
     filter "configurations:Debug"
-    defines { "MECHA_DEBUG", "WIN32_LEAN_AND_MEAN" }
-    symbols "on"
+        defines { "MECHA_DEBUG", "WIN32_LEAN_AND_MEAN" }
+        symbols "on"
 
     filter "configurations:release"
-    defines { "MECHA_RELEASE", "WIN32_LEAN_AND_MEAN" }
-    optimize "on"
+        defines { "MECHA_RELEASE", "WIN32_LEAN_AND_MEAN" }
+        optimize "on"
 
     filter "configurations:Dist"
-    defines { "MECHA_DIST", "WIN32_LEAN_AND_MEAN" }
-    optimize "on"
+        defines { "MECHA_DIST", "WIN32_LEAN_AND_MEAN" }
+        optimize "on"

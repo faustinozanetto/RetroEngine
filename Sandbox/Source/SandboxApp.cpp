@@ -67,11 +67,25 @@ public:
         m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Basic/Basic.vert",
                                                    "Assets/Shaders/Basic/Basic.frag");
 
-        m_Texture = Retro::Renderer::Texture::Create({
+        auto texture = Retro::Renderer::Texture::Create({
             "Assets/Textures/texture.jpeg",
             Retro::Renderer::TextureFiltering::Linear,
             Retro::Renderer::TextureWrapping::ClampBorder,
         });
+        Retro::Renderer::FMaterialTexture albedoTexture = {
+            Retro::Renderer::EMaterialTextureType::Albedo, texture, true
+        };
+        std::map<Retro::Renderer::EMaterialTextureType, Retro::Renderer::FMaterialTexture> textures = {
+            {Retro::Renderer::EMaterialTextureType::Albedo, albedoTexture},
+        };
+        Retro::Renderer::FMaterialSpecification materialSpecification = {
+            m_Shader,
+            textures,
+            glm::vec4(1.0f, 0.23f, 0.5f, 1.0f)
+        };
+        m_Material = Retro::Renderer::Material::Create(
+            materialSpecification
+        );
     }
 
     void OnLayerRegistered() override
@@ -86,8 +100,9 @@ public:
     {
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::scale(transform, abs(glm::vec3(glm::sin(Retro::Renderer::Renderer::GetTime()) * 2.0f)));
-        transform = glm::rotate(transform, static_cast<float>(Retro::Renderer::Renderer::GetTime()) * 5.0f,  glm::vec3(0.0f, 0.0f, 0.1f));
-        Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Square->GetVertexArrayBuffer(), m_Texture, transform});
+        transform = glm::rotate(transform, static_cast<float>(Retro::Renderer::Renderer::GetTime()) * 5.0f,
+                                glm::vec3(0.0f, 0.0f, 0.1f));
+        Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Square->GetVertexArrayBuffer(), m_Material, transform});
         /*for (int i = 0; i < 10; i++)
         {
             transform = glm::translate(transform, {glm::sin(time * i), 0.0f, glm::sin(time * i)});
@@ -101,7 +116,7 @@ private:
     Retro::Ref<Retro::Renderer::Shader> m_Shader;
     Retro::Ref<Retro::Renderer::Renderable> m_Renderable;
     Retro::Ref<Retro::Renderer::Renderable> m_Square;
-    Retro::Ref<Retro::Renderer::Texture> m_Texture;
+    Retro::Ref<Retro::Renderer::Material> m_Material;
 };
 
 class SandboxInterfaceLayer : public Retro::InterfaceLayer
@@ -120,9 +135,17 @@ public:
         ImGui::End();
     }
 
-    void OnLayerRegistered() override {}
-    void OnLayerUnregistered() override {}
-    void OnLayerUpdated() override {}
+    void OnLayerRegistered() override
+    {
+    }
+
+    void OnLayerUnregistered() override
+    {
+    }
+
+    void OnLayerUpdated() override
+    {
+    }
 };
 
 class SandboxApplication : public Retro::RetroApplication

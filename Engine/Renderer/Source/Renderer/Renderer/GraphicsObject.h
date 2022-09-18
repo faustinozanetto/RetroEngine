@@ -15,6 +15,6 @@ namespace Retro::Renderer
 		/* Getter */
 		unsigned int GetObjectHandle() const;
 	protected:
-		unsigned int m_ObjectHandle;
+		unsigned int m_ObjectHandle = 0;
 	};
 }

@@ -18,7 +18,7 @@ namespace Retro::Renderer {
 		virtual bool Initialize() = 0;
 		virtual void SetClearColor(glm::vec4 color) = 0;
 		virtual void ClearScreen() = 0;
-		virtual void ProcessRendereable(uint32_t size) = 0;
+		virtual void ProcessRendereable(int size) = 0;
 		virtual double GetTime() = 0;
 
 		/* Getters */

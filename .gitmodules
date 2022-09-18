@@ -16,3 +16,6 @@
 [submodule "ThirdParty/STB"]
 	path = ThirdParty/STB
 	url = https://github.com/nothings/stb
+[submodule "ThirdParty/ASSIMP"]
+	path = ThirdParty/ASSIMP
+	url = https://github.com/assimp/assimp

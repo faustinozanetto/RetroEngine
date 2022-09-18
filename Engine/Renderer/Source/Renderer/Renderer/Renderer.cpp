@@ -91,12 +91,13 @@ namespace Retro::Renderer
     {
         command.shader->Bind();
         command.shader->SetMat4("uTransform", command.transform);
-        if (command.texture)
-            command.texture->Bind();
+        if (command.material)
+            command.material->Bind();
         command.vao->Bind();
         // Pass the data to the rendering api and perform the actual rendering.
         s_RenderingAPI->ProcessRendereable(command.vao->GetIndexBuffer()->GetSize());
         // Unbind after usage.
+        command.material->UnBind();
         command.vao->UnBind();
         command.shader->UnBind();
     }

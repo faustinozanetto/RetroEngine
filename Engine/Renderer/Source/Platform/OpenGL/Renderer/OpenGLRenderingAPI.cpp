@@ -36,7 +36,7 @@ namespace Retro::Renderer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void OpenGLRenderingAPI::ProcessRendereable(uint32_t size)
+    void OpenGLRenderingAPI::ProcessRendereable(int size)
     {
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
     }
