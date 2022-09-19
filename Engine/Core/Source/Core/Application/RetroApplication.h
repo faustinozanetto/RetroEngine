@@ -27,7 +27,7 @@ namespace Retro
 		void RunApplication() const;
 
 		/* Getters */
-		const Renderer::Window& GetWindow() const;
+		const Scope<Renderer::Window>& GetWindow() const;
 		const Scope<LayerManager>& GetLayersManager() const;
 		const Scope<LayerManager>& GetInterfaceLayersManager() const;
 

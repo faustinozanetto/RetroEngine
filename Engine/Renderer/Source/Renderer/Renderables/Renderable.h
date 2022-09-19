@@ -22,6 +22,10 @@ namespace Retro::Renderer
         {
         }
 
+        RenderableVertex(const glm::vec3& position, const glm::vec2& texCoord) : position(position), texCoord(texCoord)
+        {
+        }
+
         RenderableVertex(const glm::vec3& position, const glm::vec2& texCoord, const glm::vec3& normal,
                          const glm::vec3& tangent, const glm::vec3& bitangent) : position(position), texCoord(texCoord),
             normal(normal), tangent(tangent), bitangent(bitangent)

@@ -39,8 +39,8 @@ namespace Retro
         while (!Renderer::Renderer::ShouldClose())
         {
             Renderer::Renderer::ClearScreen();
-            Renderer::Renderer::SetClearColor({1.0f, 1.0f, 1.0f, 1.0f});
-            
+            Renderer::Renderer::SetClearColor({0.2f, 0.3f, 0.3f, 1.0f});
+
             // Main Render Loop.
             {
                 Renderer::Renderer::Begin();
@@ -72,9 +72,9 @@ namespace Retro
         }
     }
 
-    const Renderer::Window& RetroApplication::GetWindow() const
+    const Scope<Renderer::Window>& RetroApplication::GetWindow() const
     {
-        return *m_Window;
+        return m_Window;
     }
 
     const Scope<LayerManager>& RetroApplication::GetLayersManager() const

@@ -17,30 +17,30 @@ namespace Retro::Renderer
 
         /* Methods */
         void Bind() override;
-        void Bind(uint32_t slot) override;
+        void Bind(int slot) override;
         void UnBind() override;
 
         const FTextureSpecification& GetTextureSpecification() const override;
-        const uint32_t GetMipMapLevels() override;
-        const uint32_t GetChannels() override;
-        const uint32_t GetImageWidth() override;
-        const uint32_t GetImageHeight() override;
+        int GetMipMapLevels() override;
+        int GetChannels() override;
+        int GetImageWidth() override;
+        int GetImageHeight() override;
+
+        /* Converts the enum value to the matching OpenGL enum. */
+        static GLint ConvertTextureFiltering(TextureFiltering textureFiltering);
+        /* Converts the enum value to the matching OpenGL enum. */
+        static GLint ConvertTextureWrapping(TextureWrapping textureWrapping);
 
     private:
-        /* Converts the enum value to the matching OpenGL enum. */
-        GLenum ConvertTextureFiltering(TextureFiltering textureFiltering);
-        /* Converts the enum value to the matching OpenGL enum. */
-        GLenum ConvertTextureWrapping(TextureWrapping textureWrapping);
-        
         void SetupTextureFormats();
         void SetupImageBuffer(const stbi_uc* data);
-        
+
     private:
         FTextureSpecification m_TextureSpecification;
-        uint32_t m_MipMapLevels;
-        uint32_t m_Channels;
-        uint32_t m_Width;
-        uint32_t m_Height;
+        int m_MipMapLevels;
+        int m_Channels;
+        int m_Width;
+        int m_Height;
         GLenum m_InternalFormat;
         GLenum m_DataFormat;
     };

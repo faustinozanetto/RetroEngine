@@ -13,6 +13,7 @@ namespace Retro::Renderer {
 		/* Methods */
 		bool Initialize() override;
 		void SetClearColor(glm::vec4 color) override;
+		void SetRenderMode(ERenderMode renderMode) override;
 		void ClearScreen() override;
 		void ProcessRendereable(int size) override;
 		double GetTime() override;

@@ -16,7 +16,9 @@ namespace Retro::Renderer {
 		// Set glfw context
 		glfwMakeContextCurrent(m_WindowHandle);
 		// Glad initialize
-		gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+			Logger::Error("OpenGLRendererContext::Initialize | An error occurred while trying to initialize GLAD");
+		}
 	}
 
 	void OpenGLRendererContext::SwapBuffers()

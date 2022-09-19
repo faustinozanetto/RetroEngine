@@ -50,13 +50,13 @@ namespace Retro::Renderer
 
         /* Methods */
         virtual const FTextureSpecification& GetTextureSpecification() const = 0;
-        virtual const uint32_t GetMipMapLevels() = 0;
-        virtual const uint32_t GetChannels() = 0;
-        virtual const uint32_t GetImageWidth() = 0;
-        virtual const uint32_t GetImageHeight() = 0;
+        virtual int GetMipMapLevels() = 0;
+        virtual int GetChannels() = 0;
+        virtual int GetImageWidth() = 0;
+        virtual int GetImageHeight() = 0;
 
         void Bind() override = 0;
-        virtual void Bind(uint32_t slot) = 0;
+        virtual void Bind(int slot) = 0;
         void UnBind() override = 0;
 
         static std::string GetTextureFilteringToString(TextureFiltering textureFiltering);

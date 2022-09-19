@@ -213,7 +213,6 @@ namespace Retro::Renderer
             // Print error log.
             Logger::Error(
                 "OpenGLShader::Compile | Shader linking failed: " + std::string(infoLog.begin(), infoLog.end()));
-
             return;
         }
 

@@ -3,30 +3,41 @@
 #include "Core/Base.h"
 #include "glm/glm.hpp"
 
-namespace Retro::Renderer {
-	enum class RenderingAPIType {
-		None = 0,
-		OpenGL = 1
-	};
+namespace Retro::Renderer
+{
+    enum class RenderingAPIType
+    {
+        None = 0,
+        OpenGL = 1
+    };
 
-	class RenderingAPI {
-	public:
-		/* Destructor */
-		virtual ~RenderingAPI() = default;
+    enum class ERenderMode
+    {
+        Normal = 0,
+        Wireframe = 1,
+        Point = 2,
+    };
 
-		/* Methods */
-		virtual bool Initialize() = 0;
-		virtual void SetClearColor(glm::vec4 color) = 0;
-		virtual void ClearScreen() = 0;
-		virtual void ProcessRendereable(int size) = 0;
-		virtual double GetTime() = 0;
+    class RenderingAPI
+    {
+    public:
+        /* Destructor */
+        virtual ~RenderingAPI() = default;
 
-		/* Getters */
-		static RenderingAPIType GetRenderingAPIType();
+        /* Methods */
+        virtual bool Initialize() = 0;
+        virtual void SetClearColor(glm::vec4 color) = 0;
+        virtual void SetRenderMode(ERenderMode renderMode) = 0;
+        virtual void ClearScreen() = 0;
+        virtual void ProcessRendereable(int size) = 0;
+        virtual double GetTime() = 0;
 
-		/* Instantiate */
-		static Scope<RenderingAPI> Create(RenderingAPIType renderingAPIType);
-	private:
-		static RenderingAPIType s_RenderingAPIType;
-	};
+        /* Getters */
+        static RenderingAPIType GetRenderingAPIType();
+
+        /* Instantiate */
+        static Scope<RenderingAPI> Create(RenderingAPIType renderingAPIType);
+    private:
+        static RenderingAPIType s_RenderingAPIType;
+    };
 }

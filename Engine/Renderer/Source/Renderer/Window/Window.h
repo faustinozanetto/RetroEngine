@@ -4,14 +4,18 @@
 
 namespace Retro::Renderer
 {
-    struct FWindowSpecification {
+    struct FWindowSpecification
+    {
         std::string windowTitle;
-        uint32_t width;
-        uint32_t height;
+        int width;
+        int height;
         bool vSync;
 
-        FWindowSpecification(const std::string& windowTitle = "Retro Engine", uint32_t width = 1920,
-            uint32_t height = 1080, bool vSync = false) : windowTitle(windowTitle), width(width), height(height), vSync(vSync) {}
+        FWindowSpecification(const std::string& windowTitle = "Retro Engine", int width = 1920,
+                             int height = 1080, bool vSync = false) : windowTitle(windowTitle), width(width),
+                                                                      height(height), vSync(vSync)
+        {
+        }
     };
 
     class Window

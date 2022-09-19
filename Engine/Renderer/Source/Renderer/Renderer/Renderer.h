@@ -20,23 +20,24 @@ namespace Retro::Renderer {
 		static void SwapBuffers();
 		static void PollInput();
 		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		static void SetRenderMode(ERenderMode renderMode);
 		static bool ShouldClose();
 		
 		static void Begin();
 		static void End();
 		
 		static void SubmitCommand(const RenderCommand& command);
+		static int GetRenderCommandsAmount();
 
 		/* Getters */
 		static RenderingAPIType GetRenderingAPIType();
 		static double GetTime();
 
 	private:
+		static void ProcessRenderCommand(const RenderCommand& command);
+		
 		static Scope<RenderingAPI> s_RenderingAPI;
 		static Scope<RendererContext> s_Context;
-
-		static void ProcessRenderCommand(const RenderCommand& command);
-
 		static std::queue<RenderCommand> s_CommandQueue;
 	};
 }

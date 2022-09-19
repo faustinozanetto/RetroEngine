@@ -52,6 +52,7 @@ project "EngineCore"
         "%{wks.location}/Binaries/Debug-windows-x86_64/IMGUI",
         "%{wks.location}/Binaries/Debug-windows-x86_64/GLFW",
         "%{wks.location}/Binaries/Debug-windows-x86_64/GLAD",
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
         "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
     }
 
@@ -66,18 +67,21 @@ project "EngineCore"
     }
 
     filter "system:windows"
-    cppdialect "C++latest"
-    systemversion "latest"
+        cppdialect "C++latest"
+        systemversion "latest"
 
     filter "configurations:Debug"
-    symbols "on"
-    optimize "Off"
+        symbols "on"
+        optimize "Off"
+        links {
+            "assimp-vc143-mtd.lib"
+        }
 
     filter "configurations:release"
-    optimize "Speed"
+        optimize "Speed"
 
     filter "configurations:Dist"
-    optimize "Full"
+        optimize "Full"
 
 project "EngineRenderer"
     location "Engine/Renderer"
@@ -99,7 +103,8 @@ project "EngineRenderer"
     }
     
     libdirs {
-        "%{wks.location}/ThirdParty/ASSIMP/bin/Debug"
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
     }
     
     includedirs {
@@ -130,7 +135,7 @@ project "EngineRenderer"
         symbols "on"
         optimize "Off"
         links {
-            "assimp-vc143-mtd.dll"
+            "assimp-vc143-mtd.lib"
         }
 
     filter "configurations:release"
@@ -163,6 +168,11 @@ project "Sandbox"
         "%{IncludeDir.ASSIMP}"
     }
 
+    libdirs {
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
+    }
+
     links {
         "EngineCore",
         "EngineRenderer",
@@ -175,6 +185,9 @@ project "Sandbox"
     filter "configurations:Debug"
         defines { "MECHA_DEBUG", "WIN32_LEAN_AND_MEAN" }
         symbols "on"
+        links {
+            "assimp-vc143-mtd.lib"
+        }
 
     filter "configurations:release"
         defines { "MECHA_RELEASE", "WIN32_LEAN_AND_MEAN" }

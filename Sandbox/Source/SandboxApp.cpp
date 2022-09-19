@@ -7,6 +7,7 @@
 #include "Core/EntryPoint.h"
 #include "Core/Interfaces/InterfaceLayer.h"
 #include "Renderer/Renderables/Renderable.h"
+#include "Renderer/Renderables/Model/Model.h"
 #include "Renderer/Renderer/RenderCommand.h"
 #include "Renderer/Renderer/Renderer.h"
 #include "Renderer/Shader/Shader.h"
@@ -17,7 +18,7 @@ class SandboxLayer : public Retro::Layer
 public:
     SandboxLayer() : Layer("Sandbox Layer")
     {
-        // Triangle 
+        // Triangle
         std::vector<Retro::Renderer::RenderableVertex> vertices = {};
         vertices.emplace_back(
             glm::vec3(0.0f, 0.5f, 0.0f),
@@ -67,10 +68,12 @@ public:
         m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Basic/Basic.vert",
                                                    "Assets/Shaders/Basic/Basic.frag");
 
+        m_Model = Retro::Renderer::Model::Create("Assets/Models/Tom.fbx");
+
         auto texture = Retro::Renderer::Texture::Create({
-            "Assets/Textures/texture.jpeg",
-            Retro::Renderer::TextureFiltering::Linear,
-            Retro::Renderer::TextureWrapping::ClampBorder,
+            "Assets/Textures/cat.png",
+            Retro::Renderer::TextureFiltering::Nearest,
+            Retro::Renderer::TextureWrapping::Repeat,
         });
         Retro::Renderer::FMaterialTexture albedoTexture = {
             Retro::Renderer::EMaterialTextureType::Albedo, texture, true
@@ -84,8 +87,7 @@ public:
             glm::vec4(1.0f, 0.23f, 0.5f, 1.0f)
         };
         m_Material = Retro::Renderer::Material::Create(
-            materialSpecification
-        );
+            materialSpecification);
     }
 
     void OnLayerRegistered() override
@@ -99,15 +101,16 @@ public:
     void OnLayerUpdated() override
     {
         glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::scale(transform, abs(glm::vec3(glm::sin(Retro::Renderer::Renderer::GetTime()) * 2.0f)));
-        transform = glm::rotate(transform, static_cast<float>(Retro::Renderer::Renderer::GetTime()) * 5.0f,
-                                glm::vec3(0.0f, 0.0f, 0.1f));
-        Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Square->GetVertexArrayBuffer(), m_Material, transform});
-        /*for (int i = 0; i < 10; i++)
+        transform = glm::scale(transform, glm::vec3(glm::cos(Retro::Renderer::Renderer::GetTime()) * 2.0f));
+       // transform = glm::rotate(transform, static_cast<float>(Retro::Renderer::Renderer::GetTime()) * 5.0f,
+                                //glm::vec3(0.0f, 0.0f, 0.0f));
+
+        Retro::Renderer::Renderer::SubmitCommand({
+        m_Shader, m_Square->GetVertexArrayBuffer(), m_Material, transform});
+        /*for (const auto& renderable : m_Model->GetModelRenderables())
         {
-            transform = glm::translate(transform, {glm::sin(time * i), 0.0f, glm::sin(time * i)});
             Retro::Renderer::Renderer::SubmitCommand({
-                m_Shader, m_Renderable->GetVertexArrayBuffer(), m_Texture, transform
+                m_Shader, renderable->GetVertexArrayBuffer(), m_Material, transform
             });
         }*/
     }
@@ -117,6 +120,7 @@ private:
     Retro::Ref<Retro::Renderer::Renderable> m_Renderable;
     Retro::Ref<Retro::Renderer::Renderable> m_Square;
     Retro::Ref<Retro::Renderer::Material> m_Material;
+    Retro::Ref<Retro::Renderer::Model> m_Model;
 };
 
 class SandboxInterfaceLayer : public Retro::InterfaceLayer
@@ -124,6 +128,7 @@ class SandboxInterfaceLayer : public Retro::InterfaceLayer
 public:
     SandboxInterfaceLayer() : InterfaceLayer("SandboxInterfaceLayer")
     {
+        m_UseVsync = Retro::RetroApplication::GetApplication().GetWindow()->IsVSyncEnabled();
     }
 
     void OnInterfaceRenderer() override
@@ -133,6 +138,25 @@ public:
         ImGui::Text("Frame time: %.3f ms", frameTime, ImGui::GetIO().Framerate);
         ImGui::Text("Frame rate: %.3f FPS", ImGui::GetIO().Framerate);
         ImGui::End();
+
+        ImGui::Begin("Renderer");
+        if (ImGui::Button("Normal"))
+        {
+            Retro::Renderer::Renderer::SetRenderMode(Retro::Renderer::ERenderMode::Normal);
+        }
+        if (ImGui::Button("Wireframe"))
+        {
+            Retro::Renderer::Renderer::SetRenderMode(Retro::Renderer::ERenderMode::Wireframe);
+        }
+        if (ImGui::Button("Point"))
+        {
+            Retro::Renderer::Renderer::SetRenderMode(Retro::Renderer::ERenderMode::Point);
+        }
+        if (ImGui::Checkbox("VSync", &m_UseVsync))
+        {
+            Retro::RetroApplication::GetApplication().GetWindow()->SetEnableVSync(m_UseVsync);
+        }
+            ImGui::End();
     }
 
     void OnLayerRegistered() override
@@ -146,6 +170,9 @@ public:
     void OnLayerUpdated() override
     {
     }
+
+private:
+    bool m_UseVsync;
 };
 
 class SandboxApplication : public Retro::RetroApplication

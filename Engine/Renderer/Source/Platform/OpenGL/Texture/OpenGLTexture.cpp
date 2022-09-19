@@ -55,7 +55,7 @@ namespace Retro::Renderer
         Bind(0);
     }
 
-    void OpenGLTexture::Bind(uint32_t slot)
+    void OpenGLTexture::Bind(int slot)
     {
         glBindTextureUnit(slot, m_ObjectHandle);
     }
@@ -70,29 +70,29 @@ namespace Retro::Renderer
         return m_TextureSpecification;
     }
 
-    const uint32_t OpenGLTexture::GetMipMapLevels()
+    int OpenGLTexture::GetMipMapLevels()
     {
         return m_MipMapLevels;
     }
 
-    const uint32_t OpenGLTexture::GetChannels()
+    int OpenGLTexture::GetChannels()
     {
         return m_Channels;
     }
 
-    const uint32_t OpenGLTexture::GetImageWidth()
+    int OpenGLTexture::GetImageWidth()
     {
         return m_Width;
     }
 
-    const uint32_t OpenGLTexture::GetImageHeight()
+    int OpenGLTexture::GetImageHeight()
     {
         return m_Height;
     }
 
-    GLenum OpenGLTexture::ConvertTextureFiltering(TextureFiltering textureFiltering)
+    GLint OpenGLTexture::ConvertTextureFiltering(TextureFiltering textureFiltering)
     {
-        uint32_t filter = 0;
+        GLint filter = 0;
         switch (textureFiltering)
         {
         case TextureFiltering::Nearest:
@@ -108,9 +108,9 @@ namespace Retro::Renderer
         return filter;
     }
 
-    GLenum OpenGLTexture::ConvertTextureWrapping(TextureWrapping textureWrapping)
+    GLint OpenGLTexture::ConvertTextureWrapping(TextureWrapping textureWrapping)
     {
-        uint32_t wrap = 0;
+        GLint wrap = 0;
         switch (textureWrapping)
         {
         case TextureWrapping::Repeat:
@@ -125,7 +125,7 @@ namespace Retro::Renderer
         case TextureWrapping::ClampBorder:
             wrap = GL_CLAMP_TO_BORDER;
             break;
-        default: break;
+        case TextureWrapping::None: wrap = 0;
         }
         return wrap;
     }
@@ -174,7 +174,7 @@ namespace Retro::Renderer
         // Filtering
         if (m_TextureSpecification.filtering != TextureFiltering::None)
         {
-            const GLenum filtering = ConvertTextureFiltering(m_TextureSpecification.filtering);
+            const GLint filtering = ConvertTextureFiltering(m_TextureSpecification.filtering);
             glTextureParameteri(m_ObjectHandle, GL_TEXTURE_MIN_FILTER, filtering);
             glTextureParameteri(m_ObjectHandle, GL_TEXTURE_MAG_FILTER, filtering);
         }
@@ -182,7 +182,7 @@ namespace Retro::Renderer
         // Wrapping
         if (m_TextureSpecification.wrapping != TextureWrapping::None)
         {
-            const GLenum wrapping = ConvertTextureWrapping(m_TextureSpecification.wrapping);
+            const GLint wrapping = ConvertTextureWrapping(m_TextureSpecification.wrapping);
             glTextureParameteri(m_ObjectHandle, GL_TEXTURE_WRAP_S, wrapping);
             glTextureParameteri(m_ObjectHandle, GL_TEXTURE_WRAP_T, wrapping);
         }

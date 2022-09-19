@@ -24,7 +24,7 @@ namespace Retro::Renderer
     void OpenGLInterfaceImplementation::InitializeInterface()
     {
         const RetroApplication& retroApp = RetroApplication::GetApplication();
-        const auto window = static_cast<GLFWwindow*>(retroApp.GetWindow().GetNativeWindow());
+        const auto window = static_cast<GLFWwindow*>(retroApp.GetWindow()->GetNativeWindow());
         // ImGui initialization
         IMGUI_CHECKVERSION();
         // Create the ImGui context
@@ -54,6 +54,7 @@ namespace Retro::Renderer
     void OpenGLInterfaceImplementation::EndInterfaceRender()
     {
         // Rendering
+        ImGui::ShowDemoWindow();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }

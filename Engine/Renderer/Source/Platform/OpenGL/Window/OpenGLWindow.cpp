@@ -40,14 +40,14 @@ namespace Retro::Renderer
         Logger::Info("Window Title: " + m_WindowSpecification.windowTitle);
         Logger::Info("Window Width: " + std::to_string(m_WindowSpecification.width));
         Logger::Info("Window Height: " + std::to_string(m_WindowSpecification.height));
-        Logger::Info("Window VSync: " + m_WindowSpecification.vSync ? "Enabled" : "Disabled");
+        const auto vSyncEnabledLog = m_WindowSpecification.vSync ? "Enabled" : "Disabled";
+        Logger::Info("Window VSync: " + std::to_string(*vSyncEnabledLog));
         Logger::Line();
 
         // Setup window hints
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
         // Creating the window

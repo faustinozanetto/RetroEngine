@@ -18,6 +18,5 @@ void main() {
     vec4 albedo = vec4(1.0f);
     if (material.hasAlbedoMap == 1) albedo = texture(uAlbedoMap, vTexCoord);
     else albedo = material.albedo;
-    
     FragColor = albedo;
 }

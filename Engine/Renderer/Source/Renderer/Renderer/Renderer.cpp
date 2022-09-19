@@ -52,6 +52,11 @@ namespace Retro::Renderer
         s_Context->SetViewport(x, y, width, height);
     }
 
+    void Renderer::SetRenderMode(ERenderMode renderMode)
+    {
+        s_RenderingAPI->SetRenderMode(renderMode);
+    }
+
     bool Renderer::ShouldClose()
     {
         return s_Context->ShouldClose();
@@ -75,6 +80,11 @@ namespace Retro::Renderer
     void Renderer::SubmitCommand(const RenderCommand& command)
     {
         s_CommandQueue.push(command);
+    }
+
+    int Renderer::GetRenderCommandsAmount()
+    {
+        return s_CommandQueue.size();
     }
 
     RenderingAPIType Renderer::GetRenderingAPIType()

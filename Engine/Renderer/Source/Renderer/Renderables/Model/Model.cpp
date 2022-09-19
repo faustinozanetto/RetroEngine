@@ -5,26 +5,34 @@
 
 namespace Retro::Renderer
 {
-    Model::Model(const std::string& modelPath)
+    Model::Model(const std::string &modelPath)
     {
+        Logger::Line();
+        Logger::Info("Model::Model | Loading model:");
+        Logger::Info("  - File: " + modelPath);
         LoadModelFromPath(modelPath);
+        Logger::Line();
     }
 
     Model::~Model()
     {
     }
 
-    bool Model::LoadModelFromPath(const std::string& path)
+    const std::vector<Ref<Renderable>> &Model::GetModelRenderables()
+    {
+        return m_Renderables;
+    }
+
+    bool Model::LoadModelFromPath(const std::string &path)
     {
         // Assign path.
         m_ModelPath = path;
         // Create assimp importer.
-        // Read file using assimp.
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(
+        const aiScene *scene = importer.ReadFile(
             m_ModelPath,
             aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs |
-            aiProcess_GenBoundingBoxes);
+                aiProcess_GenBoundingBoxes);
         m_AssimpScene = scene;
         // Error handling.
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -37,18 +45,25 @@ namespace Retro::Renderer
         return ProcessModelNode(m_AssimpScene->mRootNode);
     }
 
-    bool Model::ProcessModelNode(const aiNode* node)
+    bool Model::ProcessModelNode(const aiNode *node)
     {
         for (unsigned int i = 0; i < node->mNumMeshes; i++)
         {
             // The node object only contains indices to index the actual objects in the scene.
             // The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-            const aiMesh* mesh = m_AssimpScene->mMeshes[node->mMeshes[i]];
+            const aiMesh *mesh = m_AssimpScene->mMeshes[node->mMeshes[i]];
             m_Renderables.push_back(ParseRenderable(mesh));
         }
+
+        // After we've processed all of the meshes (if any) we then recursively process each of the children nodes.
+        for (unsigned int i = 0; i < node->mNumChildren; i++)
+        {
+            ProcessModelNode(node->mChildren[i]);
+        }
+        return true;
     }
 
-    Ref<Renderable> Model::ParseRenderable(const aiMesh* mesh)
+    Ref<Renderable> Model::ParseRenderable(const aiMesh *mesh)
     {
         // Create temp vectors.
         std::vector<RenderableVertex> vertices;
@@ -105,5 +120,10 @@ namespace Retro::Renderer
             " faces.");
 
         return CreateRef<Renderable>(vertices, indices);
+    }
+
+    Ref<Model> Model::Create(const std::string &modelPath)
+    {
+        return CreateRef<Model>(modelPath);
     }
 }
