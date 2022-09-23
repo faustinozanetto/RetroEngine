@@ -68,10 +68,10 @@ public:
         m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Basic/Basic.vert",
                                                    "Assets/Shaders/Basic/Basic.frag");
 
-        m_Model = Retro::Renderer::Model::Create("Assets/Models/Tom.fbx");
+        m_Model = Retro::Renderer::Model::Create("Assets/Models/Luigi/source/Luigi.fbx");
 
         auto texture = Retro::Renderer::Texture::Create({
-            "Assets/Textures/cat.png",
+            "Assets/Models/Luigi/textures/Texture.png",
             Retro::Renderer::TextureFiltering::Nearest,
             Retro::Renderer::TextureWrapping::Repeat,
         });
@@ -100,19 +100,18 @@ public:
 
     void OnLayerUpdated() override
     {
-        glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::scale(transform, glm::vec3(glm::cos(Retro::Renderer::Renderer::GetTime()) * 2.0f));
-       // transform = glm::rotate(transform, static_cast<float>(Retro::Renderer::Renderer::GetTime()) * 5.0f,
-                                //glm::vec3(0.0f, 0.0f, 0.0f));
-
-        Retro::Renderer::Renderer::SubmitCommand({
-        m_Shader, m_Square->GetVertexArrayBuffer(), m_Material, transform});
-        /*for (const auto& renderable : m_Model->GetModelRenderables())
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(0.04f)); // it's a bit too big for our scene, so scale it down
+        model = glm::rotate(model, static_cast<float>(45.0f * Retro::Renderer::Renderer::GetTime() * 0.1f), glm::vec3(0.0f, 0.1f, 0.0f));
+        //Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Renderable->GetVertexArrayBuffer(), m_Material, model});
+        for (const auto& renderable : m_Model->GetModelRenderables())
         {
             Retro::Renderer::Renderer::SubmitCommand({
-                m_Shader, renderable->GetVertexArrayBuffer(), m_Material, transform
+                m_Shader, renderable->GetVertexArrayBuffer(), m_Material, model
             });
-        }*/
+        }
     }
 
 private:
@@ -133,6 +132,7 @@ public:
 
     void OnInterfaceRenderer() override
     {
+        
         ImGui::Begin("Sandbox");
         const float frameTime = 1000.0f / ImGui::GetIO().Framerate;
         ImGui::Text("Frame time: %.3f ms", frameTime, ImGui::GetIO().Framerate);
@@ -156,7 +156,36 @@ public:
         {
             Retro::RetroApplication::GetApplication().GetWindow()->SetEnableVSync(m_UseVsync);
         }
-            ImGui::End();
+        ImGui::End();
+        
+        /*
+        bool open = true;
+        const ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove;
+        windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+        ImGui::Begin("DockSpace", &open, windowFlags);
+
+        // DockSpace
+        const ImGuiIO& io = ImGui::GetIO();
+        ImGuiStyle& style = ImGui::GetStyle();
+        const float minWinSizeX = style.WindowMinSize.x;
+        style.WindowMinSize.x = 370.0f;
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            const ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
+        }
+        style.WindowMinSize.x = minWinSizeX;
+
+        ImGui::End();
+        */
     }
 
     void OnLayerRegistered() override

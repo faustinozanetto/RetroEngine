@@ -23,12 +23,16 @@ namespace Retro::Renderer
 
     void OpenGLInterfaceImplementation::InitializeInterface()
     {
-        const RetroApplication& retroApp = RetroApplication::GetApplication();
-        const auto window = static_cast<GLFWwindow*>(retroApp.GetWindow()->GetNativeWindow());
+        const RetroApplication &retroApp = RetroApplication::GetApplication();
+        const auto window = static_cast<GLFWwindow *>(retroApp.GetWindow()->GetNativeWindow());
         // ImGui initialization
         IMGUI_CHECKVERSION();
         // Create the ImGui context
         ImGui::CreateContext();
+        ImGuiIO &io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         ImGui::StyleColorsLight();
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -57,5 +61,13 @@ namespace Retro::Renderer
         ImGui::ShowDemoWindow();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow *backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
     }
 }

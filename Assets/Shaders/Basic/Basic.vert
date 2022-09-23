@@ -16,7 +16,7 @@ uniform mat4 uTransform;
 
 void main() {
     gl_Position = uTransform * vec4(aPos, 1.0);
-    vPos = vec3(uTransform * vec4(aPos, 1.0));;
+    vPos = vec3(uTransform * vec4(aPos, 1.0));
     vTexCoord = aTexCoord;
     vNormal = aNormal;
     vTangent = aTangent;
