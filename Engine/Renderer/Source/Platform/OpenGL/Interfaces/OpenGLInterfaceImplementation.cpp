@@ -58,7 +58,6 @@ namespace Retro::Renderer
     void OpenGLInterfaceImplementation::EndInterfaceRender()
     {
         // Rendering
-        ImGui::ShowDemoWindow();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

@@ -6,6 +6,8 @@
 #include "imgui.h"
 #include "Core/EntryPoint.h"
 #include "Core/Interfaces/InterfaceLayer.h"
+#include "glad/glad.h"
+#include "Renderer/Buffers/FBO/FrameBuffer.h"
 #include "Renderer/Renderables/Renderable.h"
 #include "Renderer/Renderables/Model/Model.h"
 #include "Renderer/Renderer/RenderCommand.h"
@@ -18,55 +20,37 @@ class SandboxLayer : public Retro::Layer
 public:
     SandboxLayer() : Layer("Sandbox Layer")
     {
-        // Triangle
-        std::vector<Retro::Renderer::RenderableVertex> vertices = {};
-        vertices.emplace_back(
-            glm::vec3(0.0f, 0.5f, 0.0f),
-            glm::vec2(0.5f, 1.0f)
+        float squareVertices[5 * 4] = {
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left 
+        };
 
-        );
-        vertices.emplace_back(
-            glm::vec3(-0.5f, -0.5f, 0.0f),
-            glm::vec2(0.0f, 0.0f)
-
-        );
-        vertices.emplace_back(
-
-            glm::vec3(0.5f, -0.5f, 0.0f),
-            glm::vec2(1.0f, 0.0f)
-
-        );
-        const std::vector<uint32_t> indices = {0, 1, 2};
-        m_Renderable = Retro::Renderer::Renderable::Create(vertices, indices);
-
-        std::vector<Retro::Renderer::RenderableVertex> squareVerts = {};
-        squareVerts.emplace_back(
-            glm::vec3(-0.5f, -0.5f, 0.0f),
-            glm::vec2(0.0f, 0.0f)
-
-        );
-        squareVerts.emplace_back(
-            glm::vec3(0.5f, -0.5f, 0.0f),
-            glm::vec2(1.0f, 0.0f)
-
-        );
-        squareVerts.emplace_back(
-
-            glm::vec3(0.5f, 0.5f, 0.0f),
-            glm::vec2(1.0f, 1.0f)
-
-        );
-        squareVerts.emplace_back(
-
-            glm::vec3(-0.5f, 0.5f, 0.0f),
-            glm::vec2(0.0f, 1.0f)
-
-        );
-        const std::vector<uint32_t> squareIndx = {0, 1, 2, 2, 3, 0};
-        m_Square = Retro::Renderer::Renderable::Create(squareVerts, squareIndx);
+        // Fill index buffer
+        uint32_t squareIndices[6] = {
+            0, 3, 1, // first triangle
+            1, 3, 2, // second triangle
+        };
+        m_ScreenVAO = Retro::Renderer::VertexArrayBuffer::Create();
+        Retro::Ref<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
+            squareVertices, sizeof(squareVertices));
+        Retro::Ref<Retro::Renderer::IndexBuffer> IBO = Retro::Renderer::IndexBuffer::Create(
+            squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
+        m_ScreenVAO->Bind();
+        VBO->SetVBOLayout({
+            {Retro::Renderer::VBOElementType::FloatVec3, "aPos"},
+            {Retro::Renderer::VBOElementType::FloatVec2, "aTexCoord"}
+        });
+        m_ScreenVAO->AddVertexObjectBuffer(VBO);
+        m_ScreenVAO->SetIndexBuffer(IBO);
+        m_ScreenVAO->UnBind();
 
         m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Basic/Basic.vert",
                                                    "Assets/Shaders/Basic/Basic.frag");
+
+        m_ScreenShader = Retro::Renderer::Shader::Create("Assets/Shaders/Screen/Screen.vert",
+                                                         "Assets/Shaders/Screen/Screen.frag");
 
         m_Model = Retro::Renderer::Model::Create("Assets/Models/Luigi/source/Luigi.fbx");
 
@@ -88,6 +72,10 @@ public:
         };
         m_Material = Retro::Renderer::Material::Create(
             materialSpecification);
+
+        m_FBO = Retro::Renderer::FrameBuffer::Create({
+            1920, 1080, {Retro::Renderer::EFrameBufferAttachmentFormat::Color}
+        });
     }
 
     void OnLayerRegistered() override
@@ -100,26 +88,49 @@ public:
 
     void OnLayerUpdated() override
     {
+        m_FBO->Bind();
+        glEnable(GL_DEPTH_TEST);
+        Retro::Renderer::Renderer::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+        Retro::Renderer::Renderer::ClearScreen();
+
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(0.04f)); // it's a bit too big for our scene, so scale it down
-        model = glm::rotate(model, static_cast<float>(45.0f * Retro::Renderer::Renderer::GetTime() * 0.1f), glm::vec3(0.0f, 0.1f, 0.0f));
-        //Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_Renderable->GetVertexArrayBuffer(), m_Material, model});
+        model = glm::rotate(model, static_cast<float>(45.0f * Retro::Renderer::Renderer::GetTime() * 0.1f),
+                            glm::vec3(0.0f, 0.1f, 0.0f));
+
+        m_Shader->Bind();
         for (const auto& renderable : m_Model->GetModelRenderables())
         {
+            m_Shader->SetMat4("uTransform", model);
             Retro::Renderer::Renderer::SubmitCommand({
                 m_Shader, renderable->GetVertexArrayBuffer(), m_Material, model
             });
         }
+        m_Shader->UnBind();
+        m_FBO->UnBind();
+        glDisable(GL_DEPTH_TEST);
+        Retro::Renderer::Renderer::SetClearColor({0.2f, 0.3f, 0.3f, 1.0f});
+        Retro::Renderer::Renderer::ClearScreen();
+
+        m_ScreenShader->Bind();
+        glBindTextureUnit(0, m_FBO->GetRendererID());
+        Retro::Renderer::Renderer::SubmitCommand({
+            m_ScreenShader, m_ScreenVAO, nullptr, model
+        });
+        m_ScreenShader->UnBind();
     }
 
-private:
+private
+:
     Retro::Ref<Retro::Renderer::Shader> m_Shader;
-    Retro::Ref<Retro::Renderer::Renderable> m_Renderable;
-    Retro::Ref<Retro::Renderer::Renderable> m_Square;
+    Retro::Ref<Retro::Renderer::Shader> m_ScreenShader;
+    Retro::Ref<Retro::Renderer::VertexArrayBuffer> m_ScreenVAO;
     Retro::Ref<Retro::Renderer::Material> m_Material;
     Retro::Ref<Retro::Renderer::Model> m_Model;
+    Retro::Ref<Retro::Renderer::FrameBuffer> m_FBO;
+    Retro::Ref<Retro::Renderer::FrameBuffer> m_FBO2;
 };
 
 class SandboxInterfaceLayer : public Retro::InterfaceLayer
@@ -132,7 +143,6 @@ public:
 
     void OnInterfaceRenderer() override
     {
-        
         ImGui::Begin("Sandbox");
         const float frameTime = 1000.0f / ImGui::GetIO().Framerate;
         ImGui::Text("Frame time: %.3f ms", frameTime, ImGui::GetIO().Framerate);
@@ -157,7 +167,7 @@ public:
             Retro::RetroApplication::GetApplication().GetWindow()->SetEnableVSync(m_UseVsync);
         }
         ImGui::End();
-        
+
         /*
         bool open = true;
         const ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;

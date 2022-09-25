@@ -64,6 +64,7 @@ namespace Retro::Renderer
 
     private:
         const std::string &GetTextureUniformEnabledValue(EMaterialTextureType type);
+        uint32_t GetMaterialTextureBindSlot(EMaterialTextureType type);
 
     private:
         FMaterialSpecification m_MaterialSpecification;

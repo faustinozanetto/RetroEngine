@@ -23,7 +23,7 @@ namespace Retro::Renderer
             }
         case RenderingAPIType::OpenGL:
             {
-                return CreateRef<OpenGLFrameBuffer>();
+                return CreateRef<OpenGLFrameBuffer>(frameBufferSpecification);
             }
         }
         return {};

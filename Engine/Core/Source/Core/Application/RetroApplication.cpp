@@ -38,24 +38,21 @@ namespace Retro
     {
         while (!Renderer::Renderer::ShouldClose())
         {
-            Renderer::Renderer::ClearScreen();
-            Renderer::Renderer::SetClearColor({0.2f, 0.3f, 0.3f, 1.0f});
-
+            Renderer::Renderer::Begin();
+            
             // Main Render Loop.
             {
-                Renderer::Renderer::Begin();
                 // Update layers.
                 for (auto it = m_LayersManager->GetLayerStack().begin(); it <
                      m_LayersManager->GetLayerStack().end(); ++it)
                 {
                     it->get()->OnLayerUpdated();
                 }
-                Renderer::Renderer::End();
             }
 
+            m_InterfacesSubSystem->InitializeImGui();
             // Main Interfaces Loop.
             {
-                m_InterfacesSubSystem->InitializeImGui();
                 // Update interface layer.
                 for (auto it = m_InterfaceLayersManager->GetLayerStack().begin(); it <
                      m_InterfaceLayersManager->GetLayerStack().end(); ++it)
@@ -64,11 +61,10 @@ namespace Retro
                     interfaceLayer->OnLayerUpdated();
                     interfaceLayer->OnInterfaceRenderer();
                 }
-                m_InterfacesSubSystem->TerminateImGui();
             }
-
-            Renderer::Renderer::PollInput();
-            Renderer::Renderer::SwapBuffers();
+            m_InterfacesSubSystem->TerminateImGui();
+            
+            Renderer::Renderer::End();
         }
     }
 

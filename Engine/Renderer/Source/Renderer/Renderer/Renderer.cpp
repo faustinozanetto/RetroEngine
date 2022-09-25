@@ -64,22 +64,27 @@ namespace Retro::Renderer
 
     void Renderer::Begin()
     {
+        /*SetClearColor({0.2f, 0.3f, 0.3f, 1.0f});
+        ClearScreen();*/
     }
 
     void Renderer::End()
     {
-        while (!s_CommandQueue.empty())
+        /*while (!s_CommandQueue.empty())
         {
             const RenderCommand command = s_CommandQueue.front();
             ProcessRenderCommand(command);
             // Remove command from the queue.
             s_CommandQueue.pop();
-        }
+        }*/
+
+        SwapBuffers();
+        PollInput();
     }
 
     void Renderer::SubmitCommand(const RenderCommand& command)
     {
-        s_CommandQueue.push(command);
+        ProcessRenderCommand(command);
     }
 
     int Renderer::GetRenderCommandsAmount()
@@ -99,16 +104,14 @@ namespace Retro::Renderer
 
     void Renderer::ProcessRenderCommand(const RenderCommand& command)
     {
-        command.shader->Bind();
-        command.shader->SetMat4("uTransform", command.transform);
         if (command.material)
             command.material->Bind();
         command.vao->Bind();
         // Pass the data to the rendering api and perform the actual rendering.
         s_RenderingAPI->ProcessRendereable(command.vao->GetIndexBuffer()->GetSize());
         // Unbind after usage.
-        command.material->UnBind();
+        if (command.material)
+            command.material->UnBind();
         command.vao->UnBind();
-        command.shader->UnBind();
     }
 }

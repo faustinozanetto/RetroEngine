@@ -161,9 +161,11 @@ project "Sandbox"
     includedirs {
         "%{wks.location}/Engine/Core/Source",
         "%{wks.location}/Engine/Renderer/Source",
-        "%{IncludeDir.GLM}",
-        "%{IncludeDir.SPDLOG}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.GLAD}",
+        "%{IncludeDir.GLM}",    
         "%{IncludeDir.STB}",
+        "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
         "%{IncludeDir.ASSIMP}"
     }

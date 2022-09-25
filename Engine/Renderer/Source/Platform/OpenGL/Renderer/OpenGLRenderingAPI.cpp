@@ -131,6 +131,7 @@ namespace Retro::Renderer
     void OpenGLRenderingAPI::ProcessRendereable(int size)
     {
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
+       // glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     double OpenGLRenderingAPI::GetTime()

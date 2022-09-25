@@ -4,7 +4,6 @@
 
 #include "spdlog/sinks/stdout_sinks.h"
 #include "spdlog/sinks/base_sink.h"
-#include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/ostream_sink.h"
 
 namespace Retro
@@ -15,7 +14,7 @@ namespace Retro
     {
         std::vector<spdlog::sink_ptr> sinks;
         sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
-        sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("Logs/Engine.log", true));
+      //  sinks.push_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("Logs/Engine.log", true));
 
         s_EngineLogger = std::make_shared<spdlog::logger>("Retro Engine", begin(sinks), end(sinks));
         register_logger(s_EngineLogger);
