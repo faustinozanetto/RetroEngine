@@ -74,7 +74,7 @@ public:
             materialSpecification);
 
         m_FBO = Retro::Renderer::FrameBuffer::Create({
-            1920, 1080, {Retro::Renderer::EFrameBufferAttachmentFormat::Color}
+            1920, 1080, {Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F}
         });
     }
 
@@ -115,7 +115,7 @@ public:
         Retro::Renderer::Renderer::ClearScreen();
 
         m_ScreenShader->Bind();
-        glBindTextureUnit(0, m_FBO->GetRendererID());
+        glBindTextureUnit(0, m_FBO->GetColorAttachmentID(0));
         Retro::Renderer::Renderer::SubmitCommand({
             m_ScreenShader, m_ScreenVAO, nullptr, model
         });

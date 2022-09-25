@@ -14,9 +14,10 @@ namespace Retro::Renderer
         void Bind() override;
         void UnBind() override;
 
-        void AddTextureAttachment(const FFrameBufferTextureSpecification& frameBufferTextureAttachment) override;
+        void AddColorTextureAttachment(const FFrameBufferColorTextureSpecification& frameBufferColorTextureAttachment) override;
 
-        uint32_t GetRendererID() override;
+        uint32_t GetColorAttachmentID(uint32_t slot) override;
+        uint32_t GetDepthAttachmentID() override;
         uint32_t GetHeight() const override;
         uint32_t GetWidth() const override;
 
@@ -24,10 +25,11 @@ namespace Retro::Renderer
 
     private:
         void Reconstruct();
-
+        
     private:
         FFrameBufferSpecification m_FrameBufferSpecification;
-        std::vector<FFrameBufferTextureSpecification> m_TextureAttachmentsSpecifications;
-        std::vector<uint32_t> m_TextureAttachments;
+        std::vector<FFrameBufferColorTextureSpecification> m_ColorTextureAttachmentsSpecifications;
+        std::vector<uint32_t> m_ColorTextureAttachments;
+        uint32_t m_DepthTextureAttachment;
     };
 }
