@@ -13,6 +13,7 @@ namespace Retro::Renderer
     public:
         /* Constructor & Destructor */
         OpenGLTexture(const FTextureSpecification& textureSpecification);
+        OpenGLTexture(uint32_t width, uint32_t height, const unsigned char* data);
         ~OpenGLTexture() override;
 
         /* Methods */
@@ -32,7 +33,7 @@ namespace Retro::Renderer
         static GLint ConvertTextureWrapping(TextureWrapping textureWrapping);
 
     private:
-        void SetupTextureFormats();
+        bool SetupTextureFormats();
         void SetupImageBuffer(const stbi_uc* data);
 
     private:

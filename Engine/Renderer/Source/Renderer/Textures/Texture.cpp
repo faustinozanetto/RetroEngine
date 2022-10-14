@@ -48,4 +48,21 @@ namespace Retro::Renderer
         }
         return {};
     }
+
+    Ref<Texture> Texture::Create(uint32_t width, uint32_t height, const unsigned char* data)
+    {
+        switch (Renderer::GetRenderingAPIType())
+        {
+        case RenderingAPIType::None:
+            {
+                Logger::Error("Texture::Create | Unknown rendering api!.");
+                return nullptr;
+            }
+        case RenderingAPIType::OpenGL:
+            {
+                return CreateRef<OpenGLTexture>(width, height, data);
+            }
+        }
+        return {};
+    }
 }

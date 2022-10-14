@@ -3,10 +3,12 @@
 
 namespace Retro::Renderer
 {
-    Renderable::Renderable(const std::vector<RenderableVertex> &vertices, const std::vector<uint32_t> &indices)
+    Renderable::Renderable(const std::vector<RenderableVertex>& vertices, const std::vector<uint32_t>& indices,
+                           const std::vector<RendereableTexture>& textures)
     {
         m_Vertices = vertices;
         m_Indices = indices;
+        m_RendereableTextures = textures;
         ConstructRenderable();
     }
 
@@ -24,7 +26,7 @@ namespace Retro::Renderer
     {
         // Create VBO, VAO and IBO
         m_VAO = VertexArrayBuffer::Create();
-        m_VBO = VertexObjectBuffer::Create(reinterpret_cast<float *>(&m_Vertices[0]),
+        m_VBO = VertexObjectBuffer::Create(reinterpret_cast<float*>(&m_Vertices[0]),
                                            sizeof(RenderableVertex) * m_Vertices.size());
         m_IBO = IndexBuffer::Create((m_Indices).data(), m_Indices.size());
         // Setup VBO Layout
@@ -40,34 +42,35 @@ namespace Retro::Renderer
         m_VAO->SetIndexBuffer(m_IBO);
     }
 
-    const Ref<VertexArrayBuffer> &Renderable::GetVertexArrayBuffer() const
+    const Ref<VertexArrayBuffer>& Renderable::GetVertexArrayBuffer() const
     {
         return m_VAO;
     }
 
-    const Ref<VertexObjectBuffer> &Renderable::GetVertexObjectBuffer() const
+    const Ref<VertexObjectBuffer>& Renderable::GetVertexObjectBuffer() const
     {
         return m_VBO;
     }
 
-    const Ref<IndexBuffer> &Renderable::GetIndexBuffer() const
+    const Ref<IndexBuffer>& Renderable::GetIndexBuffer() const
     {
         return m_IBO;
     }
 
-    const std::vector<RenderableVertex> &Renderable::GetVertices() const
+    const std::vector<RenderableVertex>& Renderable::GetVertices() const
     {
         return m_Vertices;
     }
 
-    const std::vector<uint32_t> &Renderable::GetIndices() const
+    const std::vector<uint32_t>& Renderable::GetIndices() const
     {
         return m_Indices;
     }
 
-    Ref<Renderable> Renderable::Create(const std::vector<RenderableVertex> &vertices,
-                                       const std::vector<uint32_t> &indices)
+    Ref<Renderable> Renderable::Create(const std::vector<RenderableVertex>& vertices,
+                                       const std::vector<uint32_t>& indices,
+                                       const std::vector<RendereableTexture>& textures)
     {
-        return CreateRef<Renderable>(vertices, indices);
+        return CreateRef<Renderable>(vertices, indices, textures);
     }
 }

@@ -5,6 +5,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
+#include "Renderer/Textures/Texture.h"
+
 namespace Retro::Renderer
 {
     class Model
@@ -19,6 +21,10 @@ namespace Retro::Renderer
 
         /* Methods */
         const std::vector<Ref<Renderable>>& GetModelRenderables();
+        const std::vector<RendereableTexture>& GetEmbeddedTextures() const { return m_TexturesLoaded; }
+
+        std::vector<RendereableTexture>
+        ParseMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
     private:
         bool LoadModelFromPath(const std::string& path);
         bool ProcessModelNode(const aiNode* node);
@@ -26,7 +32,10 @@ namespace Retro::Renderer
 
     private:
         const aiScene* m_AssimpScene{};
+        std::vector<Ref<Texture>> m_Textures;
+        std::vector<RendereableTexture> m_TexturesLoaded;
         std::vector<Ref<Renderable>> m_Renderables;
         std::string m_ModelPath;
+        std::string m_DirectoryPath;
     };
 }

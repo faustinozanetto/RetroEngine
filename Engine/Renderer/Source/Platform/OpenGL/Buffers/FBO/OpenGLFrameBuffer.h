@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "glad/glad.h"
 #include "Renderer/Buffers/FBO/FrameBuffer.h"
 
 namespace Retro::Renderer
@@ -14,7 +15,8 @@ namespace Retro::Renderer
         void Bind() override;
         void UnBind() override;
 
-        void AddColorTextureAttachment(const FFrameBufferColorTextureSpecification& frameBufferColorTextureAttachment) override;
+        void AddColorTextureAttachment(
+            const FFrameBufferColorTextureSpecification& frameBufferColorTextureAttachment) override;
 
         uint32_t GetColorAttachmentID(uint32_t slot) override;
         uint32_t GetDepthAttachmentID() override;
@@ -25,7 +27,12 @@ namespace Retro::Renderer
 
     private:
         void Reconstruct();
-        
+
+        void GenerateColorTexture(uint32_t textureHandle, int index, uint32_t width, uint32_t height, GLenum format,
+                                  GLenum dataFormat);
+
+        void GenerateDepthTexture(uint32_t textureHandle, uint32_t width, uint32_t height);
+
     private:
         FFrameBufferSpecification m_FrameBufferSpecification;
         std::vector<FFrameBufferColorTextureSpecification> m_ColorTextureAttachmentsSpecifications;

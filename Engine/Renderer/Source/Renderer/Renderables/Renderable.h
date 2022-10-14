@@ -10,6 +10,13 @@
 
 namespace Retro::Renderer
 {
+    struct RendereableTexture
+    {
+        unsigned int id;
+        std::string type;
+        std::string path;
+    };
+
     struct RenderableVertex
     {
         glm::vec3 position;
@@ -37,7 +44,8 @@ namespace Retro::Renderer
     {
     public:
         /* Constructor & Destructor */
-        Renderable(const std::vector<RenderableVertex>& vertices, const std::vector<uint32_t>& indices);
+        Renderable(const std::vector<RenderableVertex>& vertices, const std::vector<uint32_t>& indices,
+                   const std::vector<RendereableTexture>& textures);
         ~Renderable() = default;
 
         /* Methods */
@@ -51,15 +59,17 @@ namespace Retro::Renderer
         const Ref<IndexBuffer>& GetIndexBuffer() const;
         const std::vector<RenderableVertex>& GetVertices() const;
         const std::vector<uint32_t>& GetIndices() const;
+        const std::vector<RendereableTexture> GetTextures() const { return m_RendereableTextures; }
 
         /* Instantiate */
         static Ref<Renderable> Create(const std::vector<RenderableVertex>& vertices,
-                                      const std::vector<uint32_t>& indices);
+                                      const std::vector<uint32_t>& indices, const std::vector<RendereableTexture>& textures);
 
     private:
         Ref<VertexArrayBuffer> m_VAO;
         Ref<IndexBuffer> m_IBO;
         Ref<VertexObjectBuffer> m_VBO;
+        std::vector<RendereableTexture> m_RendereableTextures;
         std::vector<RenderableVertex> m_Vertices;
         std::vector<uint32_t> m_Indices;
     };

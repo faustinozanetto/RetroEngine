@@ -35,9 +35,12 @@ namespace Retro::Renderer
         TextureFiltering filtering;
         TextureWrapping wrapping;
 
-        FTextureSpecification() : filtering(TextureFiltering::Linear), wrapping(TextureWrapping::ClampEdge) {}
+        FTextureSpecification() : filtering(TextureFiltering::Linear), wrapping(TextureWrapping::ClampEdge)
+        {
+        }
 
-        FTextureSpecification(const std::string& path, TextureFiltering filtering, TextureWrapping wrapping) : path(path), filtering(filtering), wrapping(wrapping)
+        FTextureSpecification(const std::string& path, TextureFiltering filtering,
+                              TextureWrapping wrapping) : path(path), filtering(filtering), wrapping(wrapping)
         {
         }
     };
@@ -64,5 +67,6 @@ namespace Retro::Renderer
 
         /* Instantiate */
         static Ref<Texture> Create(const FTextureSpecification& textureSpecification);
+        static Ref<Texture> Create(uint32_t width, uint32_t height, const unsigned char* data);
     };
 }

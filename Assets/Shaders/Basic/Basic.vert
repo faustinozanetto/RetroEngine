@@ -14,8 +14,15 @@ layout (location = 4) out vec3 vBiTangent;
 
 uniform mat4 uTransform;
 
+layout(binding = 0) uniform Camera
+{
+    mat4 u_ViewProjectionMatrix;
+    mat4 u_ViewMatrix;
+    mat4 u_ProjectionMatrix;
+} camera;
+
 void main() {
-    gl_Position = uTransform * vec4(aPos, 1.0);
+    gl_Position = camera.u_ViewProjectionMatrix * uTransform * vec4(aPos, 1.0);
     vPos = vec3(uTransform * vec4(aPos, 1.0));
     vTexCoord = aTexCoord;
     vNormal = aNormal;

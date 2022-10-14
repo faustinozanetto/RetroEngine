@@ -99,6 +99,7 @@ namespace Retro::Renderer
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);  
         return true;
     }
 
@@ -123,6 +124,14 @@ namespace Retro::Renderer
         }
     }
 
+    void OpenGLRenderingAPI::SetRendererState(ERendererState renderState, bool enabled)
+    {
+        if (enabled)
+            glEnable(GetRendererStateToOpenGL(renderState));
+        else
+            glDisable(GetRendererStateToOpenGL(renderState));
+    }
+
     void OpenGLRenderingAPI::ClearScreen()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -131,11 +140,26 @@ namespace Retro::Renderer
     void OpenGLRenderingAPI::ProcessRendereable(int size)
     {
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
-       // glBindTexture(GL_TEXTURE_2D, 0);
+        // glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void OpenGLRenderingAPI::BindTexture(uint32_t textureHandle, uint32_t textureSlot)
+    {
+        glBindTextureUnit(textureSlot, textureHandle);
     }
 
     double OpenGLRenderingAPI::GetTime()
     {
         return glfwGetTime();
+    }
+
+    GLenum OpenGLRenderingAPI::GetRendererStateToOpenGL(ERendererState renderState)
+    {
+        switch (renderState)
+        {
+        case ERendererState::DEPTH_TEST: return GL_DEPTH_TEST;
+        }
+        RETRO_ASSERT(false, "OpenGLRenderingAPI::GetRendererStateToOpenGL | Unknown render state");
+        return 0;
     }
 }

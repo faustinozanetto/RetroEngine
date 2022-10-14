@@ -39,7 +39,7 @@ namespace Retro
         while (!Renderer::Renderer::ShouldClose())
         {
             Renderer::Renderer::Begin();
-            
+            m_InterfacesSubSystem->InitializeImGui();
             // Main Render Loop.
             {
                 // Update layers.
@@ -50,7 +50,6 @@ namespace Retro
                 }
             }
 
-            m_InterfacesSubSystem->InitializeImGui();
             // Main Interfaces Loop.
             {
                 // Update interface layer.
@@ -63,7 +62,7 @@ namespace Retro
                 }
             }
             m_InterfacesSubSystem->TerminateImGui();
-            
+
             Renderer::Renderer::End();
         }
     }

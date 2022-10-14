@@ -6,6 +6,39 @@
 
 namespace Retro::Renderer
 {
+    void OpenGLFrameBuffer::GenerateColorTexture(uint32_t textureHandle, int index, uint32_t width, uint32_t height,
+                                                 GLenum format, GLenum dataFormat)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, dataFormat, width,
+                     height, 0, format,
+                     dataFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE, nullptr);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_2D,
+                               textureHandle,
+                               0);
+    }
+
+    void OpenGLFrameBuffer::GenerateDepthTexture(uint32_t textureHandle, uint32_t width, uint32_t height)
+    {
+        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, width,
+                       height);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureHandle, 0);
+    }
+
     OpenGLFrameBuffer::OpenGLFrameBuffer(const FFrameBufferSpecification& frameBufferSpecification)
     {
         m_FrameBufferSpecification = frameBufferSpecification;
@@ -88,26 +121,34 @@ namespace Retro::Renderer
             // Resize the array of opengl texture ids to fit the attachments.
             m_ColorTextureAttachments.resize(m_ColorTextureAttachmentsSpecifications.size());
             // Create the textures.
-            glCreateTextures(GL_TEXTURE_2D, m_ColorTextureAttachments.size(), m_ColorTextureAttachments.data());
+            glCreateTextures(GL_TEXTURE_2D, m_ColorTextureAttachments.size(),
+                             m_ColorTextureAttachments.data());
 
             // Generate the texture attachments.
             for (int i = 0; i < m_ColorTextureAttachments.size(); i++)
             {
                 glBindTexture(GL_TEXTURE_2D, m_ColorTextureAttachments[i]);
 
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_FrameBufferSpecification.width,
-                             m_FrameBufferSpecification.height, 0, GL_RGBA,
-                             GL_UNSIGNED_BYTE, nullptr);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                GLenum format;
+                GLenum dataFormat;
+                switch (m_ColorTextureAttachmentsSpecifications[i].format)
+                {
+                case EFrameBufferColorAttachmentFormat::RGBA8:
+                    {
+                        format = GL_RGBA;
+                        dataFormat = GL_RGBA8;
+                        break;
+                    }
+                case EFrameBufferColorAttachmentFormat::RGBA16F:
+                    {
+                        format = GL_RGBA;
+                        dataFormat = GL_RGB16F;
+                        break;
+                    }
+                }
 
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
-                                       m_ColorTextureAttachments[i],
-                                       0);
+                GenerateColorTexture(m_ColorTextureAttachments[i], i, m_FrameBufferSpecification.width,
+                                     m_FrameBufferSpecification.height, format, dataFormat);
             }
         }
 
@@ -116,17 +157,8 @@ namespace Retro::Renderer
             // Create the textures.
             glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthTextureAttachment);
             glBindTexture(GL_TEXTURE_2D, m_DepthTextureAttachment);
-
-            glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, m_FrameBufferSpecification.width,
-                           m_FrameBufferSpecification.height);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthTextureAttachment, 0);
+            GenerateDepthTexture(m_DepthTextureAttachment, m_FrameBufferSpecification.width,
+                                 m_FrameBufferSpecification.height);
         }
 
         // Draw buffers.

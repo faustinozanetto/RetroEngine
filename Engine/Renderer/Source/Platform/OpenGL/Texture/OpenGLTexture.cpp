@@ -4,6 +4,45 @@
 
 namespace Retro::Renderer
 {
+    static std::string ConvertTextureEnumToString(GLenum textureType)
+    {
+        switch (textureType)
+        {
+        case GL_SRGB8_ALPHA8:
+            return "GL_SRGB8_ALPHA8";
+        case GL_RGB8:
+            return "GL_RGB8";
+        case GL_RGBA8:
+            return "GL_RGBA8";
+        case GL_RGB16F:
+            return "GL_RGB16F";
+        case GL_RGBA16F:
+            return "GL_RGBA16F";
+        case GL_R8:
+            return "GL_R8";
+        case GL_R16F:
+            return "GL_R16F";
+        case GL_R32F:
+            return "GL_R32F";
+        case GL_RG8:
+            return "GL_RG8";
+        case GL_RG16F:
+            return "GL_RG16F";
+        case GL_RG32F:
+            return "GL_RG32F";
+        case GL_RED:
+            return "GL_RED";
+        case GL_RGB:
+            return "GL_RGB";
+        case GL_FLOAT:
+            return "GL_FLOAT";
+        case GL_RGBA:
+            return "GL_RGBA";
+        default:
+            return "Unknown";
+        }
+    }
+
     OpenGLTexture::OpenGLTexture(const FTextureSpecification& textureSpecification)
     {
         Logger::Line();
@@ -33,14 +72,88 @@ namespace Retro::Renderer
                 m_Height));
         Logger::Info("  - Channels: " + std::to_string(m_Channels));
 
-        // Setup image formats.
-        SetupTextureFormats();
+        // Setup texture format.
+        if (!SetupTextureFormats())
+        {
+            Logger::Error("Could not setup texture format.");
+        }
+
+        Logger::Info("Internal format: " + ConvertTextureEnumToString(m_InternalFormat));
+        Logger::Info("Data format: " + ConvertTextureEnumToString(m_DataFormat));
 
         // Construct the opengl image.
         SetupImageBuffer(data);
 
         // Free memory.
         stbi_image_free(data);
+
+        Logger::Line();
+    }
+
+    OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height, const unsigned char* data)
+    {
+        int lWidth, lHeight, channels;
+        stbi_set_flip_vertically_on_load(1);
+        stbi_uc* mdata;
+        if (height == 0)
+        {
+            mdata = stbi_load_from_memory(data, width, &lWidth, &lHeight, &channels, 0);
+        }
+        else
+        {
+            mdata = stbi_load_from_memory(data, width * height, &lWidth, &lHeight, &channels, 0);
+        }
+
+        m_Width = width;
+        m_Height = height;
+        m_Channels = channels;
+
+        Logger::Info(
+            "  - Width: " + std::to_string(m_Width) + " Height: " + std::to_string(
+                m_Height));
+        Logger::Info("  - Channels: " + std::to_string(m_Channels));
+
+        // Setup texture format.
+        if (!SetupTextureFormats())
+        {
+            Logger::Error("Could not setup texture format.");
+        }
+
+        Logger::Info("Internal format: " + ConvertTextureEnumToString(m_InternalFormat));
+        Logger::Info("Data format: " + ConvertTextureEnumToString(m_DataFormat));
+
+        // Generating the texture.
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_ObjectHandle);
+        glBindTexture(GL_TEXTURE_2D, m_ObjectHandle);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTextureStorage2D(m_ObjectHandle, m_MipMapLevels, m_InternalFormat, m_Width, m_Height);
+
+        // Setup mipmaps.
+        m_MipMapLevels = static_cast<GLsizei>(floor(log2((std::min)(m_Width, m_Height))));
+
+        // Filtering
+        if (m_TextureSpecification.filtering != TextureFiltering::None)
+        {
+            const GLint filtering = ConvertTextureFiltering(m_TextureSpecification.filtering);
+            glTextureParameteri(m_ObjectHandle, GL_TEXTURE_MIN_FILTER, filtering);
+            glTextureParameteri(m_ObjectHandle, GL_TEXTURE_MAG_FILTER, filtering);
+        }
+
+        // Wrapping
+        if (m_TextureSpecification.wrapping != TextureWrapping::None)
+        {
+            const GLint wrapping = ConvertTextureWrapping(m_TextureSpecification.wrapping);
+            glTextureParameteri(m_ObjectHandle, GL_TEXTURE_WRAP_S, wrapping);
+            glTextureParameteri(m_ObjectHandle, GL_TEXTURE_WRAP_T, wrapping);
+        }
+
+        // Allocating memory.
+        glTextureSubImage2D(m_ObjectHandle, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, mdata);
+        glGenerateTextureMipmap(m_ObjectHandle);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+        // Free memory.
+        stbi_image_free(mdata);
 
         Logger::Line();
     }
@@ -130,33 +243,33 @@ namespace Retro::Renderer
         return wrap;
     }
 
-    void OpenGLTexture::SetupTextureFormats()
+    bool OpenGLTexture::SetupTextureFormats()
     {
         if (m_Channels == 4)
         {
             m_InternalFormat = GL_RGBA8;
             m_DataFormat = GL_RGBA;
+            return true;
         }
-        else if (m_Channels == 3)
+        if (m_Channels == 3)
         {
             m_InternalFormat = GL_RGB8;
             m_DataFormat = GL_RGB;
+            return true;
         }
-        else if (m_Channels == 2)
+        if (m_Channels == 2)
         {
             m_InternalFormat = GL_RG8;
             m_DataFormat = GL_RG;
+            return true;
         }
-        else if (m_Channels == 1)
+        if (m_Channels == 1)
         {
             m_InternalFormat = GL_R8;
             m_DataFormat = GL_RED;
+            return true;
         }
-        else
-        {
-            m_InternalFormat = GL_RGB8;
-            m_DataFormat = GL_RGB;
-        }
+        return false;
     }
 
     void OpenGLTexture::SetupImageBuffer(const stbi_uc* data)

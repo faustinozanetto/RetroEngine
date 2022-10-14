@@ -57,6 +57,16 @@ namespace Retro::Renderer
         s_RenderingAPI->SetRenderMode(renderMode);
     }
 
+    void Renderer::SetRendererState(ERendererState renderState, bool enabled)
+    {
+        s_RenderingAPI->SetRendererState(renderState, enabled);
+    }
+
+    void Renderer::BindTexture(uint32_t textureHandle, uint32_t textureSlot)
+    {
+        s_RenderingAPI->BindTexture(textureHandle, textureSlot);
+    }
+
     bool Renderer::ShouldClose()
     {
         return s_Context->ShouldClose();
@@ -70,13 +80,13 @@ namespace Retro::Renderer
 
     void Renderer::End()
     {
-        /*while (!s_CommandQueue.empty())
+        while (!s_CommandQueue.empty())
         {
             const RenderCommand command = s_CommandQueue.front();
             ProcessRenderCommand(command);
             // Remove command from the queue.
             s_CommandQueue.pop();
-        }*/
+        }
 
         SwapBuffers();
         PollInput();
@@ -84,6 +94,7 @@ namespace Retro::Renderer
 
     void Renderer::SubmitCommand(const RenderCommand& command)
     {
+        //s_CommandQueue.push(command);
         ProcessRenderCommand(command);
     }
 
@@ -104,7 +115,7 @@ namespace Retro::Renderer
 
     void Renderer::ProcessRenderCommand(const RenderCommand& command)
     {
-        if (command.material)
+        if (command.material) 
             command.material->Bind();
         command.vao->Bind();
         // Pass the data to the rendering api and perform the actual rendering.

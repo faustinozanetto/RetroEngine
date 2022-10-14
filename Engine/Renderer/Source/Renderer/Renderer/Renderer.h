@@ -21,6 +21,8 @@ namespace Retro::Renderer {
 		static void PollInput();
 		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 		static void SetRenderMode(ERenderMode renderMode);
+		static void SetRendererState(ERendererState renderState, bool enabled);
+		static void BindTexture(uint32_t textureHandle, uint32_t textureSlot = 0);
 		static bool ShouldClose();
 		
 		static void Begin();

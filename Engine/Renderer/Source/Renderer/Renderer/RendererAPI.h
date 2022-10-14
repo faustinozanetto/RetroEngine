@@ -18,6 +18,11 @@ namespace Retro::Renderer
         Point = 2,
     };
 
+    enum class ERendererState
+    {
+        DEPTH_TEST
+    };
+
     class RenderingAPI
     {
     public:
@@ -28,8 +33,10 @@ namespace Retro::Renderer
         virtual bool Initialize() = 0;
         virtual void SetClearColor(glm::vec4 color) = 0;
         virtual void SetRenderMode(ERenderMode renderMode) = 0;
+        virtual void SetRendererState(ERendererState renderState, bool enabled) = 0;
         virtual void ClearScreen() = 0;
         virtual void ProcessRendereable(int size) = 0;
+        virtual void BindTexture(uint32_t textureHandle, uint32_t textureSlot = 0) = 0;
         virtual double GetTime() = 0;
 
         /* Getters */
