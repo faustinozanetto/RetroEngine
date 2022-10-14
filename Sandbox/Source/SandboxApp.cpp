@@ -57,8 +57,8 @@ public:
 		m_ScreenVAO->SetIndexBuffer(IBO);
 		m_ScreenVAO->UnBind();
 
-		m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Basic/Basic.vert",
-			"Assets/Shaders/Basic/Basic.frag");
+		m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Geometry/Geometry.vert",
+			"Assets/Shaders/Geometry/Geometry.frag");
 
 		m_ScreenShader = Retro::Renderer::Shader::Create("Assets/Shaders/Screen/Screen.vert",
 			"Assets/Shaders/Screen/Screen.frag");
@@ -86,6 +86,8 @@ public:
 
 		m_FBO = Retro::Renderer::FrameBuffer::Create({
 			2560, 1440, {
+				Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
+				Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
 				Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
 			}
 			});
@@ -169,7 +171,7 @@ public:
 		ImGui::End();
 
 		m_ScreenShader->Bind();
-		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(0), 0);
+		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(1), 0);
 		Retro::Renderer::Renderer::SubmitCommand({
 			m_ScreenShader, m_ScreenVAO, nullptr, model
 			});
