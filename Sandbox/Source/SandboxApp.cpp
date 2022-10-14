@@ -104,8 +104,6 @@ public:
 
 	void OnLayerUpdated() override
 	{
-		m_FBO->Bind();
-
 		// Update camera UBO.
 		m_Camera->SetFocalPoint(m_CameraLocation);
 		m_Camera->SetFOV(m_CameraFov);
@@ -114,7 +112,7 @@ public:
 		m_CameraData.u_ProjectionMatrix = m_Camera->GetProjectionMatrix();
 		m_CameraUBO->SetData(&m_CameraData, sizeof(CameraData));
 
-		// m_CameraFov = glm::abs(glm::sin(Retro::Renderer::Renderer::GetTime()) * 90.0f);
+		m_FBO->Bind();
 
 		if (Retro::Input::InputManager::IsKeyPressed(Retro::Input::Key::Escape)) {
 			m_CameraFov = 20.0f;
@@ -131,8 +129,6 @@ public:
 		model = glm::translate(model, m_Translate);
 		// translate it down so it's at the center of the scene
 		model = glm::scale(model, m_Scale); // it's a bit too big for our scene, so scale it down
-		model = glm::rotate(model, static_cast<float>(Retro::Renderer::Renderer::GetTime() * m_RotationSpeed),
-			glm::vec3(0.0f, 0.0f, 1.0f));
 
 		m_Shader->Bind();
 		for (const auto& renderable : m_Model->GetModelRenderables())
@@ -155,6 +151,21 @@ public:
 		ImGui::SliderFloat3("Location", glm::value_ptr(m_Translate), -5.0f, 5.0f);
 		ImGui::SliderFloat3("Camera Pos", glm::value_ptr(m_CameraLocation), -10.0f, 10.0f);
 		ImGui::SliderFloat("Camera FOV", &m_CameraFov, 1.0f, 90.0f);
+		ImGui::End();
+
+		ImGui::Begin("Assets");
+		if (ImGui::TreeNode("Shaders")) {
+			for (auto& shader : Retro::RetroApplication::GetApplication().GetAssetsManager()->GetShaderAssets()) {
+				ImGui::Text("UUID: %lld", shader.first->Get());
+			}
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Models")) {
+			for (auto& shader : Retro::RetroApplication::GetApplication().GetAssetsManager()->GetModelAssets()) {
+				ImGui::Text("UUID: %lld", shader.first->Get());
+			}
+			ImGui::TreePop();
+		}
 		ImGui::End();
 
 		m_ScreenShader->Bind();
@@ -192,6 +203,7 @@ public:
 
 	void OnInterfaceRenderer() override
 	{
+		ImGui::ShowDemoWindow();
 		ImGui::Begin("Sandbox");
 		const float frameTime = 1000.0f / ImGui::GetIO().Framerate;
 		ImGui::Text("Frame time: %.3f ms", frameTime, ImGui::GetIO().Framerate);

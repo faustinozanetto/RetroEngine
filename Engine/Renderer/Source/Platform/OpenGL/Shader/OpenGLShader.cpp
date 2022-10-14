@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "Platform/OpenGL/Shader/OpenGLShader.h"
+#include "Core/Application/RetroApplication.h"
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
@@ -216,6 +217,7 @@ namespace Retro::Renderer
             return;
         }
 
+        RetroApplication::GetApplication().GetAssetsManager()->RegisterShader(Ref<Shader>(this));
         Logger::Info("OpenGLShader::Compile | Shader Compiled Successfully!");
 
         // Cleanup.

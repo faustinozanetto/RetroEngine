@@ -9,6 +9,9 @@ namespace Retro
 
     LayerManager::~LayerManager()
     {
+    }
+
+    void LayerManager::Shutdown() {
         // Delete all layers
         while (!m_LayerStack.empty())
         {
@@ -17,6 +20,7 @@ namespace Retro
             layer->OnLayerUnregistered();
             m_LayerStack.pop_front();
         }
+        m_LayerStack.clear();
     }
 
     void LayerManager::RegisterLayer(const Ref<Layer>& layer)

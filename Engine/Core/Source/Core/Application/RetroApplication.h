@@ -3,6 +3,7 @@
 #include "Core/Base.h"
 #include "Core/Interfaces/InterfacesSubSystem.h"
 #include "Core/Layers/LayerManager.h"
+#include "Core/Assets/AssetsManager.h"
 #include "Renderer/Window/Window.h"
 
 int main(int argc, char** argv);
@@ -30,12 +31,14 @@ namespace Retro
 		const Scope<Renderer::Window>& GetWindow() const;
 		const Scope<LayerManager>& GetLayersManager() const;
 		const Scope<LayerManager>& GetInterfaceLayersManager() const;
+		const Scope<AssetsManager>& GetAssetsManager() const;
 
 		static RetroApplication& GetApplication();
 
 	private:
 		FRetroApplicationSpecification m_ApplicationSpecification;
 		Scope<Renderer::Window> m_Window;
+		Scope<AssetsManager> m_AssetsManager;
 		Scope<LayerManager> m_LayersManager;
 		Scope<LayerManager> m_InterfaceLayersManager;
 		Scope<InterfacesSubSystem> m_InterfacesSubSystem;

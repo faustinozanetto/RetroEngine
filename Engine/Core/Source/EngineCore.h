@@ -9,6 +9,7 @@
 #include "Core/Layers/LayerManager.h"
 
 #include "Core/EntryPoint.h"
+#include "Core/Assets/Asset.h"
 
 #include "Core/Input/InputKey.h"
 #include "Core/Input/InputManager.h"

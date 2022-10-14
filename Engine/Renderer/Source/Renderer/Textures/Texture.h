@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Base.h"
+#include "Core/Assets/Asset.h"
 #include "Renderer/Renderer/GraphicsObject.h"
 
 namespace Retro::Renderer
@@ -45,7 +46,7 @@ namespace Retro::Renderer
         }
     };
 
-    class Texture : public GraphicsObject
+    class Texture : public GraphicsObject, public Asset
     {
     public:
         /* Destructor */

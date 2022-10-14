@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Core/Base.h"
+#include "Core/Assets/Asset.h"
 #include "Renderer/Renderer/GraphicsObject.h"
 
 #include "glm/glm.hpp"
 
 namespace Retro::Renderer
 {
-    class Shader : public GraphicsObject
+    class Shader : public GraphicsObject, public Asset
     {
     public:
         /* Destructor */

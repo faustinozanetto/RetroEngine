@@ -15,6 +15,7 @@ namespace Retro
         ~LayerManager() override;
 
         /* Methods */
+        void Shutdown() override;
         void RegisterLayer(const Ref<Layer>& layer);
         const std::deque<Ref<Layer>>& GetLayerStack() const;
 

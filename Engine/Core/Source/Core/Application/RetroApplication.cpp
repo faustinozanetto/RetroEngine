@@ -26,13 +26,17 @@ namespace Retro
         // Initialize Renderer
         Renderer::Renderer::Initialize(Renderer::RenderingAPIType::OpenGL, *m_Window.get());
         // Initialize Layers and SubSystems.
+        m_AssetsManager = AssetsManager::Create();
         m_LayersManager = LayerManager::Create("LayersManager");
         m_InterfaceLayersManager = LayerManager::Create("InterfaceLayersManager");
         m_InterfacesSubSystem = InterfacesSubSystem::Create();
         m_InterfacesSubSystem->OnSubSystemStart();
     }
 
-    RetroApplication::~RetroApplication() = default;
+    RetroApplication::~RetroApplication() {
+        m_LayersManager->Shutdown();
+        m_AssetsManager->Shutdown();
+    };
 
     void RetroApplication::RunApplication() const
     {
@@ -80,6 +84,10 @@ namespace Retro
     const Scope<LayerManager>& RetroApplication::GetInterfaceLayersManager() const
     {
         return m_InterfaceLayersManager;
+    }
+
+    const Scope<AssetsManager>& RetroApplication::GetAssetsManager() const {
+        return m_AssetsManager;
     }
 
     RetroApplication& RetroApplication::GetApplication()

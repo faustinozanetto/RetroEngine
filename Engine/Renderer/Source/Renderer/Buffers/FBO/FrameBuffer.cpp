@@ -18,7 +18,7 @@ namespace Retro::Renderer
         {
         case RenderingAPIType::None:
             {
-                Logger::Error("FrameBuffer::Create | Unknown rendering api!.");
+            Logger::Error("FrameBuffer::Create | Unknown rendering api!.");
                 return {};
             }
         case RenderingAPIType::OpenGL:

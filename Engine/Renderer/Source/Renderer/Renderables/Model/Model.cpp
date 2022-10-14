@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 
 #include "Model.h"
+#include "Core/Application/RetroApplication.h"
 #include <assimp/postprocess.h>
 
 namespace Retro::Renderer
@@ -11,6 +12,7 @@ namespace Retro::Renderer
 		Logger::Info("Model::Model | Loading model:");
 		Logger::Info("  - File: " + modelPath);
 		LoadModelFromPath(modelPath);
+		RetroApplication::GetApplication().GetAssetsManager()->RegisterModel(Ref<Model>(this));
 		Logger::Line();
 	}
 

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core/Base.h"
+#include "Core/Assets/Asset.h"
 #include "Renderer/Renderables/Renderable.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -9,7 +10,7 @@
 
 namespace Retro::Renderer
 {
-    class Model
+    class Model : public Asset
     {
     public:
         /* Constructor & Destructor */
