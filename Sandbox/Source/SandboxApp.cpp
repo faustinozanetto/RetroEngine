@@ -11,6 +11,7 @@
 #include "Core/Input/InputKey.h"
 #include "Renderer/Buffers/FBO/FrameBuffer.h"
 #include "Renderer/Buffers/UBO/UniformBuffer.h"
+#include "Renderer/Lighting/Light.h"
 #include "Renderer/Camera/Camera.h"
 #include "Renderer/Renderables/Renderable.h"
 #include "Renderer/Renderables/Model/Model.h"
@@ -63,6 +64,9 @@ public:
 		m_ScreenShader = Retro::Renderer::Shader::Create("Assets/Shaders/Screen/Screen.vert",
 			"Assets/Shaders/Screen/Screen.frag");
 
+		m_LightingShader = Retro::Renderer::Shader::Create("Assets/Shaders/Lighting/Lighting.vert",
+			"Assets/Shaders/Lighting/Lighting.frag");
+
 		m_Model = Retro::Renderer::Model::Create("Assets/Models/Patrick/patrick.fbx");
 
 		auto texture = Retro::Renderer::Texture::Create({
@@ -94,6 +98,9 @@ public:
 
 		m_Camera = new Retro::Renderer::Camera(50.0f, 0.01f, 1000.0f);
 		m_CameraUBO = Retro::Renderer::UniformBuffer::Create(sizeof(CameraData), 0);
+
+		m_Light = Retro::CreateRef<Retro::Renderer::Light>();
+		m_Light->SetColor({ 1.0f, 0.0f, 1.0f });
 	}
 
 	void OnLayerRegistered() override
@@ -147,46 +154,88 @@ public:
 		Retro::Renderer::Renderer::SetClearColor({ 0.2f, 0.3f, 0.3f, 1.0f });
 		Retro::Renderer::Renderer::ClearScreen();
 
+		m_LightingShader->Bind();
+		m_LightingShader->SetVecFloat3("lightColor", m_Light->GetColor());
+		m_LightingShader->SetVecFloat3("lightPos", m_LightPos);
+		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(0), 0);
+		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(1), 1);
+		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(2), 2);
+		Retro::Renderer::Renderer::SubmitCommand({
+			m_LightingShader, m_ScreenVAO, nullptr, glm::mat4(1.0f)
+			});
+		m_LightingShader->UnBind();
+
 		ImGui::Begin("Edit");
-		ImGui::SliderFloat("Rotation Speed", &m_RotationSpeed, 0.0f, 10.0f);
 		ImGui::SliderFloat3("Scale", glm::value_ptr(m_Scale), 0.04f, 5.0f);
 		ImGui::SliderFloat3("Location", glm::value_ptr(m_Translate), -5.0f, 5.0f);
 		ImGui::SliderFloat3("Camera Pos", glm::value_ptr(m_CameraLocation), -10.0f, 10.0f);
 		ImGui::SliderFloat("Camera FOV", &m_CameraFov, 1.0f, 90.0f);
+		ImGui::SliderFloat3("Light Pos", glm::value_ptr(m_LightPos), -10.0f, 10.0f);
+		if (ImGui::SliderFloat3("Light Color", glm::value_ptr(m_LightColor), 0.0f, 1.0f)) {
+			m_Light->SetColor(m_LightColor);
+		}
 		ImGui::End();
 
 		ImGui::Begin("Assets");
-		if (ImGui::TreeNode("Shaders")) {
-			for (auto& shader : Retro::RetroApplication::GetApplication().GetAssetsManager()->GetShaderAssets()) {
-				ImGui::Text("UUID: %lld", shader.first->Get());
-			}
-			ImGui::TreePop();
-		}
-		if (ImGui::TreeNode("Models")) {
-			for (auto& shader : Retro::RetroApplication::GetApplication().GetAssetsManager()->GetModelAssets()) {
-				ImGui::Text("UUID: %lld", shader.first->Get());
+
+		if (ImGui::TreeNode("List")) {
+			for (auto& assetsCategory : Retro::RetroApplication::GetApplication().GetAssetsManager()->GetAssets()) {
+				if (ImGui::TreeNode((void*)(intptr_t)assetsCategory.first, "Asset %s", Retro::Asset::GetAssetToString(assetsCategory.first).c_str())) {
+					for (auto& asset : assetsCategory.second) {
+						ImGui::Text("UUID: %lld", asset.first->Get());
+					}
+					ImGui::TreePop();
+				}
 			}
 			ImGui::TreePop();
 		}
 		ImGui::End();
 
+		/*
 		m_ScreenShader->Bind();
 		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(1), 0);
 		Retro::Renderer::Renderer::SubmitCommand({
 			m_ScreenShader, m_ScreenVAO, nullptr, model
 			});
 		m_ScreenShader->UnBind();
+		*/
+
+		ImGui::Begin("Viewport");
+		const auto viewportMinRegin = ImGui::GetWindowContentRegionMin();
+		const auto viewportMaxRegin = ImGui::GetWindowContentRegionMax();
+		const auto viewportOffset = ImGui::GetWindowPos();
+
+		// Viewport bounds
+		m_ViewportBounds[0] = { viewportMinRegin.x + viewportOffset.x, viewportMinRegin.y + viewportOffset.y };
+		m_ViewportBounds[1] = { viewportMaxRegin.x + viewportOffset.x, viewportMaxRegin.y + viewportOffset.y };
+
+		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+
+		// Draw viewport
+		ImGui::Image(
+			reinterpret_cast<ImTextureID>(m_FBO->GetColorAttachmentID(1)),
+			ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 },
+			ImVec2{ 1, 0 });
+
+		ImGui::End();
 	}
 
 private:
 	float m_RotationSpeed = 1.0f;
 	float m_CameraFov = 45.0f;
 	glm::vec3 m_Scale = glm::vec3(1.0f);
+	glm::vec3 m_LightPos = glm::vec3(1.0f);
+	glm::vec3 m_LightColor = glm::vec3(1.0f);
 	glm::vec3 m_Translate = glm::vec3(1.0f);
 	glm::vec3 m_CameraLocation = glm::vec3(1.0f);
+	glm::vec2 m_ViewportBounds[2];
+	glm::vec2 m_ViewportSize = { 1920.0f, 1080.0f };
 	CameraData m_CameraData;
 	Retro::Renderer::Camera* m_Camera;
+	Retro::Ref<Retro::Renderer::Light> m_Light;
 	Retro::Ref<Retro::Renderer::Shader> m_Shader;
+	Retro::Ref<Retro::Renderer::Shader> m_LightingShader;
 	Retro::Ref<Retro::Renderer::Shader> m_ScreenShader;
 	Retro::Ref<Retro::Renderer::VertexArrayBuffer> m_ScreenVAO;
 	Retro::Ref<Retro::Renderer::Material> m_Material;

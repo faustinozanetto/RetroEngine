@@ -8,7 +8,7 @@
 
 namespace Retro::Renderer
 {
-    class OpenGLTexture : public Texture
+    class OpenGLTexture : public Texture, public Asset
     {
     public:
         /* Constructor & Destructor */

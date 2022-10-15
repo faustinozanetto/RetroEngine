@@ -46,7 +46,7 @@ namespace Retro::Renderer
         }
     };
 
-    class Texture : public GraphicsObject, public Asset
+    class Texture : public GraphicsObject
     {
     public:
         /* Destructor */

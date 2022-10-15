@@ -12,7 +12,7 @@ namespace Retro::Renderer
         Fragment = GL_FRAGMENT_SHADER,
     };
 
-    class OpenGLShader : public Shader
+    class OpenGLShader : public Shader, public Asset
     {
     public:
         /* Constructor & Destructor */

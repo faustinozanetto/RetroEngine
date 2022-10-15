@@ -18,7 +18,6 @@ uniform Material material;
 // Inputs
 layout(location = 0) in GeometryOutput geometryInput;
 
-
 // Samplers
 layout(binding = 0) uniform sampler2D uAlbedoMap;
 layout(binding = 1) uniform sampler2D uNormalMap;

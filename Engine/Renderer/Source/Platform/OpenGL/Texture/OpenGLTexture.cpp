@@ -43,7 +43,7 @@ namespace Retro::Renderer
         }
     }
 
-    OpenGLTexture::OpenGLTexture(const FTextureSpecification& textureSpecification)
+    OpenGLTexture::OpenGLTexture(const FTextureSpecification& textureSpecification) : Asset(AssetType::Texture)
     {
         Logger::Line();
         m_TextureSpecification = textureSpecification;
@@ -90,7 +90,7 @@ namespace Retro::Renderer
         Logger::Line();
     }
 
-    OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height, const unsigned char* data)
+    OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height, const unsigned char* data) : Asset(AssetType::Texture)
     {
         int lWidth, lHeight, channels;
         stbi_set_flip_vertically_on_load(1);

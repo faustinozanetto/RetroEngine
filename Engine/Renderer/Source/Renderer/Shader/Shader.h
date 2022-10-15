@@ -8,7 +8,7 @@
 
 namespace Retro::Renderer
 {
-    class Shader : public GraphicsObject, public Asset
+    class Shader : public GraphicsObject
     {
     public:
         /* Destructor */

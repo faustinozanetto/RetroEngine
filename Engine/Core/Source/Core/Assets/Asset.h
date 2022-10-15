@@ -17,7 +17,9 @@ namespace Retro {
 		virtual ~Asset() = default;
 
 		const Ref<UUID>& GetUUID() const;
+		const AssetType GetAssetType() { return m_AssetType; }
 
+		static std::string GetAssetToString(AssetType assetType);
 		static Ref<Asset> Create(AssetType assetType);
 
 	private:

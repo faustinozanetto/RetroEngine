@@ -13,16 +13,13 @@ namespace Retro {
 
         /* Methods */
         void Shutdown() override;
-        void RegisterShader(const Ref<Renderer::Shader>& shader);
-        void RegisterModel(const Ref<Renderer::Model>& model);
+        void RegisterAsset(const Ref<Asset> asset);
 
-        const std::unordered_map<Ref<UUID>, Ref<Renderer::Shader>>& GetShaderAssets() const { return m_ShaderAssets; }
-        const std::unordered_map<Ref<UUID>, Ref<Renderer::Model>>& GetModelAssets() const { return m_ModelAssets; }
+        const std::unordered_map<AssetType, std::unordered_map<Ref<UUID>, Ref<Asset>>>& GetAssets() const { return m_Assets; }
 
         /* Instantiate */
         static Scope<AssetsManager> Create();
     private:
-        std::unordered_map<Ref<UUID>, Ref<Renderer::Shader>> m_ShaderAssets;
-        std::unordered_map<Ref<UUID>, Ref<Renderer::Model>> m_ModelAssets;
+        std::unordered_map<AssetType, std::unordered_map<Ref<UUID>, Ref<Asset>>> m_Assets;
 	};
 }

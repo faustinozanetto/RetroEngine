@@ -11,16 +11,11 @@ namespace Retro {
 	}
 
 	void AssetsManager::Shutdown() {
-		m_ShaderAssets.clear();
-		m_ModelAssets.clear();
+		m_Assets.clear();
 	}
 
-	void AssetsManager::RegisterShader(const Ref<Renderer::Shader>& shader) {
-		m_ShaderAssets.insert(std::make_pair(shader->GetUUID(), shader));
-	}
-
-	void AssetsManager::RegisterModel(const Ref<Renderer::Model>& model) {
-		m_ModelAssets.insert(std::make_pair(model->GetUUID(), model));
+	void AssetsManager::RegisterAsset(const Ref<Asset> asset) {
+		m_Assets[asset->GetAssetType()].insert(std::make_pair(asset->GetUUID(), asset));
 	}
 
 	Scope<AssetsManager> AssetsManager::Create()

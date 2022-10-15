@@ -6,13 +6,12 @@
 
 namespace Retro::Renderer
 {
-	Model::Model(const std::string& modelPath)
+	Model::Model(const std::string& modelPath) : Asset(AssetType::Model)
 	{
 		Logger::Line();
 		Logger::Info("Model::Model | Loading model:");
 		Logger::Info("  - File: " + modelPath);
 		LoadModelFromPath(modelPath);
-		RetroApplication::GetApplication().GetAssetsManager()->RegisterModel(Ref<Model>(this));
 		Logger::Line();
 	}
 

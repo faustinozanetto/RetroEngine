@@ -7,7 +7,7 @@
 
 namespace Retro::Renderer
 {
-    OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath)
+    OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath) : Asset(AssetType::Shader)
     {
         Logger::Line();
         // Parse both vertex and fragment shaders sources from file.
@@ -217,7 +217,6 @@ namespace Retro::Renderer
             return;
         }
 
-        RetroApplication::GetApplication().GetAssetsManager()->RegisterShader(Ref<Shader>(this));
         Logger::Info("OpenGLShader::Compile | Shader Compiled Successfully!");
 
         // Cleanup.
