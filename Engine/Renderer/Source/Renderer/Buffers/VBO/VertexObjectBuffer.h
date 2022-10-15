@@ -12,12 +12,29 @@ namespace Retro::Renderer
         FloatVec3 = 2,
         FloatVec4 = 3,
         Int = 4,
-        IntVec2 =5,
+        IntVec2 = 5,
         IntVec3 = 6,
         IntVec4 = 7,
         Mat3 = 8,
         Mat4 = 9
     };
+
+    static uint32_t CalculateElementSize(VBOElementType type) {
+        switch (type)
+        {
+        case VBOElementType::Float:									return 4;
+        case VBOElementType::FloatVec2:								return 4 * 2;
+        case VBOElementType::FloatVec3:								return 4 * 3;
+        case VBOElementType::FloatVec4:								return 4 * 4;
+        case VBOElementType::Mat3:									return 4 * 3 * 3;
+        case VBOElementType::Mat4:									return 4 * 4 * 4;
+        case VBOElementType::Int:									return 4;
+        case VBOElementType::IntVec2:									return 4 * 2;
+        case VBOElementType::IntVec3:									return 4 * 3;
+        case VBOElementType::IntVec4:									return 4 * 4;
+        }
+        return 0;
+    }
 
     struct VBOElement
     {
@@ -29,14 +46,8 @@ namespace Retro::Renderer
         /* Constructors */
         VBOElement() = default;
 
-        VBOElement(VBOElementType type, std::string name) : type(type), name(std::move(name)),
-                                                            size(CalculateElementSize()),
-                                                            offset(0)
-        {
-        }
+        VBOElement(VBOElementType elementType, std::string elementName);
 
-        /* Methods */
-        uint32_t CalculateElementSize() const;
         uint32_t CalculateElementCount() const;
         static std::string GetVBOElementTypeName(VBOElementType vboElementType);
     };

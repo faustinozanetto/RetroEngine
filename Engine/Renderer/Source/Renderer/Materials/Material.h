@@ -11,16 +11,16 @@ namespace Retro::Renderer
     {
         Albedo = 0,
         Normal = 1,
+        Roughness = 2,
+        Metallic = 3
     };
 
     struct FMaterialTexture
     {
-        EMaterialTextureType type;
         Ref<Texture> texture;
         bool enabled;
 
-        FMaterialTexture(EMaterialTextureType type, const Ref<Texture> &texture, bool enabled) : type(type),
-                                                                                                 texture(texture), enabled(enabled)
+        FMaterialTexture(const Ref<Texture> &texture, bool enabled) : texture(texture), enabled(enabled)
         {
         }
     };
@@ -29,15 +29,17 @@ namespace Retro::Renderer
     {
         Ref<Shader> shader;
         std::map<EMaterialTextureType, FMaterialTexture> textures;
-        glm::vec4 albedo;
+        glm::vec4 albedo = glm::vec4(1.0f);
+        float metallic = 0.0f;
+        float roughness = 1.0f;
 
-        FMaterialSpecification() : textures({}), albedo(1.0f)
-        {
-        }
+        FMaterialSpecification() = default;
 
         FMaterialSpecification(const Ref<Shader> &shader,
                                const std::map<EMaterialTextureType, FMaterialTexture> &textures,
-                               const glm::vec4 &albedo) : shader(shader), textures(textures), albedo(albedo)
+                               const glm::vec4 &albedo, float metallic, float roughness) : shader(shader),
+            textures(textures), albedo(albedo),
+            metallic(metallic), roughness(roughness)
         {
         }
     };
@@ -57,13 +59,17 @@ namespace Retro::Renderer
         void SetShader(const Ref<Shader> &shader);
 
         const FMaterialTexture &GetMaterialTexture(EMaterialTextureType type);
+        const FMaterialSpecification& GetMaterialSpecification() const { return m_MaterialSpecification; }
+
+        void SetRoughness(float roughness) { m_MaterialSpecification.roughness = roughness; }
+        void SetMetallic(float metallic) { m_MaterialSpecification.metallic = metallic; }
 
         /* Instantiate */
         static Ref<Material> Create();
         static Ref<Material> Create(const FMaterialSpecification &materialSpecification);
 
     private:
-        const std::string &GetTextureUniformEnabledValue(EMaterialTextureType type);
+        const std::string GetTextureUniformEnabledValue(EMaterialTextureType type);
         uint32_t GetMaterialTextureBindSlot(EMaterialTextureType type);
 
     private:

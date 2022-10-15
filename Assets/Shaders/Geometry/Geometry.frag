@@ -9,8 +9,12 @@ struct GeometryOutput {
 
 struct Material {
     vec4 albedo;
+    float metallic;
+    float roughness;
     int hasAlbedoMap;
     int hasNormalMap;
+    int hasRoughnessMap;
+    int hasMetallicMap;
 };
 
 uniform Material material;
@@ -21,11 +25,15 @@ layout(location = 0) in GeometryOutput geometryInput;
 // Samplers
 layout(binding = 0) uniform sampler2D uAlbedoMap;
 layout(binding = 1) uniform sampler2D uNormalMap;
+layout(binding = 2) uniform sampler2D uRoughnessMap;
+layout(binding = 3) uniform sampler2D uMetallicMap;
 
 // Outputs
 layout(location = 0) out vec3 gPosistion;	
 layout(location = 1) out vec4 gAlbedo;
 layout(location = 2) out vec3 gNormal;	
+layout(location = 3) out vec3 gRoughness;	
+layout(location = 4) out vec3 gMetallic;	
 
 void main() {
     gPosistion = geometryInput.position;
@@ -46,4 +54,18 @@ void main() {
         normal = normalize(normal * 2.0 - 1.0);
     }
     gNormal = normalize(geometryInput.tbn * normal);
+
+    /* Roughness */
+    if (material.hasRoughnessMap == 1) {
+        gRoughness = texture(uRoughnessMap, geometryInput.texCoords).rgb;
+    } else {
+        gRoughness = vec3(material.roughness);
+	}
+
+    /* Metallic */
+        if (material.hasMetallicMap == 1) {
+        gMetallic = texture(uMetallicMap, geometryInput.texCoords).rgb;
+    } else {
+        gMetallic = vec3(material.metallic);
+    }
 }

@@ -20,20 +20,23 @@ namespace Retro::Renderer
     void Material::Bind()
     {
         if (!m_MaterialSpecification.shader) return;
+        // Bind colors and parameters.
+        m_MaterialSpecification.shader->SetVecFloat4("material.albedo", m_MaterialSpecification.albedo);
+        m_MaterialSpecification.shader->SetFloat("material.metallic", m_MaterialSpecification.metallic);
+        m_MaterialSpecification.shader->SetFloat("material.roughness", m_MaterialSpecification.roughness);
         // Bind each texture in the material.
         for (auto const& [type, texture] : m_MaterialSpecification.textures)
         {
             const std::string& uniformName = GetTextureUniformEnabledValue(type);
-            m_MaterialSpecification.shader->SetInt("material.hasAlbedoMap", texture.enabled ? 1 : 0);
+            m_MaterialSpecification.shader->SetInt(uniformName, texture.enabled ? 1 : 0);
             if (texture.enabled) texture.texture->Bind(GetMaterialTextureBindSlot(type));
         }
-        // Bind colors and parameters.
-        m_MaterialSpecification.shader->SetVecFloat4("material.albedo", m_MaterialSpecification.albedo);
     }
 
     void Material::UnBind()
     {
-        /*// UnBind each texture in the material.
+        // UnBind each texture in the material.
+        /*
         for (auto const& [type, texture] : m_MaterialSpecification.textures)
         {
             if (texture.enabled) texture.texture->UnBind();
@@ -60,11 +63,14 @@ namespace Retro::Renderer
         return CreateRef<Material>(materialSpecification);
     }
 
-    const std::string& Material::GetTextureUniformEnabledValue(EMaterialTextureType type)
+    const std::string Material::GetTextureUniformEnabledValue(EMaterialTextureType type)
     {
         switch (type)
         {
         case EMaterialTextureType::Albedo: return "material.hasAlbedoMap";
+        case EMaterialTextureType::Normal: return "material.hasNormalMap";
+        case EMaterialTextureType::Roughness: return "material.hasRoughnessMap";
+        case EMaterialTextureType::Metallic: return "material.hasMetallicMap";
         }
         return "";
     }
@@ -75,6 +81,8 @@ namespace Retro::Renderer
         {
         case EMaterialTextureType::Albedo: return 0;
         case EMaterialTextureType::Normal: return 1;
+        case EMaterialTextureType::Roughness: return 2;
+        case EMaterialTextureType::Metallic: return 3;
         }
         return 0;
     }

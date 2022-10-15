@@ -13,6 +13,7 @@ layout(binding = 0) uniform Camera
     mat4 u_ViewProjectionMatrix;
     mat4 u_ViewMatrix;
     mat4 u_ProjectionMatrix;
+    vec3 u_Position;
 } camera;
 
 struct GeometryOutput {

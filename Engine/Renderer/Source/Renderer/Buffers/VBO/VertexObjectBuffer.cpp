@@ -7,18 +7,6 @@
 
 namespace Retro::Renderer
 {
-    uint32_t VBOElement::CalculateElementSize() const
-    {
-        switch (type)
-        {
-        case Float: return 4;
-        case FloatVec2: return 8;
-        case FloatVec3: return 12;
-        case FloatVec4: return 16;
-        }
-        return 0;
-    }
-
     uint32_t VBOElement::CalculateElementCount() const
     {
         switch (type)
@@ -41,6 +29,13 @@ namespace Retro::Renderer
         case FloatVec4: return "FloatVec4";
         }
         return "Unknown!";
+    }
+
+    VBOElement::VBOElement(VBOElementType elementType, std::string elementName) {
+        type = elementType;
+        name = elementName;
+        size = CalculateElementSize(elementType);
+        offset = 0;
     }
 
     VBOLayout::VBOLayout(std::initializer_list<VBOElement> elements)

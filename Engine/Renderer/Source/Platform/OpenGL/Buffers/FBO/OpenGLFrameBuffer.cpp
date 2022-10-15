@@ -164,8 +164,9 @@ namespace Retro::Renderer
         // Draw buffers.
         if (!m_ColorTextureAttachments.empty())
         {
-            const GLenum buffers[4] = {
-                GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3
+            const GLenum buffers[8] = {
+                GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3,
+                GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5,GL_COLOR_ATTACHMENT6,GL_COLOR_ATTACHMENT7
             };
             glDrawBuffers(m_ColorTextureAttachments.size(), buffers);
         }

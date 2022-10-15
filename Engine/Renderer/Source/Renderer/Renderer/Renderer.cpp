@@ -80,6 +80,7 @@ namespace Retro::Renderer
 
     void Renderer::End()
     {
+        /*
         while (!s_CommandQueue.empty())
         {
             const RenderCommand command = s_CommandQueue.front();
@@ -87,6 +88,7 @@ namespace Retro::Renderer
             // Remove command from the queue.
             s_CommandQueue.pop();
         }
+        */
 
         SwapBuffers();
         PollInput();
