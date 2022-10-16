@@ -8,7 +8,8 @@ layout (location = 4) in vec3 aBiTangent;
 
 uniform mat4 uTransform;
 
-layout(binding = 0) uniform Camera
+// Camera UB
+layout(std140, binding = 0) uniform Camera
 {
     mat4 u_ViewProjectionMatrix;
     mat4 u_ViewMatrix;
