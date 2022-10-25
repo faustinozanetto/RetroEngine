@@ -12,7 +12,7 @@ namespace Retro::Renderer
 	{
 	}
 
-	Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
+	Shared<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -23,7 +23,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLUniformBuffer>(size, binding);
+				return CreateShared<OpenGLUniformBuffer>(size, binding);
 			}
 		}
 		return {};

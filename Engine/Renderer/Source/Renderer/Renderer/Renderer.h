@@ -40,8 +40,8 @@ namespace Retro::Renderer
 	private:
 		static void ProcessRenderCommand(const RenderCommand& command);
 
-		static Scope<RenderingAPI> s_RenderingAPI;
-		static Scope<RendererContext> s_Context;
+		static Unique<RenderingAPI> s_RenderingAPI;
+		static Unique<RendererContext> s_Context;
 		static std::queue<RenderCommand> s_CommandQueue;
 	};
 }

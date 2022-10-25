@@ -6,8 +6,8 @@
 
 namespace Retro::Renderer
 {
-	Scope<RenderingAPI> Renderer::s_RenderingAPI = nullptr;
-	Scope<RendererContext> Renderer::s_Context = nullptr;
+	Unique<RenderingAPI> Renderer::s_RenderingAPI = nullptr;
+	Unique<RendererContext> Renderer::s_Context = nullptr;
 	std::queue<RenderCommand> Renderer::s_CommandQueue = {};
 
 	bool Renderer::Initialize(RenderingAPIType renderingAPIType, const Window& window)

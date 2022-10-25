@@ -16,12 +16,12 @@ namespace Retro
 
 		/* Methods */
 		void Shutdown() override;
-		void RegisterLayer(const Ref<Layer>& layer);
-		const std::deque<Ref<Layer>>& GetLayerStack() const;
+		void RegisterLayer(const Shared<Layer>& layer);
+		const std::deque<Shared<Layer>>& GetLayerStack() const;
 
 		/* Instantiate */
-		static Scope<LayerManager> Create(const std::string& layerManagerName);
+		static Unique<LayerManager> Create(const std::string& layerManagerName);
 	private:
-		std::deque<Ref<Layer>> m_LayerStack;
+		std::deque<Shared<Layer>> m_LayerStack;
 	};
 }

@@ -15,6 +15,6 @@ namespace Retro::Renderer
 		virtual uint32_t GetSize() const = 0;
 
 		/* Instantiate */
-		static Ref<IndexBuffer> Create(uint32_t* data, uint32_t size);
+		static Shared<IndexBuffer> Create(uint32_t* data, uint32_t size);
 	};
 }

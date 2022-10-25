@@ -7,7 +7,7 @@
 
 namespace Retro::Renderer
 {
-	Scope<RendererContext> RendererContext::Create(void* windowHandle)
+	Unique<RendererContext> RendererContext::Create(void* windowHandle)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -18,7 +18,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateScope<OpenGLRendererContext>(static_cast<GLFWwindow*>(windowHandle));
+				return CreateUnique<OpenGLRendererContext>(static_cast<GLFWwindow*>(windowHandle));
 			}
 		}
 		return {};

@@ -16,13 +16,13 @@ namespace Retro::Renderer
 		void Bind() override;
 		void UnBind() override;
 
-		void AddVertexObjectBuffer(const Ref<VertexObjectBuffer>& vbo) override;
-		const std::vector<Ref<VertexObjectBuffer>>& GetVertexObjectBuffers() const override;
-		const Ref<IndexBuffer>& GetIndexBuffer() const override;
-		void SetIndexBuffer(const Ref<IndexBuffer>& ibo) override;
+		void AddVertexObjectBuffer(const Shared<VertexObjectBuffer>& vbo) override;
+		const std::vector<Shared<VertexObjectBuffer>>& GetVertexObjectBuffers() const override;
+		const Shared<IndexBuffer>& GetIndexBuffer() const override;
+		void SetIndexBuffer(const Shared<IndexBuffer>& ibo) override;
 
 	private:
-		std::vector<Ref<VertexObjectBuffer>> m_VBOs;
-		Ref<IndexBuffer> m_IBO;
+		std::vector<Shared<VertexObjectBuffer>> m_VBOs;
+		Shared<IndexBuffer> m_IBO;
 	};
 }

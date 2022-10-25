@@ -8,17 +8,17 @@ namespace Retro::Renderer
 {
 	struct RenderCommand
 	{
-		Ref<Shader> shader;
-		Ref<VertexArrayBuffer> vao;
-		Ref<Material> material;
+		Shared<Shader> shader;
+		Shared<VertexArrayBuffer> vao;
+		Shared<Material> material;
 		glm::mat4 transform;
 
-		RenderCommand(const Ref<Shader>& shader, const Ref<VertexArrayBuffer>& vao) : shader(shader), vao(vao),
+		RenderCommand(const Shared<Shader>& shader, const Shared<VertexArrayBuffer>& vao) : shader(shader), vao(vao),
 			transform(1.0f)
 		{
 		}
 
-		RenderCommand(const Ref<Shader>& shader, const Ref<VertexArrayBuffer>& vao, const Ref<Material>& material,
+		RenderCommand(const Shared<Shader>& shader, const Shared<VertexArrayBuffer>& vao, const Shared<Material>& material,
 		              const glm::mat4& transform) : shader(shader), vao(vao), material(material), transform(transform)
 		{
 		}

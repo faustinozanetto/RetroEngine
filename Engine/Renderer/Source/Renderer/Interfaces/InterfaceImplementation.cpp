@@ -8,7 +8,7 @@
 
 namespace Retro::Renderer
 {
-	Scope<InterfaceImplementation> InterfaceImplementation::Create()
+	Unique<InterfaceImplementation> InterfaceImplementation::Create()
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -19,7 +19,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateScope<OpenGLInterfaceImplementation>();
+				return CreateUnique<OpenGLInterfaceImplementation>();
 			}
 		}
 		return {};

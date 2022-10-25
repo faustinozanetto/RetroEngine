@@ -20,3 +20,6 @@
 [submodule "ThirdParty/ASSIMP"]
 	path = ThirdParty/ASSIMP
 	url = https://github.com/assimp/assimp
+[submodule "ThirdParty/ENTT"]
+	path = ThirdParty/ENTT
+	url = https://github.com/skypjack/entt

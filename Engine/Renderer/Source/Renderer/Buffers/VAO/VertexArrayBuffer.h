@@ -15,12 +15,12 @@ namespace Retro::Renderer
 		~VertexArrayBuffer() override;
 
 		/* Methods */
-		virtual void AddVertexObjectBuffer(const Ref<VertexObjectBuffer>& vbo) = 0;
-		virtual const std::vector<Ref<VertexObjectBuffer>>& GetVertexObjectBuffers() const = 0;
-		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
-		virtual void SetIndexBuffer(const Ref<IndexBuffer>& ibo) = 0;
+		virtual void AddVertexObjectBuffer(const Shared<VertexObjectBuffer>& vbo) = 0;
+		virtual const std::vector<Shared<VertexObjectBuffer>>& GetVertexObjectBuffers() const = 0;
+		virtual const Shared<IndexBuffer>& GetIndexBuffer() const = 0;
+		virtual void SetIndexBuffer(const Shared<IndexBuffer>& ibo) = 0;
 
 		/* Instantiate */
-		static Ref<VertexArrayBuffer> Create();
+		static Shared<VertexArrayBuffer> Create();
 	};
 }

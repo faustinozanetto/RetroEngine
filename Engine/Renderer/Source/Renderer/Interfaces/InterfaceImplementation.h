@@ -16,7 +16,7 @@ namespace Retro::Renderer
 		virtual void EndInterfaceRender() = 0;
 
 		/* Instantiate */
-		static Scope<InterfaceImplementation> Create();
+		static Unique<InterfaceImplementation> Create();
 
 	private:
 	};

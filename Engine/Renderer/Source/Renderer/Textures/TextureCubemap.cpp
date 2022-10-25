@@ -7,7 +7,7 @@
 
 namespace Retro::Renderer
 {
-	Ref<TextureCubemap> TextureCubemap::Create(const FTextureSpecification& textureSpecification)
+	Shared<TextureCubemap> TextureCubemap::Create(const FTextureSpecification& textureSpecification)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -18,7 +18,7 @@ namespace Retro::Renderer
 		}
 		case RenderingAPIType::OpenGL:
 		{
-			return CreateRef<OpenGLTextureCubemap>(textureSpecification);
+			return CreateShared<OpenGLTextureCubemap>(textureSpecification);
 		}
 		}
 		return {};

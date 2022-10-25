@@ -21,6 +21,7 @@ IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 IncludeDir["IMGUI"] = "%{wks.location}/ThirdParty/IMGUI"
 IncludeDir["STB"] = "%{wks.location}/ThirdParty/STB"
 IncludeDir["ASSIMP"] = "%{wks.location}/ThirdParty/ASSIMP/include"
+IncludeDir["ENTT"] = "%{wks.location}/ThirdParty/ENTT/src"
 
 group "Dependencies"
     include "ThirdParty/GLFW"
@@ -63,7 +64,8 @@ project "EngineCore"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
-        "%{IncludeDir.ASSIMP}"
+        "%{IncludeDir.ASSIMP}",
+        "%{IncludeDir.ENTT}"
     }
 
     filter "system:windows"
@@ -71,6 +73,7 @@ project "EngineCore"
         systemversion "latest"
 
     filter "configurations:Debug"
+        defines { "RETRO_ENABLE_ASSERTS","RETRO_DEBUG", "WIN32_LEAN_AND_MEAN" }
         symbols "on"
         optimize "Off"
         links {
@@ -116,7 +119,8 @@ project "EngineRenderer"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
-        "%{IncludeDir.ASSIMP}"
+        "%{IncludeDir.ASSIMP}",  
+        "%{IncludeDir.ENTT}"
     }
 
     links {
@@ -132,6 +136,7 @@ project "EngineRenderer"
         systemversion "latest"
 
     filter "configurations:Debug"
+        defines { "RETRO_ENABLE_ASSERTS","RETRO_DEBUG", "WIN32_LEAN_AND_MEAN" }
         symbols "on"
         optimize "Off"
         links {
@@ -167,7 +172,8 @@ project "Sandbox"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
-        "%{IncludeDir.ASSIMP}"
+        "%{IncludeDir.ASSIMP}",
+        "%{IncludeDir.ENTT}"
     }
 
     libdirs {
@@ -185,16 +191,16 @@ project "Sandbox"
         systemversion "latest"
 
     filter "configurations:Debug"
-        defines { "MECHA_DEBUG", "WIN32_LEAN_AND_MEAN" }
+        defines { "RETRO_ENABLE_ASSERTS","RETRO_DEBUG", "WIN32_LEAN_AND_MEAN" }
         symbols "on"
         links {
             "assimp-vc143-mtd.lib"
         }
 
     filter "configurations:release"
-        defines { "MECHA_RELEASE", "WIN32_LEAN_AND_MEAN" }
+        defines {  "WIN32_LEAN_AND_MEAN" }
         optimize "on"
 
     filter "configurations:Dist"
-        defines { "MECHA_DIST", "WIN32_LEAN_AND_MEAN" }
+        defines { "WIN32_LEAN_AND_MEAN" }
         optimize "on"

@@ -29,6 +29,6 @@ namespace Retro::Renderer
 		virtual int GetUniformLocation(const std::string& uniform) = 0;
 
 		/* Instaintiate */
-		static Ref<Shader> Create(const std::string& vertexPath, const std::string& fragmentPath);
+		static Shared<Shader> Create(const std::string& vertexPath, const std::string& fragmentPath);
 	};
 }

@@ -12,7 +12,7 @@ namespace Retro::Renderer
 		return s_RenderingAPIType;
 	}
 
-	Scope<RenderingAPI> RenderingAPI::Create(RenderingAPIType renderingAPITYpe)
+	Unique<RenderingAPI> RenderingAPI::Create(RenderingAPIType renderingAPITYpe)
 	{
 		switch (renderingAPITYpe)
 		{
@@ -23,7 +23,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateScope<OpenGLRenderingAPI>();
+				return CreateUnique<OpenGLRenderingAPI>();
 			}
 		}
 		return {};

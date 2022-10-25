@@ -32,7 +32,7 @@ namespace Retro::Renderer
 		return "Unknown";
 	}
 
-	Ref<Texture> Texture::Create(const FTextureSpecification& textureSpecification)
+	Shared<Texture> Texture::Create(const FTextureSpecification& textureSpecification)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -43,13 +43,13 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLTexture>(textureSpecification);
+				return CreateShared<OpenGLTexture>(textureSpecification);
 			}
 		}
 		return {};
 	}
 
-	Ref<Texture> Texture::Create(uint32_t width, uint32_t height, const unsigned char* data)
+	Shared<Texture> Texture::Create(uint32_t width, uint32_t height, const unsigned char* data)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -60,7 +60,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLTexture>(width, height, data);
+				return CreateShared<OpenGLTexture>(width, height, data);
 			}
 		}
 		return {};

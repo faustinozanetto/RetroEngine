@@ -17,6 +17,6 @@ namespace Retro::Renderer
 		virtual void SetIBOLayout(const VBOLayout& layout, uint32_t block, uint32_t count = 1) = 0;
 
 		/* Instantiate */
-		static Ref<UniformBuffer> Create(uint32_t size, uint32_t binding);
+		static Shared<UniformBuffer> Create(uint32_t size, uint32_t binding);
 	};
 }

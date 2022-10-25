@@ -20,8 +20,8 @@ namespace Retro
 		void TerminateImGui() const;
 
 		/* Instantiate */
-		static Scope<InterfacesSubSystem> Create();
+		static Unique<InterfacesSubSystem> Create();
 	private:
-		Scope<Renderer::InterfaceImplementation> m_InterfaceImplementation;
+		Unique<Renderer::InterfaceImplementation> m_InterfaceImplementation;
 	};
 }

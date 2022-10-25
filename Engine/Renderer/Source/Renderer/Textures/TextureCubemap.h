@@ -17,6 +17,6 @@ namespace Retro::Renderer
 		virtual void Bind(int slot) = 0;
 		void UnBind() override = 0;
 
-		static Ref<TextureCubemap> Create(const FTextureSpecification& textureSpecification);
+		static Shared<TextureCubemap> Create(const FTextureSpecification& textureSpecification);
 	};
 }

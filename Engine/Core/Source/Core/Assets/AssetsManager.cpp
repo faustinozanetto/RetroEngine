@@ -16,13 +16,13 @@ namespace Retro
 		m_Assets.clear();
 	}
 
-	void AssetsManager::RegisterAsset(const Ref<Asset> asset)
+	void AssetsManager::RegisterAsset(const Shared<Asset> asset)
 	{
 		m_Assets[asset->GetAssetType()].insert(std::make_pair(asset->GetUUID(), asset));
 	}
 
-	Scope<AssetsManager> AssetsManager::Create()
+	Unique<AssetsManager> AssetsManager::Create()
 	{
-		return CreateScope<AssetsManager>();
+		return CreateUnique<AssetsManager>();
 	}
 }

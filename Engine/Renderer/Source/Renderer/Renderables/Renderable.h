@@ -54,22 +54,22 @@ namespace Retro::Renderer
 
 		void ConstructRenderable();
 
-		const Ref<VertexArrayBuffer>& GetVertexArrayBuffer() const;
-		const Ref<VertexObjectBuffer>& GetVertexObjectBuffer() const;
-		const Ref<IndexBuffer>& GetIndexBuffer() const;
+		const Shared<VertexArrayBuffer>& GetVertexArrayBuffer() const;
+		const Shared<VertexObjectBuffer>& GetVertexObjectBuffer() const;
+		const Shared<IndexBuffer>& GetIndexBuffer() const;
 		const std::vector<RenderableVertex>& GetVertices() const;
 		const std::vector<uint32_t>& GetIndices() const;
 		const std::vector<RendereableTexture> GetTextures() const { return m_RendereableTextures; }
 
 		/* Instantiate */
-		static Ref<Renderable> Create(const std::vector<RenderableVertex>& vertices,
+		static Shared<Renderable> Create(const std::vector<RenderableVertex>& vertices,
 		                              const std::vector<uint32_t>& indices,
 		                              const std::vector<RendereableTexture>& textures);
 
 	private:
-		Ref<VertexArrayBuffer> m_VAO;
-		Ref<IndexBuffer> m_IBO;
-		Ref<VertexObjectBuffer> m_VBO;
+		Shared<VertexArrayBuffer> m_VAO;
+		Shared<IndexBuffer> m_IBO;
+		Shared<VertexObjectBuffer> m_VBO;
 		std::vector<RendereableTexture> m_RendereableTextures;
 		std::vector<RenderableVertex> m_Vertices;
 		std::vector<uint32_t> m_Indices;

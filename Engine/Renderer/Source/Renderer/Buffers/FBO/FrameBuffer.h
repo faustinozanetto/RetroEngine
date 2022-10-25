@@ -58,6 +58,6 @@ namespace Retro::Renderer
 		virtual uint32_t GetHeight() const = 0;
 
 		/* Instantiate */
-		static Ref<FrameBuffer> Create(const FFrameBufferSpecification& frameBufferSpecification);
+		static Shared<FrameBuffer> Create(const FFrameBufferSpecification& frameBufferSpecification);
 	};
 }
