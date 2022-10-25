@@ -3,7 +3,7 @@
 
 namespace Retro
 {
-    InterfaceLayer::InterfaceLayer(const std::string& interfaceLayerName) : Layer(interfaceLayerName)
-    {
-    }
+	InterfaceLayer::InterfaceLayer(const std::string& interfaceLayerName) : Layer(interfaceLayerName)
+	{
+	}
 }

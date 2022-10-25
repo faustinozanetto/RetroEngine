@@ -9,12 +9,14 @@
 #include "Renderer/Window/Window.h"
 #include "glm/glm.hpp"
 
-namespace Retro::Renderer {
-	class Renderer {
+namespace Retro::Renderer
+{
+	class Renderer
+	{
 	public:
 		/* Methods */
 		static bool Initialize(RenderingAPIType renderingAPIType, const Window& window);
-		
+
 		static void SetClearColor(glm::vec4 color);
 		static void ClearScreen();
 		static void SwapBuffers();
@@ -24,10 +26,10 @@ namespace Retro::Renderer {
 		static void SetRendererState(ERendererState renderState, bool enabled);
 		static void BindTexture(uint32_t textureHandle, uint32_t textureSlot = 0);
 		static bool ShouldClose();
-		
+
 		static void Begin();
 		static void End();
-		
+
 		static void SubmitCommand(const RenderCommand& command);
 		static int GetRenderCommandsAmount();
 
@@ -37,7 +39,7 @@ namespace Retro::Renderer {
 
 	private:
 		static void ProcessRenderCommand(const RenderCommand& command);
-		
+
 		static Scope<RenderingAPI> s_RenderingAPI;
 		static Scope<RendererContext> s_Context;
 		static std::queue<RenderCommand> s_CommandQueue;

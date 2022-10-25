@@ -10,10 +10,13 @@ int main(int argc, char** argv);
 
 namespace Retro
 {
-	struct FRetroApplicationSpecification {
+	struct FRetroApplicationSpecification
+	{
 		std::string name;
 
-		FRetroApplicationSpecification(const std::string& name = "Retro Application") : name(name) {}
+		FRetroApplicationSpecification(const std::string& name = "Retro Application") : name(name)
+		{
+		}
 	};
 
 	class RetroApplication

@@ -34,5 +34,5 @@
 #include "Logger/Logger.h"
 
 #ifdef RETRO_PLATFORM_WINDOWS
-	#include <Windows.h>
+#include <Windows.h>
 #endif

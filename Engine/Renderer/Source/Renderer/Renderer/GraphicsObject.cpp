@@ -3,8 +3,8 @@
 
 namespace Retro::Renderer
 {
-    uint32_t GraphicsObject::GetObjectHandle() const
-    {
-        return m_ObjectHandle;
-    }
+	uint32_t GraphicsObject::GetObjectHandle() const
+	{
+		return m_ObjectHandle;
+	}
 }

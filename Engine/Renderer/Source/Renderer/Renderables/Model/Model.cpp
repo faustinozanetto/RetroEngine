@@ -107,7 +107,7 @@ namespace Retro::Renderer
 				bitangent.z = mesh->mBitangents[i].z;
 			}
 			// Push to the vector.
-			vertices.push_back({ position, texCoords, normals, tangent, bitangent });
+			vertices.push_back({position, texCoords, normals, tangent, bitangent});
 		}
 		// Process indices.
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -123,6 +123,7 @@ namespace Retro::Renderer
 			"Mesh has " + std::to_string(mesh->mNumVertices) + " vertices and " + std::to_string(mesh->mNumFaces) +
 			" faces.");
 
+		/*
 		if (mesh->mMaterialIndex >= 0)
 		{
 			// process materials
@@ -148,6 +149,7 @@ namespace Retro::Renderer
 				material, aiTextureType_AMBIENT, "texture_height");
 			textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 		}
+		*/
 
 		if (textures.empty())
 		{
@@ -158,7 +160,7 @@ namespace Retro::Renderer
 	}
 
 	std::vector<RendereableTexture> Model::ParseMaterialTextures(aiMaterial* mat, aiTextureType type,
-		std::string typeName)
+	                                                             std::string typeName)
 	{
 		std::vector<RendereableTexture> textures;
 		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -193,7 +195,7 @@ namespace Retro::Renderer
 				}
 				else
 				{
-					texture = Texture::Create({ file, TextureFiltering::Nearest, TextureWrapping::Repeat });
+					texture = Texture::Create({file, TextureFiltering::Nearest, TextureWrapping::Repeat});
 				}
 				if (texture)
 				{

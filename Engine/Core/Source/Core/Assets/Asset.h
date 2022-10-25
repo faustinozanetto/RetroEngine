@@ -1,16 +1,20 @@
 #pragma once
 
 #include "Core/Utils/UUID.h"
+#include "Core/Base.h"
 
-namespace Retro {
-	enum class AssetType {
+namespace Retro
+{
+	enum class AssetType
+	{
 		None = 0,
 		Model = 1,
 		Texture = 2,
 		Shader = 3,
 	};
 
-	class Asset {
+	class Asset
+	{
 	public:
 		Asset();
 		Asset(AssetType assetType);

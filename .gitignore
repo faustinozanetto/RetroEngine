@@ -1,6 +1,7 @@
 **/Intermediates
 **/Binaries
 **/Build
+**/Assets/Models
 *.log
 *.vcxproj
 *.vcxproj.user

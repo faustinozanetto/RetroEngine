@@ -32,6 +32,8 @@ layout(std140, binding = 1) uniform Lights
 layout(binding = 0) uniform sampler2D gPosition;
 layout(binding = 1) uniform sampler2D gAlbedo;
 layout(binding = 2) uniform sampler2D gNormal;
+layout(binding = 3) uniform sampler2D gRoughness;
+layout(binding = 4) uniform sampler2D gMetallic;
 
 layout(location = 0) out vec4 FragColor;
 

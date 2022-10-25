@@ -2,10 +2,11 @@
 
 #include "Platform/OpenGL/Renderer/OpenGLRendererContext.h"
 
-namespace Retro::Renderer {
+namespace Retro::Renderer
+{
 	OpenGLRendererContext::OpenGLRendererContext(GLFWwindow* windowHandle)
 	{
-		RETRO_ASSERT(windowHandle, "OpenGLRendererContext::OpenGLRendererContext | Window handle invalid!.")
+		RETRO_CORE_ASSERT(windowHandle, "OpenGLRendererContext::OpenGLRendererContext | Window handle invalid!.")
 		m_WindowHandle = windowHandle;
 		Logger::Info("OpenGLRendererContext::OpenGLRendererContext | Created renderer context.");
 	}
@@ -16,7 +17,8 @@ namespace Retro::Renderer {
 		// Set glfw context
 		glfwMakeContextCurrent(m_WindowHandle);
 		// Glad initialize
-		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+		{
 			Logger::Error("OpenGLRendererContext::Initialize | An error occurred while trying to initialize GLAD");
 		}
 	}

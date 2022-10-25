@@ -2,8 +2,10 @@
 
 #include "Renderer/Lighting/Light.h"
 
-namespace Retro::Renderer {
-	class PointLight : public Light {
+namespace Retro::Renderer
+{
+	class PointLight : public Light
+	{
 	public:
 		PointLight();
 		~PointLight() = default;
