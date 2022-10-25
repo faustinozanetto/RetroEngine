@@ -7,24 +7,24 @@
 
 namespace Retro::Renderer
 {
-    IndexBuffer::~IndexBuffer()
-    {
-    }
+	IndexBuffer::~IndexBuffer()
+	{
+	}
 
-    Ref<IndexBuffer> IndexBuffer::Create(uint32_t* data, uint32_t size)
-    {
-        switch (Renderer::GetRenderingAPIType())
-        {
-        case RenderingAPIType::None:
-            {
-                Logger::Error("IndexBuffer::Create | Unknown rendering api!.");
-                return {};
-            }
-        case RenderingAPIType::OpenGL:
-            {
-                return CreateRef<OpenGLIndexBuffer>(data, size);
-            }
-        }
-        return {};
-    }
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* data, uint32_t size)
+	{
+		switch (Renderer::GetRenderingAPIType())
+		{
+		case RenderingAPIType::None:
+			{
+				Logger::Error("IndexBuffer::Create | Unknown rendering api!.");
+				return {};
+			}
+		case RenderingAPIType::OpenGL:
+			{
+				return CreateRef<OpenGLIndexBuffer>(data, size);
+			}
+		}
+		return {};
+	}
 }

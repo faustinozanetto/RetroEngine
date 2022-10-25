@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "Light.h"
 
-namespace Retro::Renderer {
-	Light::Light() {
-
+namespace Retro::Renderer
+{
+	Light::Light()
+	{
 	}
 }

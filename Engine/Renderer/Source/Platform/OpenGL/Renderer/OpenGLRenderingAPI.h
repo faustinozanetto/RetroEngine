@@ -4,8 +4,10 @@
 #include "Renderer/Renderer/RendererAPI.h"
 #include "glm/glm.hpp"
 
-namespace Retro::Renderer {
-	class OpenGLRenderingAPI : public RenderingAPI {
+namespace Retro::Renderer
+{
+	class OpenGLRenderingAPI : public RenderingAPI
+	{
 	public:
 		/* Constructor & Destructor */
 		OpenGLRenderingAPI();

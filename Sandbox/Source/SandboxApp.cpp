@@ -2,12 +2,12 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.inl>
+#include "glad/glad.h"
 
 #include "EngineCore.h"
 #include "imgui.h"
 #include "Core/EntryPoint.h"
 #include "Core/Interfaces/InterfaceLayer.h"
-#include "glad/glad.h"
 #include "Core/Input/InputKey.h"
 #include "Renderer/Buffers/FBO/FrameBuffer.h"
 #include "Renderer/Buffers/UBO/UniformBuffer.h"
@@ -18,6 +18,7 @@
 #include "Renderer/Renderer/RenderCommand.h"
 #include "Renderer/Renderer/Renderer.h"
 #include "Renderer/Shader/Shader.h"
+#include "Renderer/Textures/TextureCubemap.h"
 #include "Renderer/Textures/Texture.h"
 
 struct CameraData
@@ -40,66 +41,147 @@ struct LightsData {
 	PointLight pointLight;
 };
 
+float skyboxVertices[] = {
+	// positions          
+	-1.0f,  1.0f, -1.0f,
+	-1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	-1.0f,  1.0f, -1.0f,
+	 1.0f,  1.0f, -1.0f,
+	 1.0f,  1.0f,  1.0f,
+	 1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	 1.0f, -1.0f, -1.0f,
+	 1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	 1.0f, -1.0f,  1.0f
+};
+
+
 class SandboxLayer : public Retro::Layer
 {
 public:
 	SandboxLayer() : Layer("Sandbox Layer")
 	{
-		float squareVertices[5 * 4] = {
-			1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
-			1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-			-1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left 
-		};
+		{
+			float squareVertices[5 * 4] = {
+				1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
+				1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
+				-1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left 
+			};
 
-		// Fill index buffer
-		uint32_t squareIndices[6] = {
-			0, 3, 1, // first triangle
-			1, 3, 2, // second triangle
-		};
-		m_ScreenVAO = Retro::Renderer::VertexArrayBuffer::Create();
-		Retro::Ref<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
-			squareVertices, sizeof(squareVertices));
-		Retro::Ref<Retro::Renderer::IndexBuffer> IBO = Retro::Renderer::IndexBuffer::Create(
-			squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-		m_ScreenVAO->Bind();
-		VBO->SetVBOLayout({
-			{Retro::Renderer::VBOElementType::FloatVec3, "aPos"},
-			{Retro::Renderer::VBOElementType::FloatVec2, "aTexCoord"}
+			// Fill index buffer
+			uint32_t squareIndices[6] = {
+				0, 3, 1, // first triangle
+				1, 3, 2, // second triangle
+			};
+			m_ScreenVAO = Retro::Renderer::VertexArrayBuffer::Create();
+			Retro::Ref<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
+				squareVertices, sizeof(squareVertices));
+			Retro::Ref<Retro::Renderer::IndexBuffer> IBO = Retro::Renderer::IndexBuffer::Create(
+				squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
+			m_ScreenVAO->Bind();
+			VBO->SetVBOLayout({
+				{Retro::Renderer::VBOElementType::FloatVec3, "aPos"},
+				{Retro::Renderer::VBOElementType::FloatVec2, "aTexCoord"}
+				});
+			m_ScreenVAO->AddVertexObjectBuffer(VBO);
+			m_ScreenVAO->SetIndexBuffer(IBO);
+			m_ScreenVAO->UnBind();
+		}
+
+		{
+			m_SkyboxVAO = Retro::Renderer::VertexArrayBuffer::Create();
+			Retro::Ref<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
+				skyboxVertices, sizeof(skyboxVertices));
+			m_SkyboxVAO->Bind();
+			VBO->SetVBOLayout({
+				{Retro::Renderer::VBOElementType::FloatVec3, "aPos"}});
+			m_SkyboxVAO->AddVertexObjectBuffer(VBO);
+			m_SkyboxVAO->UnBind();
+
+		
+			m_SkyboxCubemap = Retro::Renderer::TextureCubemap::Create({
+				"Assets/Textures/HDR/belfast_farmhouse_2k.hdr",
+				Retro::Renderer::TextureFiltering::Linear,
+				Retro::Renderer::TextureWrapping::ClampEdge
 			});
-		m_ScreenVAO->AddVertexObjectBuffer(VBO);
-		m_ScreenVAO->SetIndexBuffer(IBO);
-		m_ScreenVAO->UnBind();
+		
+		}
 
 		m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Geometry/Geometry.vert",
 			"Assets/Shaders/Geometry/Geometry.frag");
-
 		m_ScreenShader = Retro::Renderer::Shader::Create("Assets/Shaders/Screen/Screen.vert",
 			"Assets/Shaders/Screen/Screen.frag");
-
 		m_LightingShader = Retro::Renderer::Shader::Create("Assets/Shaders/Lighting/Lighting.vert",
 			"Assets/Shaders/Lighting/Lighting.frag");
-
+		m_SkyboxShader = Retro::Renderer::Shader::Create("Assets/Shaders/Skybox/Skybox.vert",
+			"Assets/Shaders/Skybox/Skybox.frag");
 		m_LightModel = Retro::Renderer::Model::Create("Assets/Models/Cube.obj");
 
-		m_Model = Retro::Renderer::Model::Create("Assets/Models/Patrick/patrick.fbx");
+		m_Model = Retro::Renderer::Model::Create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
 
-		auto texture = Retro::Renderer::Texture::Create({
-			"Assets/Models/Patrick/Char_Patrick.png",
+		auto albedo = Retro::Renderer::Texture::Create({
+			"Assets/Models/Cerberus/textures/Cerberus_A.png",
 			Retro::Renderer::TextureFiltering::Linear,
 			Retro::Renderer::TextureWrapping::ClampEdge,
 			});
 		Retro::Renderer::FMaterialTexture albedoTexture = {
-			texture, true
+			albedo, true
 		};
+		auto normal = Retro::Renderer::Texture::Create({
+			"Assets/Models/Cerberus/textures/Cerberus_N.png",
+			Retro::Renderer::TextureFiltering::Linear,
+			Retro::Renderer::TextureWrapping::ClampEdge,
+		});
 		Retro::Renderer::FMaterialTexture normalTexture = {
-			nullptr, false
+			normal, true
 		};
+		auto roughness = Retro::Renderer::Texture::Create({
+			"Assets/Models/Cerberus/textures/Cerberus_R.png",
+			Retro::Renderer::TextureFiltering::Linear,
+			Retro::Renderer::TextureWrapping::ClampEdge,
+		});
 		Retro::Renderer::FMaterialTexture roughnessTexture = {
-			nullptr, false
+			roughness, true
 		};
+		auto metallic = Retro::Renderer::Texture::Create({
+			"Assets/Models/Cerberus/textures/Cerberus_M.png",
+			Retro::Renderer::TextureFiltering::Linear,
+			Retro::Renderer::TextureWrapping::ClampEdge,
+		});
 		Retro::Renderer::FMaterialTexture metallicTexture = {
-			nullptr, false
+			metallic, true
 		};
 		std::map<Retro::Renderer::EMaterialTextureType, Retro::Renderer::FMaterialTexture> textures = {
 			{Retro::Renderer::EMaterialTextureType::Albedo, albedoTexture},
@@ -198,6 +280,7 @@ public:
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, m_Translate);
+		model = glm::rotate(model, 1.0f, m_Rotation);
 		// translate it down so it's at the center of the scene
 		model = glm::scale(model, m_Scale); // it's a bit too big for our scene, so scale it down
 
@@ -215,6 +298,19 @@ public:
 		Retro::Renderer::Renderer::SetClearColor({ 0.2f, 0.3f, 0.3f, 1.0f });
 		Retro::Renderer::Renderer::ClearScreen();
 
+		glDepthFunc(GL_LEQUAL);
+		glm::mat4 view = m_Camera->GetViewMatrix();
+		m_SkyboxShader->Bind();
+		view = glm::mat4(glm::mat3(m_Camera->GetViewMatrix())); // remove translation from the view matrix
+		m_SkyboxShader->SetMat4("view", view);
+		m_SkyboxShader->SetMat4("projection", m_Camera->GetProjectionMatrix());
+		m_SkyboxVAO->Bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxCubemap->GetObjectHandle());
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // set depth function back to default
+
 		// Update lights UBO
 		const uint32_t size = sizeof(PointLight);
 		m_LightsUBO->Bind();
@@ -230,14 +326,17 @@ public:
 		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(0), 0);
 		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(1), 1);
 		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(2), 2);
+		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(3), 3);
+		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(4), 4);
 		Retro::Renderer::Renderer::SubmitCommand({
 			m_LightingShader, m_ScreenVAO, nullptr, glm::mat4(1.0f)
-			});
+		});
 		m_LightingShader->UnBind();
 
 		ImGui::Begin("Edit");
-		ImGui::SliderFloat3("Scale", glm::value_ptr(m_Scale), 0.04f, 5.0f);
+		ImGui::SliderFloat3("Scale", glm::value_ptr(m_Scale), 0.02f, 5.0f);
 		ImGui::SliderFloat3("Location", glm::value_ptr(m_Translate), -5.0f, 5.0f);
+		ImGui::SliderFloat3("Rotation", glm::value_ptr(m_Rotation), -5.0f, 5.0f);
 		ImGui::SliderFloat3("Camera Pos", glm::value_ptr(m_CameraLocation), -10.0f, 10.0f);
 		ImGui::SliderFloat("Camera FOV", &m_CameraFov, 1.0f, 90.0f);
 		if (ImGui::SliderFloat3("Light Position", glm::value_ptr(m_LightPos), -5.0f, 5.0f)) {
@@ -292,6 +391,7 @@ private:
 	glm::vec3 m_Scale = glm::vec3(1.0f);
 	glm::vec3 m_LightPos = glm::vec3(-0.2f, -1.0f, -0.3f);
 	glm::vec3 m_LightColor = glm::vec3(0.2f, 0.2f, 0.2f);
+	glm::vec3 m_Rotation = glm::vec3(1.0f);
 	glm::vec3 m_Translate = glm::vec3(1.0f);
 	glm::vec3 m_CameraLocation = glm::vec3(1.0f);
 	glm::vec2 m_ViewportBounds[2];
@@ -299,11 +399,14 @@ private:
 	CameraData m_CameraData;
 	Retro::Renderer::Camera* m_Camera;
 	LightsData m_LightsData;
+	Retro::Ref<Retro::Renderer::TextureCubemap> m_SkyboxCubemap;
 	Retro::Ref<Retro::Renderer::PointLight> m_Light;
 	Retro::Ref<Retro::Renderer::Shader> m_Shader;
 	Retro::Ref<Retro::Renderer::Shader> m_LightingShader;
+	Retro::Ref<Retro::Renderer::Shader> m_SkyboxShader;
 	Retro::Ref<Retro::Renderer::Shader> m_ScreenShader;
 	Retro::Ref<Retro::Renderer::VertexArrayBuffer> m_ScreenVAO;
+	Retro::Ref<Retro::Renderer::VertexArrayBuffer> m_SkyboxVAO;
 	Retro::Ref<Retro::Renderer::Material> m_Material;
 	Retro::Ref<Retro::Renderer::Model> m_Model;
 	Retro::Ref<Retro::Renderer::Model> m_LightModel;

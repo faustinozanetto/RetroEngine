@@ -1,20 +1,23 @@
 #include "pch.h"
 #include "AssetsManager.h"
 
-namespace Retro {
-	AssetsManager::AssetsManager() : Manager("AssetssManager") {
-
+namespace Retro
+{
+	AssetsManager::AssetsManager() : Manager("AssetssManager")
+	{
 	}
 
-	AssetsManager::~AssetsManager() {
-
+	AssetsManager::~AssetsManager()
+	{
 	}
 
-	void AssetsManager::Shutdown() {
+	void AssetsManager::Shutdown()
+	{
 		m_Assets.clear();
 	}
 
-	void AssetsManager::RegisterAsset(const Ref<Asset> asset) {
+	void AssetsManager::RegisterAsset(const Ref<Asset> asset)
+	{
 		m_Assets[asset->GetAssetType()].insert(std::make_pair(asset->GetUUID(), asset));
 	}
 

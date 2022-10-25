@@ -1,7 +1,9 @@
 #pragma once
 
-namespace Retro {
-	class UUID {
+namespace Retro
+{
+	class UUID
+	{
 	public:
 		UUID();
 		UUID(uint64_t uuid);

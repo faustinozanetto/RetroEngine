@@ -3,13 +3,13 @@
 
 namespace Retro
 {
-    Layer::Layer(const std::string& layerName)
-    {
-        m_LayerName = layerName;
-    }
+	Layer::Layer(const std::string& layerName)
+	{
+		m_LayerName = layerName;
+	}
 
-    const std::string& Layer::GetLayerName() const
-    {
-        return m_LayerName;
-    }
+	const std::string& Layer::GetLayerName() const
+	{
+		return m_LayerName;
+	}
 }

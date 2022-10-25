@@ -2,8 +2,8 @@
 
 #include "Core/Base.h"
 
-namespace Retro::Renderer {
-
+namespace Retro::Renderer
+{
 	class RendererContext
 	{
 	public:
@@ -20,5 +20,4 @@ namespace Retro::Renderer {
 		/* Instantiate */
 		static Scope<RendererContext> Create(void* windowHandle);
 	};
-
 }

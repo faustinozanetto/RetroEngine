@@ -3,14 +3,14 @@
 
 namespace Retro
 {
-    class InterfaceLayer : public Layer
-    {
-    public:
-        /* Constructor & Destructor */
-        InterfaceLayer(const std::string& interfaceLayerName);
-        ~InterfaceLayer() override = default;
+	class InterfaceLayer : public Layer
+	{
+	public:
+		/* Constructor & Destructor */
+		InterfaceLayer(const std::string& interfaceLayerName);
+		~InterfaceLayer() override = default;
 
-        /* Methods */
-        virtual void OnInterfaceRenderer() = 0;
-    };
+		/* Methods */
+		virtual void OnInterfaceRenderer() = 0;
+	};
 }

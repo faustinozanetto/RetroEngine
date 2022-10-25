@@ -4,8 +4,10 @@
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 
-namespace Retro::Renderer {
-	class OpenGLRendererContext : public RendererContext {
+namespace Retro::Renderer
+{
+	class OpenGLRendererContext : public RendererContext
+	{
 	public:
 		/* Constructor */
 		OpenGLRendererContext(GLFWwindow* windowHandle);

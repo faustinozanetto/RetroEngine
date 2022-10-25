@@ -3,13 +3,13 @@
 
 namespace Retro
 {
-    SubSystem::SubSystem(const std::string& subSystemName)
-    {
-        m_SubSystemName = subSystemName;
-    }
+	SubSystem::SubSystem(const std::string& subSystemName)
+	{
+		m_SubSystemName = subSystemName;
+	}
 
-    const std::string& SubSystem::GetSubSystemName() const
-    {
-        return m_SubSystemName;
-    }
+	const std::string& SubSystem::GetSubSystemName() const
+	{
+		return m_SubSystemName;
+	}
 }

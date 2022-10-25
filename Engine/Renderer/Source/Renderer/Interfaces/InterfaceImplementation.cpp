@@ -8,20 +8,20 @@
 
 namespace Retro::Renderer
 {
-    Scope<InterfaceImplementation> InterfaceImplementation::Create()
-    {
-        switch (Renderer::GetRenderingAPIType())
-        {
-        case RenderingAPIType::None:
-            {
-                Logger::Error("InterfaceImplementation::Create | Unknown rendering api!.");
-                return nullptr;
-            }
-        case RenderingAPIType::OpenGL:
-            {
-                return CreateScope<OpenGLInterfaceImplementation>();
-            }
-        }
-        return {};
-    }
+	Scope<InterfaceImplementation> InterfaceImplementation::Create()
+	{
+		switch (Renderer::GetRenderingAPIType())
+		{
+		case RenderingAPIType::None:
+			{
+				Logger::Error("InterfaceImplementation::Create | Unknown rendering api!.");
+				return nullptr;
+			}
+		case RenderingAPIType::OpenGL:
+			{
+				return CreateScope<OpenGLInterfaceImplementation>();
+			}
+		}
+		return {};
+	}
 }

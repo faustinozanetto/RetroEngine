@@ -6,37 +6,37 @@
 
 namespace Retro
 {
-    InterfacesSubSystem::InterfacesSubSystem() : SubSystem("InterfacesSubSystem")
-    {
-        m_InterfaceImplementation = Renderer::InterfaceImplementation::Create();
-    }
+	InterfacesSubSystem::InterfacesSubSystem() : SubSystem("InterfacesSubSystem")
+	{
+		m_InterfaceImplementation = Renderer::InterfaceImplementation::Create();
+	}
 
-    InterfacesSubSystem::~InterfacesSubSystem()
-    {
-    }
+	InterfacesSubSystem::~InterfacesSubSystem()
+	{
+	}
 
-    void InterfacesSubSystem::OnSubSystemStart()
-    {
-        m_InterfaceImplementation->InitializeInterface();
-    }
+	void InterfacesSubSystem::OnSubSystemStart()
+	{
+		m_InterfaceImplementation->InitializeInterface();
+	}
 
-    void InterfacesSubSystem::OnSubSystemStop()
-    {
-        m_InterfaceImplementation->ShutdownInterface();
-    }
+	void InterfacesSubSystem::OnSubSystemStop()
+	{
+		m_InterfaceImplementation->ShutdownInterface();
+	}
 
-    void InterfacesSubSystem::InitializeImGui() const
-    {
-        m_InterfaceImplementation->BeginInterfaceRender();
-    }
+	void InterfacesSubSystem::InitializeImGui() const
+	{
+		m_InterfaceImplementation->BeginInterfaceRender();
+	}
 
-    void InterfacesSubSystem::TerminateImGui() const
-    {
-        m_InterfaceImplementation->EndInterfaceRender();
-    }
+	void InterfacesSubSystem::TerminateImGui() const
+	{
+		m_InterfaceImplementation->EndInterfaceRender();
+	}
 
-    Scope<InterfacesSubSystem> InterfacesSubSystem::Create()
-    {
-        return CreateScope<InterfacesSubSystem>();
-    }
+	Scope<InterfacesSubSystem> InterfacesSubSystem::Create()
+	{
+		return CreateScope<InterfacesSubSystem>();
+	}
 }

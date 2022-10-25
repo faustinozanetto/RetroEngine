@@ -16,7 +16,7 @@ namespace Retro::Renderer
 		void UnBind() override;
 
 		uint32_t GetSize() const override;
-	
+
 	private:
 		uint32_t m_Size;
 	};

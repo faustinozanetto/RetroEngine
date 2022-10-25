@@ -2,10 +2,12 @@
 
 #include <cstdint>
 
-namespace Retro::Input {
+namespace Retro::Input
+{
 	using KeyCode = uint16_t;
 
-	namespace Key {
+	namespace Key
+	{
 		enum : KeyCode
 		{
 			// From glfw3.h

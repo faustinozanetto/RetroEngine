@@ -2,8 +2,10 @@
 
 #include "Renderer/Lighting/Light.h"
 
-namespace Retro::Renderer {
-	class DirectionalLight : public Light {
+namespace Retro::Renderer
+{
+	class DirectionalLight : public Light
+	{
 	public:
 		DirectionalLight();
 		~DirectionalLight() = default;

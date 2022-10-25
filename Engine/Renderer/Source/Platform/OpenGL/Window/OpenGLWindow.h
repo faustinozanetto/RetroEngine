@@ -5,8 +5,10 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-namespace Retro::Renderer {
-	class OpenGLWindow : public Window {
+namespace Retro::Renderer
+{
+	class OpenGLWindow : public Window
+	{
 	public:
 		/* Constructor & Destructor */
 		OpenGLWindow() = default;
@@ -27,5 +29,4 @@ namespace Retro::Renderer {
 	private:
 		GLFWwindow* m_OpenGLWindow{};
 	};
-
 }

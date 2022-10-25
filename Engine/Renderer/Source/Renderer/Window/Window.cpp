@@ -6,7 +6,8 @@
 #include "Platform/OpenGL/Window/OpenGLWindow.h"
 #endif
 
-namespace Retro::Renderer {
+namespace Retro::Renderer
+{
 	const FWindowSpecification& Window::GetWindowSpecification()
 	{
 		return m_WindowSpecification;
@@ -27,5 +28,3 @@ namespace Retro::Renderer {
 #endif
 	}
 }
-
-

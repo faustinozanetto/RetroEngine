@@ -11,6 +11,7 @@ namespace Retro::Renderer
 	VertexArrayBuffer::VertexArrayBuffer()
 	{
 	}
+
 	VertexArrayBuffer::~VertexArrayBuffer()
 	{
 	}
@@ -20,14 +21,14 @@ namespace Retro::Renderer
 		switch (Renderer::GetRenderingAPIType())
 		{
 		case RenderingAPIType::None:
-		{
-			Logger::Error("VertexArrayBuffer::Create | Unknown rendering api!.");
-			return {};
-		}
+			{
+				Logger::Error("VertexArrayBuffer::Create | Unknown rendering api!.");
+				return {};
+			}
 		case RenderingAPIType::OpenGL:
-		{
-			return CreateRef<OpenGLVertexArrayBuffer>();
-		}
+			{
+				return CreateRef<OpenGLVertexArrayBuffer>();
+			}
 		}
 		return {};
 	}

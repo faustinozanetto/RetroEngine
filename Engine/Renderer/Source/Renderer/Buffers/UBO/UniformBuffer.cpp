@@ -8,24 +8,24 @@
 
 namespace Retro::Renderer
 {
-    UniformBuffer::~UniformBuffer()
-    {
-    }
+	UniformBuffer::~UniformBuffer()
+	{
+	}
 
-    Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
-    {
-        switch (Renderer::GetRenderingAPIType())
-        {
-        case RenderingAPIType::None:
-            {
-                Logger::Error("UniformBuffer::Create | Unknown rendering api!.");
-                return {};
-            }
-        case RenderingAPIType::OpenGL:
-            {
-                return CreateRef<OpenGLUniformBuffer>(size, binding);
-            }
-        }
-        return {};
-    }
+	Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
+	{
+		switch (Renderer::GetRenderingAPIType())
+		{
+		case RenderingAPIType::None:
+			{
+				Logger::Error("UniformBuffer::Create | Unknown rendering api!.");
+				return {};
+			}
+		case RenderingAPIType::OpenGL:
+			{
+				return CreateRef<OpenGLUniformBuffer>(size, binding);
+			}
+		}
+		return {};
+	}
 }

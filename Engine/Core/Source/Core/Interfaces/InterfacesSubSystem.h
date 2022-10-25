@@ -5,23 +5,23 @@
 
 namespace Retro
 {
-    class InterfacesSubSystem : public SubSystem
-    {
-    public:
-        /* Constructor & Destructor */
-        InterfacesSubSystem();
-        ~InterfacesSubSystem() override;
+	class InterfacesSubSystem : public SubSystem
+	{
+	public:
+		/* Constructor & Destructor */
+		InterfacesSubSystem();
+		~InterfacesSubSystem() override;
 
-        /* Methods */
-        void OnSubSystemStart() override;
-        void OnSubSystemStop() override;
+		/* Methods */
+		void OnSubSystemStart() override;
+		void OnSubSystemStop() override;
 
-        void InitializeImGui() const;
-        void TerminateImGui() const;
+		void InitializeImGui() const;
+		void TerminateImGui() const;
 
-        /* Instantiate */
-        static Scope<InterfacesSubSystem> Create();
-    private:
-        Scope<Renderer::InterfaceImplementation> m_InterfaceImplementation;
-    };
+		/* Instantiate */
+		static Scope<InterfacesSubSystem> Create();
+	private:
+		Scope<Renderer::InterfaceImplementation> m_InterfaceImplementation;
+	};
 }
