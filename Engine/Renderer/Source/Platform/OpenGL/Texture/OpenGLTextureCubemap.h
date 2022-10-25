@@ -24,7 +24,7 @@ namespace Retro::Renderer
 
 	protected:
 		FTextureSpecification m_TextureSpecification;
-		Ref<Shader> m_EquirectangularShader;
+		Shared<Shader> m_EquirectangularShader;
 		int m_MipMapLevels;
 		int m_Channels;
 		int m_Width;
@@ -32,7 +32,7 @@ namespace Retro::Renderer
 		GLenum m_InternalFormat;
 		GLenum m_DataFormat;
 
-		Ref<VertexArrayBuffer> m_CubeVAO, m_QuadVAO;
+		Shared<VertexArrayBuffer> m_CubeVAO, m_QuadVAO;
 
 		unsigned int envCubemap;
 		unsigned int brdfLUTTexture;

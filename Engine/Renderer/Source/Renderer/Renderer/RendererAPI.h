@@ -43,7 +43,7 @@ namespace Retro::Renderer
 		static RenderingAPIType GetRenderingAPIType();
 
 		/* Instantiate */
-		static Scope<RenderingAPI> Create(RenderingAPIType renderingAPIType);
+		static Unique<RenderingAPI> Create(RenderingAPIType renderingAPIType);
 	private:
 		static RenderingAPIType s_RenderingAPIType;
 	};

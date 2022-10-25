@@ -42,17 +42,17 @@ namespace Retro::Renderer
 		m_VAO->SetIndexBuffer(m_IBO);
 	}
 
-	const Ref<VertexArrayBuffer>& Renderable::GetVertexArrayBuffer() const
+	const Shared<VertexArrayBuffer>& Renderable::GetVertexArrayBuffer() const
 	{
 		return m_VAO;
 	}
 
-	const Ref<VertexObjectBuffer>& Renderable::GetVertexObjectBuffer() const
+	const Shared<VertexObjectBuffer>& Renderable::GetVertexObjectBuffer() const
 	{
 		return m_VBO;
 	}
 
-	const Ref<IndexBuffer>& Renderable::GetIndexBuffer() const
+	const Shared<IndexBuffer>& Renderable::GetIndexBuffer() const
 	{
 		return m_IBO;
 	}
@@ -67,10 +67,10 @@ namespace Retro::Renderer
 		return m_Indices;
 	}
 
-	Ref<Renderable> Renderable::Create(const std::vector<RenderableVertex>& vertices,
+	Shared<Renderable> Renderable::Create(const std::vector<RenderableVertex>& vertices,
 	                                   const std::vector<uint32_t>& indices,
 	                                   const std::vector<RendereableTexture>& textures)
 	{
-		return CreateRef<Renderable>(vertices, indices, textures);
+		return CreateShared<Renderable>(vertices, indices, textures);
 	}
 }

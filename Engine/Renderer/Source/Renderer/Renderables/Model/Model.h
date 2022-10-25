@@ -18,10 +18,10 @@ namespace Retro::Renderer
 		~Model() override;
 
 		/* Instantiate */
-		static Ref<Model> Create(const std::string& modelPath);
+		static Shared<Model> Create(const std::string& modelPath);
 
 		/* Methods */
-		const std::vector<Ref<Renderable>>& GetModelRenderables();
+		const std::vector<Shared<Renderable>>& GetModelRenderables();
 		const std::vector<RendereableTexture>& GetEmbeddedTextures() const { return m_TexturesLoaded; }
 
 		std::vector<RendereableTexture>
@@ -29,13 +29,13 @@ namespace Retro::Renderer
 	private:
 		bool LoadModelFromPath(const std::string& path);
 		bool ProcessModelNode(const aiNode* node);
-		Ref<Renderable> ParseRenderable(const aiMesh* mesh);
+		Shared<Renderable> ParseRenderable(const aiMesh* mesh);
 
 	private:
 		const aiScene* m_AssimpScene{};
-		std::vector<Ref<Texture>> m_Textures;
+		std::vector<Shared<Texture>> m_Textures;
 		std::vector<RendereableTexture> m_TexturesLoaded;
-		std::vector<Ref<Renderable>> m_Renderables;
+		std::vector<Shared<Renderable>> m_Renderables;
 		std::string m_ModelPath;
 		std::string m_DirectoryPath;
 	};

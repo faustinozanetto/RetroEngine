@@ -17,17 +17,17 @@ namespace Retro::Renderer
 
 	struct FMaterialTexture
 	{
-		Ref<Texture> texture;
+		Shared<Texture> texture;
 		bool enabled;
 
-		FMaterialTexture(const Ref<Texture>& texture, bool enabled) : texture(texture), enabled(enabled)
+		FMaterialTexture(const Shared<Texture>& texture, bool enabled) : texture(texture), enabled(enabled)
 		{
 		}
 	};
 
 	struct FMaterialSpecification
 	{
-		Ref<Shader> shader;
+		Shared<Shader> shader;
 		std::map<EMaterialTextureType, FMaterialTexture> textures;
 		glm::vec4 albedo = glm::vec4(1.0f);
 		float metallic = 0.0f;
@@ -35,7 +35,7 @@ namespace Retro::Renderer
 
 		FMaterialSpecification() = default;
 
-		FMaterialSpecification(const Ref<Shader>& shader,
+		FMaterialSpecification(const Shared<Shader>& shader,
 		                       const std::map<EMaterialTextureType, FMaterialTexture>& textures,
 		                       const glm::vec4& albedo, float metallic, float roughness) : shader(shader),
 			textures(textures), albedo(albedo),
@@ -56,7 +56,7 @@ namespace Retro::Renderer
 		void Bind() override;
 		void UnBind() override;
 
-		void SetShader(const Ref<Shader>& shader);
+		void SetShader(const Shared<Shader>& shader);
 
 		const FMaterialTexture& GetMaterialTexture(EMaterialTextureType type);
 		const FMaterialSpecification& GetMaterialSpecification() const { return m_MaterialSpecification; }
@@ -65,8 +65,8 @@ namespace Retro::Renderer
 		void SetMetallic(float metallic) { m_MaterialSpecification.metallic = metallic; }
 
 		/* Instantiate */
-		static Ref<Material> Create();
-		static Ref<Material> Create(const FMaterialSpecification& materialSpecification);
+		static Shared<Material> Create();
+		static Shared<Material> Create(const FMaterialSpecification& materialSpecification);
 
 	private:
 		const std::string GetTextureUniformEnabledValue(EMaterialTextureType type);

@@ -64,7 +64,7 @@ namespace Retro::Renderer
 		static std::string GetTextureWrappingToString(TextureWrapping textureWrapping);
 
 		/* Instantiate */
-		static Ref<Texture> Create(const FTextureSpecification& textureSpecification);
-		static Ref<Texture> Create(uint32_t width, uint32_t height, const unsigned char* data);
+		static Shared<Texture> Create(const FTextureSpecification& textureSpecification);
+		static Shared<Texture> Create(uint32_t width, uint32_t height, const unsigned char* data);
 	};
 }

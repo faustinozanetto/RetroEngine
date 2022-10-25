@@ -16,7 +16,7 @@ namespace Retro::Renderer
 	{
 	}
 
-	Ref<VertexArrayBuffer> VertexArrayBuffer::Create()
+	Shared<VertexArrayBuffer> VertexArrayBuffer::Create()
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -27,7 +27,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLVertexArrayBuffer>();
+				return CreateShared<OpenGLVertexArrayBuffer>();
 			}
 		}
 		return {};

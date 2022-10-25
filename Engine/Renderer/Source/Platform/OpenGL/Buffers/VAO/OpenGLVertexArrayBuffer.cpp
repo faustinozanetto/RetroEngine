@@ -30,7 +30,7 @@ namespace Retro::Renderer
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArrayBuffer::AddVertexObjectBuffer(const Ref<VertexObjectBuffer>& vbo)
+	void OpenGLVertexArrayBuffer::AddVertexObjectBuffer(const Shared<VertexObjectBuffer>& vbo)
 	{
 		// Bind this VAO and then bind the VBO.
 		Bind();
@@ -107,17 +107,17 @@ namespace Retro::Renderer
 		UnBind();
 	}
 
-	const std::vector<Ref<VertexObjectBuffer>>& OpenGLVertexArrayBuffer::GetVertexObjectBuffers() const
+	const std::vector<Shared<VertexObjectBuffer>>& OpenGLVertexArrayBuffer::GetVertexObjectBuffers() const
 	{
 		return m_VBOs;
 	}
 
-	const Ref<IndexBuffer>& OpenGLVertexArrayBuffer::GetIndexBuffer() const
+	const Shared<IndexBuffer>& OpenGLVertexArrayBuffer::GetIndexBuffer() const
 	{
 		return m_IBO;
 	}
 
-	void OpenGLVertexArrayBuffer::SetIndexBuffer(const Ref<IndexBuffer>& ibo)
+	void OpenGLVertexArrayBuffer::SetIndexBuffer(const Shared<IndexBuffer>& ibo)
 	{
 		Bind();
 		ibo->Bind();

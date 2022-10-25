@@ -35,8 +35,8 @@ namespace Retro
 		m_InterfaceImplementation->EndInterfaceRender();
 	}
 
-	Scope<InterfacesSubSystem> InterfacesSubSystem::Create()
+	Unique<InterfacesSubSystem> InterfacesSubSystem::Create()
 	{
-		return CreateScope<InterfacesSubSystem>();
+		return CreateUnique<InterfacesSubSystem>();
 	}
 }

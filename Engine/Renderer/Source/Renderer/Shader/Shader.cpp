@@ -7,7 +7,7 @@
 
 namespace Retro::Renderer
 {
-	Ref<Shader> Shader::Create(const std::string& vertexPath, const std::string& fragmentPath)
+	Shared<Shader> Shader::Create(const std::string& vertexPath, const std::string& fragmentPath)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -18,7 +18,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLShader>(vertexPath, fragmentPath);
+				return CreateShared<OpenGLShader>(vertexPath, fragmentPath);
 			}
 		}
 		return {};

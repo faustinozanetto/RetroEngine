@@ -31,20 +31,20 @@ namespace Retro
 		void RunApplication() const;
 
 		/* Getters */
-		const Scope<Renderer::Window>& GetWindow() const;
-		const Scope<LayerManager>& GetLayersManager() const;
-		const Scope<LayerManager>& GetInterfaceLayersManager() const;
-		const Scope<AssetsManager>& GetAssetsManager() const;
+		const Unique<Renderer::Window>& GetWindow() const;
+		const Unique<LayerManager>& GetLayersManager() const;
+		const Unique<LayerManager>& GetInterfaceLayersManager() const;
+		const Unique<AssetsManager>& GetAssetsManager() const;
 
 		static RetroApplication& GetApplication();
 
 	private:
 		FRetroApplicationSpecification m_ApplicationSpecification;
-		Scope<Renderer::Window> m_Window;
-		Scope<AssetsManager> m_AssetsManager;
-		Scope<LayerManager> m_LayersManager;
-		Scope<LayerManager> m_InterfaceLayersManager;
-		Scope<InterfacesSubSystem> m_InterfacesSubSystem;
+		Unique<Renderer::Window> m_Window;
+		Unique<AssetsManager> m_AssetsManager;
+		Unique<LayerManager> m_LayersManager;
+		Unique<LayerManager> m_InterfaceLayersManager;
+		Unique<InterfacesSubSystem> m_InterfacesSubSystem;
 		static RetroApplication* s_Instance;
 	};
 

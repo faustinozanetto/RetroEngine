@@ -6,19 +6,19 @@ namespace Retro
 {
 	Asset::Asset()
 	{
-		m_UUID = CreateRef<UUID>();
+		m_UUID = CreateShared<UUID>();
 		m_AssetType = AssetType::None;
-		RetroApplication::GetApplication().GetAssetsManager()->RegisterAsset(Ref<Asset>(this));
+		RetroApplication::GetApplication().GetAssetsManager()->RegisterAsset(Shared<Asset>(this));
 	}
 
 	Asset::Asset(AssetType assetType)
 	{
-		m_UUID = CreateRef<UUID>();
+		m_UUID = CreateShared<UUID>();
 		m_AssetType = assetType;
-		RetroApplication::GetApplication().GetAssetsManager()->RegisterAsset(Ref<Asset>(this));
+		RetroApplication::GetApplication().GetAssetsManager()->RegisterAsset(Shared<Asset>(this));
 	}
 
-	const Ref<UUID>& Asset::GetUUID() const
+	const Shared<UUID>& Asset::GetUUID() const
 	{
 		return m_UUID;
 	}
@@ -35,8 +35,8 @@ namespace Retro
 		return "";
 	}
 
-	static Ref<Asset> Create(AssetType assetType)
+	static Shared<Asset> Create(AssetType assetType)
 	{
-		return CreateRef<Asset>(assetType);
+		return CreateShared<Asset>(assetType);
 	}
 }

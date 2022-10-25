@@ -72,22 +72,22 @@ namespace Retro
 		}
 	}
 
-	const Scope<Renderer::Window>& RetroApplication::GetWindow() const
+	const Unique<Renderer::Window>& RetroApplication::GetWindow() const
 	{
 		return m_Window;
 	}
 
-	const Scope<LayerManager>& RetroApplication::GetLayersManager() const
+	const Unique<LayerManager>& RetroApplication::GetLayersManager() const
 	{
 		return m_LayersManager;
 	}
 
-	const Scope<LayerManager>& RetroApplication::GetInterfaceLayersManager() const
+	const Unique<LayerManager>& RetroApplication::GetInterfaceLayersManager() const
 	{
 		return m_InterfaceLayersManager;
 	}
 
-	const Scope<AssetsManager>& RetroApplication::GetAssetsManager() const
+	const Unique<AssetsManager>& RetroApplication::GetAssetsManager() const
 	{
 		return m_AssetsManager;
 	}

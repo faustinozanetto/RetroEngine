@@ -18,6 +18,6 @@ namespace Retro::Renderer
 		virtual bool ShouldClose() = 0;
 
 		/* Instantiate */
-		static Scope<RendererContext> Create(void* windowHandle);
+		static Unique<RendererContext> Create(void* windowHandle);
 	};
 }

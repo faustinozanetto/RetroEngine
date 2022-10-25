@@ -11,7 +11,7 @@ namespace Retro::Renderer
 	{
 	}
 
-	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* data, uint32_t size)
+	Shared<IndexBuffer> IndexBuffer::Create(uint32_t* data, uint32_t size)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -22,7 +22,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLIndexBuffer>(data, size);
+				return CreateShared<OpenGLIndexBuffer>(data, size);
 			}
 		}
 		return {};

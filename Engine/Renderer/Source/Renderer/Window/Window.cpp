@@ -18,10 +18,10 @@ namespace Retro::Renderer
 		return m_WindowSpecification.vSync;
 	}
 
-	Scope<Window> Window::Create(const FWindowSpecification& specification)
+	Unique<Window> Window::Create(const FWindowSpecification& specification)
 	{
 #ifdef RETRO_PLATFORM_WINDOWS
-		return CreateScope<OpenGLWindow>(specification);
+		return CreateUnique<OpenGLWindow>(specification);
 #else
 		Logger::Error("Window::Create | Couldnt create window.");
 		return nullptr;

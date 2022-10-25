@@ -12,7 +12,7 @@ namespace Retro::Renderer
 	{
 	}
 
-	Ref<FrameBuffer> FrameBuffer::Create(const FFrameBufferSpecification& frameBufferSpecification)
+	Shared<FrameBuffer> FrameBuffer::Create(const FFrameBufferSpecification& frameBufferSpecification)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -23,7 +23,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLFrameBuffer>(frameBufferSpecification);
+				return CreateShared<OpenGLFrameBuffer>(frameBufferSpecification);
 			}
 		}
 		return {};

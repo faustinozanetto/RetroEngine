@@ -233,7 +233,7 @@ namespace Retro::Renderer
 			-1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f // bottom-left        
 		};
 		m_CubeVAO = VertexArrayBuffer::Create();
-		Ref<VertexObjectBuffer> cubeVBO = VertexObjectBuffer::Create(vertices, sizeof(vertices));
+		Shared<VertexObjectBuffer> cubeVBO = VertexObjectBuffer::Create(vertices, sizeof(vertices));
 
 		cubeVBO->SetVBOLayout({
 			{VBOElementType::FloatVec3, "aPos"},

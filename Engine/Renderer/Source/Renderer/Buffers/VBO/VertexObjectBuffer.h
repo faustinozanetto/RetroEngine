@@ -82,6 +82,6 @@ namespace Retro::Renderer
 		virtual void SetVBOLayout(const VBOLayout& layout) = 0;
 
 		/* Instantiate */
-		static Ref<VertexObjectBuffer> Create(float* data, uint32_t size);
+		static Shared<VertexObjectBuffer> Create(float* data, uint32_t size);
 	};
 }

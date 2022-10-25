@@ -35,7 +35,7 @@ namespace Retro::Renderer
 		bool IsVSyncEnabled() const;
 
 		/* Instantiate */
-		static Scope<Window> Create(const FWindowSpecification& specification = FWindowSpecification());
+		static Unique<Window> Create(const FWindowSpecification& specification = FWindowSpecification());
 	protected:
 		FWindowSpecification m_WindowSpecification;
 	};

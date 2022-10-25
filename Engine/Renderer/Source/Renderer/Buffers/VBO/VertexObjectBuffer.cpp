@@ -71,7 +71,7 @@ namespace Retro::Renderer
 	{
 	}
 
-	Ref<VertexObjectBuffer> VertexObjectBuffer::Create(float* data, uint32_t size)
+	Shared<VertexObjectBuffer> VertexObjectBuffer::Create(float* data, uint32_t size)
 	{
 		switch (Renderer::GetRenderingAPIType())
 		{
@@ -82,7 +82,7 @@ namespace Retro::Renderer
 			}
 		case RenderingAPIType::OpenGL:
 			{
-				return CreateRef<OpenGLVertexObjectBuffer>(data, size);
+				return CreateShared<OpenGLVertexObjectBuffer>(data, size);
 			}
 		}
 		return {};

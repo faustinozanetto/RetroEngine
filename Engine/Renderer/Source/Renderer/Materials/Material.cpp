@@ -44,7 +44,7 @@ namespace Retro::Renderer
 		 */
 	}
 
-	void Material::SetShader(const Ref<Shader>& shader)
+	void Material::SetShader(const Shared<Shader>& shader)
 	{
 		m_MaterialSpecification.shader = shader;
 	}
@@ -54,14 +54,14 @@ namespace Retro::Renderer
 		return m_MaterialSpecification.textures.find(type)->second;
 	}
 
-	Ref<Material> Material::Create()
+	Shared<Material> Material::Create()
 	{
-		return CreateRef<Material>();
+		return CreateShared<Material>();
 	}
 
-	Ref<Material> Material::Create(const FMaterialSpecification& materialSpecification)
+	Shared<Material> Material::Create(const FMaterialSpecification& materialSpecification)
 	{
-		return CreateRef<Material>(materialSpecification);
+		return CreateShared<Material>(materialSpecification);
 	}
 
 	const std::string Material::GetTextureUniformEnabledValue(EMaterialTextureType type)

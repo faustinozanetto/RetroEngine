@@ -106,9 +106,9 @@ public:
 				1, 3, 2, // second triangle
 			};
 			m_ScreenVAO = Retro::Renderer::VertexArrayBuffer::Create();
-			Retro::Ref<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
+			Retro::Shared<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
 				squareVertices, sizeof(squareVertices));
-			Retro::Ref<Retro::Renderer::IndexBuffer> IBO = Retro::Renderer::IndexBuffer::Create(
+			Retro::Shared<Retro::Renderer::IndexBuffer> IBO = Retro::Renderer::IndexBuffer::Create(
 				squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 			m_ScreenVAO->Bind();
 			VBO->SetVBOLayout({
@@ -122,7 +122,7 @@ public:
 
 		{
 			m_SkyboxVAO = Retro::Renderer::VertexArrayBuffer::Create();
-			Retro::Ref<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
+			Retro::Shared<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
 				skyboxVertices, sizeof(skyboxVertices));
 			m_SkyboxVAO->Bind();
 			VBO->SetVBOLayout({
@@ -218,7 +218,7 @@ public:
 				{Retro::Renderer::VBOElementType::FloatVec3, "u_Position"}
 		}, 0);
 
-		m_Light = Retro::CreateRef<Retro::Renderer::PointLight>();
+		m_Light = Retro::CreateShared<Retro::Renderer::PointLight>();
 
 		m_LightsUBO = Retro::Renderer::UniformBuffer::Create(sizeof(LightsData), 1);
 		m_LightsUBO->SetIBOLayout({
@@ -298,6 +298,7 @@ public:
 		Retro::Renderer::Renderer::SetClearColor({ 0.2f, 0.3f, 0.3f, 1.0f });
 		Retro::Renderer::Renderer::ClearScreen();
 
+		/*
 		glDepthFunc(GL_LEQUAL);
 		glm::mat4 view = m_Camera->GetViewMatrix();
 		m_SkyboxShader->Bind();
@@ -310,6 +311,7 @@ public:
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
 		glDepthFunc(GL_LESS); // set depth function back to default
+		*/
 
 		// Update lights UBO
 		const uint32_t size = sizeof(PointLight);
@@ -399,20 +401,20 @@ private:
 	CameraData m_CameraData;
 	Retro::Renderer::Camera* m_Camera;
 	LightsData m_LightsData;
-	Retro::Ref<Retro::Renderer::TextureCubemap> m_SkyboxCubemap;
-	Retro::Ref<Retro::Renderer::PointLight> m_Light;
-	Retro::Ref<Retro::Renderer::Shader> m_Shader;
-	Retro::Ref<Retro::Renderer::Shader> m_LightingShader;
-	Retro::Ref<Retro::Renderer::Shader> m_SkyboxShader;
-	Retro::Ref<Retro::Renderer::Shader> m_ScreenShader;
-	Retro::Ref<Retro::Renderer::VertexArrayBuffer> m_ScreenVAO;
-	Retro::Ref<Retro::Renderer::VertexArrayBuffer> m_SkyboxVAO;
-	Retro::Ref<Retro::Renderer::Material> m_Material;
-	Retro::Ref<Retro::Renderer::Model> m_Model;
-	Retro::Ref<Retro::Renderer::Model> m_LightModel;
-	Retro::Ref<Retro::Renderer::FrameBuffer> m_FBO;
-	Retro::Ref<Retro::Renderer::UniformBuffer> m_CameraUBO;
-	Retro::Ref<Retro::Renderer::UniformBuffer> m_LightsUBO;
+	Retro::Shared<Retro::Renderer::TextureCubemap> m_SkyboxCubemap;
+	Retro::Shared<Retro::Renderer::PointLight> m_Light;
+	Retro::Shared<Retro::Renderer::Shader> m_Shader;
+	Retro::Shared<Retro::Renderer::Shader> m_LightingShader;
+	Retro::Shared<Retro::Renderer::Shader> m_SkyboxShader;
+	Retro::Shared<Retro::Renderer::Shader> m_ScreenShader;
+	Retro::Shared<Retro::Renderer::VertexArrayBuffer> m_ScreenVAO;
+	Retro::Shared<Retro::Renderer::VertexArrayBuffer> m_SkyboxVAO;
+	Retro::Shared<Retro::Renderer::Material> m_Material;
+	Retro::Shared<Retro::Renderer::Model> m_Model;
+	Retro::Shared<Retro::Renderer::Model> m_LightModel;
+	Retro::Shared<Retro::Renderer::FrameBuffer> m_FBO;
+	Retro::Shared<Retro::Renderer::UniformBuffer> m_CameraUBO;
+	Retro::Shared<Retro::Renderer::UniformBuffer> m_LightsUBO;
 };
 
 class SandboxInterfaceLayer : public Retro::InterfaceLayer
@@ -473,8 +475,8 @@ class SandboxApplication : public Retro::RetroApplication
 public:
 	SandboxApplication() : RetroApplication({ "Sandbox" })
 	{
-		GetLayersManager()->RegisterLayer(Retro::CreateRef<SandboxLayer>());
-		GetInterfaceLayersManager()->RegisterLayer(Retro::CreateRef<SandboxInterfaceLayer>());
+		GetLayersManager()->RegisterLayer(Retro::CreateShared<SandboxLayer>());
+		GetInterfaceLayersManager()->RegisterLayer(Retro::CreateShared<SandboxInterfaceLayer>());
 	}
 
 	~SandboxApplication() override

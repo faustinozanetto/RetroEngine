@@ -19,7 +19,7 @@ namespace Retro::Renderer
 	{
 	}
 
-	const std::vector<Ref<Renderable>>& Model::GetModelRenderables()
+	const std::vector<Shared<Renderable>>& Model::GetModelRenderables()
 	{
 		return m_Renderables;
 	}
@@ -66,7 +66,7 @@ namespace Retro::Renderer
 		return true;
 	}
 
-	Ref<Renderable> Model::ParseRenderable(const aiMesh* mesh)
+	Shared<Renderable> Model::ParseRenderable(const aiMesh* mesh)
 	{
 		// Create temp vectors.
 		std::vector<RenderableVertex> vertices;
@@ -156,7 +156,7 @@ namespace Retro::Renderer
 			Logger::Info("The model has no textures.");
 		}
 
-		return CreateRef<Renderable>(vertices, indices, textures);
+		return CreateShared<Renderable>(vertices, indices, textures);
 	}
 
 	std::vector<RendereableTexture> Model::ParseMaterialTextures(aiMaterial* mat, aiTextureType type,
@@ -184,7 +184,7 @@ namespace Retro::Renderer
 				// if texture hasn't been loaded already, load it
 				file = m_DirectoryPath + '\\' + file;
 
-				Ref<Texture> texture;
+				Shared<Texture> texture;
 				if (const auto& tex = m_AssimpScene->GetEmbeddedTexture(str.C_Str()))
 				{
 					Logger::Info("Found embedded texture" + *tex->mFilename.C_Str());
@@ -212,8 +212,8 @@ namespace Retro::Renderer
 		return textures;
 	}
 
-	Ref<Model> Model::Create(const std::string& modelPath)
+	Shared<Model> Model::Create(const std::string& modelPath)
 	{
-		return CreateRef<Model>(modelPath);
+		return CreateShared<Model>(modelPath);
 	}
 }
