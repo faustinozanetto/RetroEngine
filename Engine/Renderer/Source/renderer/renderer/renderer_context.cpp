@@ -1,11 +1,10 @@
 #include "pch.h"
 
-#include "Platform/OpenGL/Renderer/OpenGLRendererContext.h"
+#include "platform/open_gl/renderer/open_gl_renderer_context.h"
 #include "renderer/renderer/renderer_context.h"
-#include "Renderer/Renderer/Renderer.h"
-#include "GLFW/glfw3.h"
+#include "renderer/renderer/renderer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	unique<renderer_context> renderer_context::create(void *window_handle)
 	{

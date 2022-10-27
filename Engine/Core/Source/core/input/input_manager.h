@@ -2,7 +2,7 @@
 
 #include "core/input/input_key.h"
 
-namespace Retro::Input
+namespace retro::input
 {
 	class input_manager
 	{

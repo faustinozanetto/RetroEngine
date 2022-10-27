@@ -4,7 +4,7 @@
 
 #include "glad/glad.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	open_gl_index_buffer::open_gl_index_buffer(uint32_t* data, uint32_t size)
 	{

@@ -2,7 +2,7 @@
 
 #include "actor.h"
 
-namespace Retro
+namespace retro
 {
 	actor::actor()
 	{
@@ -10,7 +10,7 @@ namespace Retro
 
 	actor::actor(entt::entity handle)
 	{
-		m_ActorHandle = handle;
+		m_actor_handle = handle;
 	}
 
 	actor::~actor()

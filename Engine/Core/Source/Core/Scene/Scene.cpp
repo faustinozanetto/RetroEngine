@@ -2,7 +2,7 @@
 
 #include "scene.h"
 
-namespace Retro
+namespace retro
 {
   scene::scene() : scene("Scene")
   {

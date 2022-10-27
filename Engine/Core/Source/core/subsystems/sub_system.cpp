@@ -1,7 +1,8 @@
 ﻿#include "pch.h"
+
 #include "sub_system.h"
 
-namespace Retro
+namespace retro
 {
 	sub_system::sub_system(const std::string &sub_system_name)
 	{

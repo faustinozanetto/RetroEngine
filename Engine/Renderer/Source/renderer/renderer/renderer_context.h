@@ -2,7 +2,7 @@
 
 #include "core/base.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class renderer_context
 	{

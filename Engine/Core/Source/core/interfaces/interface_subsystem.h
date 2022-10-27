@@ -1,10 +1,9 @@
 ﻿#pragma once
 
 #include "core/subsystems/sub_system.h"
+#include "renderer/interfaces/interface_implementation.h"
 
-#include "Renderer/Interfaces/InterfaceImplementation.h"
-
-namespace Retro
+namespace retro
 {
 	class interface_subsystem : public sub_system
 	{
@@ -24,6 +23,6 @@ namespace Retro
 		static unique<interface_subsystem> create();
 
 	private:
-		unique<Renderer::InterfaceImplementation> m_interface_implementation;
+		unique<renderer::interface_implementation> m_interface_implementation;
 	};
 }

@@ -4,9 +4,9 @@
 
 #include "core/assets/asset.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
-	static std::string convertex_text_enum_to_string(GLenum texture_type)
+	static std::string convert_texture_enum_to_string(GLenum texture_type)
 	{
 		switch (texture_type)
 		{
@@ -82,8 +82,8 @@ namespace Retro::Renderer
 			logger::error("Could not setup texture format.");
 		}
 
-		logger::info("Internal format: " + convertex_text_enum_to_string(m_internal_format));
-		logger::info("Data format: " + convertex_text_enum_to_string(m_data_format));
+		logger::info("Internal format: " + convert_texture_enum_to_string(m_internal_format));
+		logger::info("Data format: " + convert_texture_enum_to_string(m_data_format));
 
 		// Construct the opengl image.
 		setup_image_buffers(data);
@@ -123,8 +123,8 @@ namespace Retro::Renderer
 			logger::error("Could not setup texture format.");
 		}
 
-		logger::info("Internal format: " + convertex_text_enum_to_string(m_internal_format));
-		logger::info("Data format: " + convertex_text_enum_to_string(m_data_format));
+		logger::info("Internal format: " + convert_texture_enum_to_string(m_internal_format));
+		logger::info("Data format: " + convert_texture_enum_to_string(m_data_format));
 
 		// Generating the texture.
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_object_handle);

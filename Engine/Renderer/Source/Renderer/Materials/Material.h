@@ -1,78 +1,79 @@
 ﻿#pragma once
+
 #include <map>
 
-#include "Core/Base.h"
-#include "Renderer/Shader/Shader.h"
-#include "Renderer/Textures/Texture.h"
+#include "core/base.h"
+#include "renderer/shader/shader.h"
+#include "renderer/texture/texture.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
-	enum class EMaterialTextureType
+	enum class material_texture_type
 	{
-		Albedo = 0,
-		Normal = 1,
-		Roughness = 2,
-		Metallic = 3
+		albedo = 0,
+		normal = 1,
+		roughness = 2,
+		metallic = 3
 	};
 
-	struct FMaterialTexture
+	struct material_texture
 	{
-		Shared<Texture> texture;
+		shared<texture> mat_texture;
 		bool enabled;
 
-		FMaterialTexture(const Shared<Texture>& texture, bool enabled) : texture(texture), enabled(enabled)
+		material_texture(const shared<texture>& texture, bool enabled) : mat_texture(texture), enabled(enabled)
 		{
 		}
 	};
 
-	struct FMaterialSpecification
+	struct material_specification
 	{
-		Shared<Shader> shader;
-		std::map<EMaterialTextureType, FMaterialTexture> textures;
+		shared<shader> mat_shader;
+		std::map<material_texture_type, material_texture> textures;
 		glm::vec4 albedo = glm::vec4(1.0f);
 		float metallic = 0.0f;
 		float roughness = 1.0f;
 
-		FMaterialSpecification() = default;
+		material_specification() = default;
 
-		FMaterialSpecification(const Shared<Shader>& shader,
-		                       const std::map<EMaterialTextureType, FMaterialTexture>& textures,
-		                       const glm::vec4& albedo, float metallic, float roughness) : shader(shader),
+		material_specification(const shared<shader>& shader,
+		                       const std::map<material_texture_type, material_texture>& textures,
+		                       const glm::vec4& albedo, float metallic, float roughness) : mat_shader(shader),
 			textures(textures), albedo(albedo),
 			metallic(metallic), roughness(roughness)
 		{
 		}
 	};
 
-	class Material : public GraphicsObject
+	class material : public graphics_object
 	{
 	public:
 		/* Constructor & Destructor */
-		Material();
-		Material(const FMaterialSpecification& materialSpecification);
-		~Material() override;
+		material();
+		material(const material_specification& material_specification);
+		~material() override;
 
 		/* Methods */
-		void Bind() override;
-		void UnBind() override;
+		void bind() override;
+		void un_bind() override;
 
-		void SetShader(const Shared<Shader>& shader);
+		void set_shader(const shared<shader>& shader);
 
-		const FMaterialTexture& GetMaterialTexture(EMaterialTextureType type);
-		const FMaterialSpecification& GetMaterialSpecification() const { return m_MaterialSpecification; }
+		const material_texture& get_material_texture(material_texture_type material_texture_type);
+		const material_specification& get_material_specification() const { return m_material_specification; }
 
-		void SetRoughness(float roughness) { m_MaterialSpecification.roughness = roughness; }
-		void SetMetallic(float metallic) { m_MaterialSpecification.metallic = metallic; }
+		void set_roughness(float roughness) { m_material_specification.roughness = roughness; }
+		void set_metallic(float metallic) { m_material_specification.metallic = metallic; }
 
 		/* Instantiate */
-		static Shared<Material> Create();
-		static Shared<Material> Create(const FMaterialSpecification& materialSpecification);
+		static shared<material> create();
+		static shared<material> create(const material_specification& material_specification);
 
 	private:
-		const std::string GetTextureUniformEnabledValue(EMaterialTextureType type);
-		uint32_t GetMaterialTextureBindSlot(EMaterialTextureType type);
+		const std::string get_material_texture_uniform(material_texture_type material_texture_type);
+		uint32_t get_material_texture_bind_slot(material_texture_type material_texture_type);
 
 	private:
-		FMaterialSpecification m_MaterialSpecification;
+		material_specification m_material_specification;
 	};
 }

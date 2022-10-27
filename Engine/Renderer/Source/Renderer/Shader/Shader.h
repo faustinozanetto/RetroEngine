@@ -1,12 +1,11 @@
 #pragma once
 
 #include "core/base.h"
-#include "core/assets/asset.h"
 #include "renderer/renderer/graphics_object.h"
 
 #include "glm/glm.hpp"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class shader : public graphics_object
 	{
@@ -28,7 +27,7 @@ namespace Retro::Renderer
 
 		virtual int get_uniform_location(const std::string& uniform) = 0;
 
-		/* Instaintiate */
+		/* Instantiate */
 		static shared<shader> create(const std::string& vertex_path, const std::string& fragment_path);
 	};
 }

@@ -3,8 +3,9 @@
 #include "open_gl_vertex_array_buffer.h"
 
 #include "glad/glad.h"
+#include "platform/open_gl/buffers/vbo/open_gl_vertex_object_buffer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	open_gl_vertex_array_buffer::open_gl_vertex_array_buffer()
 	{

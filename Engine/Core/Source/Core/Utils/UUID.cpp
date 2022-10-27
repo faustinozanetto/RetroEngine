@@ -1,7 +1,8 @@
 #include "pch.h"
+
 #include "uuid.h"
 
-namespace Retro
+namespace retro
 {
 	static std::random_device s_random_device;
 	static std::mt19937_64 s_engine(s_random_device());

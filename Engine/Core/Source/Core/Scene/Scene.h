@@ -1,9 +1,9 @@
 #pragma once
 
 #include "entt/entt.hpp"
-#include "Actor.h"
+#include "actor.h"
 
-namespace Retro
+namespace retro
 {
   class scene
   {

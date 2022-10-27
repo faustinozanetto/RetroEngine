@@ -3,7 +3,7 @@
 #include "core/base.h"
 #include "glm/glm.hpp"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	enum class renderer_api_type
 	{

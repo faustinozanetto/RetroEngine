@@ -2,22 +2,21 @@
 
 #include "renderer/renderer/renderer.h"
 #include "core/base.h"
-#include "glad/glad.h"
 
-namespace Retro::renderer
+namespace retro::renderer
 {
 	unique<renderer_api> renderer::s_renderer_api = nullptr;
-	unique<rendererContext> renderer::s_context = nullptr;
+	unique<renderer_context> renderer::s_renderer_context = nullptr;
 	std::queue<render_command> renderer::s_command_queue = {};
 
-	bool renderer::initialize(renderer_api_type renderer_api_type, const Window &window)
+	bool renderer::initialize(renderer_api_type renderer_api_type, const window &window)
 	{
-		Logger::Info("renderer::Initialize | Initializing renderer.");
+		logger::info("renderer::initialize | Initializing renderer.");
 
 		// Instantiate renderer Context.
-		s_context = rendererContext::create(window.GetNativeWindow());
-		RETRO_CORE_ASSERT(s_context, "renderer::initialize | Unable to create renderer context");
-		s_context->initialize();
+		s_renderer_context = renderer_context::create(window.get_native_window());
+		RETRO_CORE_ASSERT(s_renderer_context, "renderer::initialize | Unable to create renderer context");
+		s_renderer_context->initialize();
 
 		// Instantiate rendering api.
 		s_renderer_api = renderer_api::create(renderer_api_type);
@@ -28,7 +27,7 @@ namespace Retro::renderer
 
 	void renderer::set_clear_color(glm::vec4 color)
 	{
-		s_renderer_api->SetClearColor(color);
+		s_renderer_api->set_clear_color(color);
 	}
 
 	void renderer::clear_screen()
@@ -38,17 +37,17 @@ namespace Retro::renderer
 
 	void renderer::swap_buffers()
 	{
-		s_context->swap_buffers();
+		s_renderer_context->swap_buffers();
 	}
 
 	void renderer::poll_input()
 	{
-		s_context->poll_input();
+		s_renderer_context->poll_input();
 	}
 
 	void renderer::set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
-		s_context->set_viewport(x, y, width, height);
+		s_renderer_context->set_viewport(x, y, width, height);
 	}
 
 	void renderer::set_renderer_mode(renderer_mode renderer_mode)
@@ -68,7 +67,7 @@ namespace Retro::renderer
 
 	bool renderer::should_close()
 	{
-		return s_context->should_close();
+		return s_renderer_context->should_close();
 	}
 
 	void renderer::begin()
@@ -111,17 +110,17 @@ namespace Retro::renderer
 
 	void renderer::process_render_command(const render_command &command)
 	{
-		if (command.material)
-			command.material->Bind();
-		command.vao->Bind();
+		if (command.c_material)
+			command.c_material->bind();
+		command.vao->bind();
 		// Pass the data to the rendering api and perform the actual rendering.
 		uint32_t size = 0;
-		if (command.vao->GetIndexBuffer())
-			size = command.vao->GetIndexBuffer()->GetSize();
-		s_rendering_api->ProcessRendereable(size);
+		if (command.vao->get_index_buffer())
+			size = command.vao->get_index_buffer()->get_size();
+		s_renderer_api->process_rendereable(size);
 		// Unbind after usage.
-		command.vao->UnBind();
-		if (command.material)
-			command.material->UnBind();
+		command.vao->un_bind();
+		if (command.c_material)
+			command.c_material->un_bind();
 	}
 }

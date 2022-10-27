@@ -6,7 +6,7 @@
 #include "renderer/renderer/renderer_context.h"
 #include "renderer/renderer/renderer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	uniform_buffer::~uniform_buffer()
 	{

@@ -1,26 +1,24 @@
 #include "pch.h"
 
-#include "OpenGLTexture.cpp"
 #include <stb_image.h>
-#include "OpenGLTextureCubemap.h"
-
+#include "open_gl_texture_cubemap.h"
 
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "open_gl_texture.cpp"
 
-
-namespace Retro::Renderer
+namespace retro::renderer
 {
-	OpenGLTextureCubemap::OpenGLTextureCubemap(const FTextureSpecification& textureSpecification) : Asset(AssetType::Texture)
+	open_gl_texture_cubemap::open_gl_texture_cubemap(const texture_specification& texture_specification) : asset(asset_type::texture)
 	{
-		Logger::Line();
-		m_EquirectangularShader = Shader::Create("Assets/Shaders/Skybox/Equirectangular.vert", 
+		logger::line();
+		m_EquirectangularShader = shader::create("Assets/Shaders/Skybox/Equirectangular.vert", 
 			"Assets/Shaders/Skybox/Equirectangular.frag");
-		m_TextureSpecification = textureSpecification;
-		Logger::Info("OpenGLTextureCubemap::OpenGLTextureCubemap | Loading cubemap: ");
-		Logger::Info("  - Path: " + m_TextureSpecification.path);
-		Logger::Info("  - Filtering: " + Texture::GetTextureFilteringToString(m_TextureSpecification.filtering));
-		Logger::Info("  - Wrapping: " + Texture::GetTextureWrappingToString(m_TextureSpecification.wrapping));
+		m_texture_specification = texture_specification;
+		logger::info("open_gl_texture_cubemap::open_gl_texture_cubemap | Loading cubemap: ");
+		logger::info("  - Path: " + m_texture_specification.path);
+		logger::info("  - Filtering: " + texture::get_texture_filtering_to_string(m_texture_specification.filtering));
+		logger::info("  - Wrapping: " + texture::get_texture_wrapping_to_string(m_texture_specification.wrapping));
 
 		const uint32_t cubemapSize = 2048;
 		const uint32_t irradianceMapSize = 32;
@@ -33,7 +31,7 @@ namespace Retro::Renderer
 		// Load file using STB.
 		stbi_set_flip_vertically_on_load(1);
 		{
-			data = stbi_loadf(m_TextureSpecification.path.c_str(), &width, &height, &channels, 0);
+			data = stbi_loadf(m_texture_specification.path.c_str(), &width, &height, &channels, 0);
 		}
 
 		RETRO_CORE_ASSERT(data, "Failed to load data from image");
@@ -43,19 +41,19 @@ namespace Retro::Renderer
 		m_Height = height;
 		m_Channels = channels;
 
-		Logger::Info(
+		logger::info(
 			"  - Width: " + std::to_string(m_Width) + " Height: " + std::to_string(
 				m_Height));
-		Logger::Info("  - Channels: " + std::to_string(m_Channels));
+		logger::info("  - Channels: " + std::to_string(m_Channels));
 
 		const GLenum internalFormat = GL_RGB16F, dataFormat = GL_RGB;
 
 		m_InternalFormat = internalFormat;
 		m_DataFormat = dataFormat;
 
-		Logger::Info("Internal format: " + ConvertTextureEnumToString(m_InternalFormat));
-		Logger::Info("Data format: " + ConvertTextureEnumToString(m_DataFormat));
-		SetupCube();
+		logger::info("Internal format: " + convert_texture_enum_to_string(m_InternalFormat));
+		logger::info("Data format: " + convert_texture_enum_to_string(m_DataFormat));
+		setup_cube();
 		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 		glm::mat4 captureViews[] =
 		{
@@ -68,8 +66,8 @@ namespace Retro::Renderer
 		};
 
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_ObjectHandle);
-		glBindTexture(GL_TEXTURE_2D, m_ObjectHandle);
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_object_handle);
+		glBindTexture(GL_TEXTURE_2D, m_object_handle);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
 
@@ -101,20 +99,20 @@ namespace Retro::Renderer
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		m_EquirectangularShader->Bind();
-		m_EquirectangularShader->SetMat4("camera.u_ProjectionMatrix", captureProjection);
+		m_EquirectangularShader->bind();
+		m_EquirectangularShader->set_mat4("camera.u_ProjectionMatrix", captureProjection);
 
-		Bind(0);
+		bind(0);
 
 		glViewport(0, 0, 2048, 2048); // don't forget to configure the viewport to the capture dimensions.
 		glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 		for (unsigned int i = 0; i < 6; ++i)
 		{
-			m_EquirectangularShader->SetMat4("camera.u_ViewMatrix", captureViews[i]);
+			m_EquirectangularShader->set_mat4("camera.u_ViewMatrix", captureViews[i]);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap,
 				0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			RenderCube();
+			render_cube();
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -166,27 +164,27 @@ namespace Retro::Renderer
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 	}
 
-	OpenGLTextureCubemap::~OpenGLTextureCubemap()
+	open_gl_texture_cubemap::~open_gl_texture_cubemap()
 	{
-		glDeleteTextures(1, &m_ObjectHandle);
+		glDeleteTextures(1, &m_object_handle);
 	}
 
-	void OpenGLTextureCubemap::Bind()
+	void open_gl_texture_cubemap::bind()
 	{
-		Bind(0);
+		bind(0);
 	}
 
-	void OpenGLTextureCubemap::Bind(int slot)
+	void open_gl_texture_cubemap::bind(int slot)
 	{
-		glBindTextureUnit(slot, m_ObjectHandle);
+		glBindTextureUnit(slot, m_object_handle);
 	}
 
-	void OpenGLTextureCubemap::UnBind()
+	void open_gl_texture_cubemap::un_bind()
 	{
-		glBindTexture(m_ObjectHandle, 0);
+		glBindTexture(m_object_handle, 0);
 	}
 
-	void OpenGLTextureCubemap::SetupCube()
+	void open_gl_texture_cubemap::setup_cube()
 	{
 		float vertices[] = {
 			// back face
@@ -232,20 +230,20 @@ namespace Retro::Renderer
 			-1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top-left
 			-1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f // bottom-left        
 		};
-		m_CubeVAO = VertexArrayBuffer::Create();
-		Shared<VertexObjectBuffer> cubeVBO = VertexObjectBuffer::Create(vertices, sizeof(vertices));
+		m_CubeVAO = vertex_array_buffer::create();
+		shared<vertex_object_buffer> cubeVBO = vertex_object_buffer::create(vertices, sizeof(vertices));
 
-		cubeVBO->SetVBOLayout({
-			{VBOElementType::FloatVec3, "aPos"},
-			{VBOElementType::FloatVec2, "aNormal"},
-			{VBOElementType::FloatVec3, "aTexCoord"},
+		cubeVBO->set_layout({
+			{layout_element_type::FloatVec3, "aPos"},
+			{layout_element_type::FloatVec2, "aNormal"},
+			{layout_element_type::FloatVec3, "aTexCoord"},
 			});
-		m_CubeVAO->AddVertexObjectBuffer(cubeVBO);
+		m_CubeVAO->add_vertex_buffer(cubeVBO);
 	}
 
-	void OpenGLTextureCubemap::RenderCube()
+	void open_gl_texture_cubemap::render_cube()
 	{
-		m_CubeVAO->Bind();
+		m_CubeVAO->bind();
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 }

@@ -2,11 +2,11 @@
 
 #include "frame_buffer.h"
 
-#include "Platform/OpenGL/Buffers/FBO/OpenGLFrameBuffer.h"
+#include "platform/open_gl/buffers/fbo/open_gl_frame_buffer.h"
 #include "renderer/renderer/renderer_context.h"
 #include "renderer/renderer/renderer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	frame_buffer::~frame_buffer()
 	{

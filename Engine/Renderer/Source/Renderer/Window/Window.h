@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "Core/Base.h"
+#include "core/base.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	struct window_specification
 	{

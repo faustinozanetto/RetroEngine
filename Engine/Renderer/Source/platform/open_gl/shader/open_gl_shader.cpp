@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	open_gl_shader::open_gl_shader(const std::string& vertexPath, const std::string& fragmentPath) : asset(
 		asset_type::shader)

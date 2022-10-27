@@ -5,7 +5,7 @@
 #include "renderer/buffers/vbo/vertex_object_buffer.h"
 #include "renderer/renderer/graphics_object.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class vertex_array_buffer : public graphics_object
 	{

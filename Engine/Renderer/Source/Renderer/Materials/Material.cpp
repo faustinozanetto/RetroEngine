@@ -1,39 +1,40 @@
 ﻿#include "pch.h"
-#include "Material.h"
 
-namespace Retro::Renderer
+#include "material.h"
+
+namespace retro::renderer
 {
-	Material::Material()
+	material::material()
 	{
-		m_MaterialSpecification = FMaterialSpecification();
+		m_material_specification = material_specification();
 	}
 
-	Material::Material(const FMaterialSpecification& materialSpecification)
+	material::material(const material_specification& material_specification)
 	{
-		m_MaterialSpecification = materialSpecification;
+		m_material_specification = material_specification;
 	}
 
-	Material::~Material()
+	material::~material()
 	{
 	}
 
-	void Material::Bind()
+	void material::bind()
 	{
-		if (!m_MaterialSpecification.shader) return;
+		if (!m_material_specification.mat_shader) return;
 		// Bind colors and parameters.
-		m_MaterialSpecification.shader->SetVecFloat4("material.albedo", m_MaterialSpecification.albedo);
-		m_MaterialSpecification.shader->SetFloat("material.metallic", m_MaterialSpecification.metallic);
-		m_MaterialSpecification.shader->SetFloat("material.roughness", m_MaterialSpecification.roughness);
+		m_material_specification.mat_shader->set_vec_float4("material.albedo", m_material_specification.albedo);
+		m_material_specification.mat_shader->set_float("material.metallic", m_material_specification.metallic);
+		m_material_specification.mat_shader->set_float("material.roughness", m_material_specification.roughness);
 		// Bind each texture in the material.
-		for (const auto& [type, texture] : m_MaterialSpecification.textures)
+		for (const auto& [type, texture] : m_material_specification.textures)
 		{
-			const std::string& uniformName = GetTextureUniformEnabledValue(type);
-			m_MaterialSpecification.shader->SetInt(uniformName, texture.enabled ? 1 : 0);
-			if (texture.enabled) texture.texture->Bind(GetMaterialTextureBindSlot(type));
+			const std::string& uniformName = get_material_texture_uniform(type);
+			m_material_specification.mat_shader->set_int(uniformName, texture.enabled ? 1 : 0);
+			if (texture.enabled) texture.mat_texture->bind(get_material_texture_bind_slot(type));
 		}
 	}
 
-	void Material::UnBind()
+	void material::un_bind()
 	{
 		// UnBind each texture in the material.
 		/*
@@ -44,46 +45,46 @@ namespace Retro::Renderer
 		 */
 	}
 
-	void Material::SetShader(const Shared<Shader>& shader)
+	void material::set_shader(const shared<shader>& shader)
 	{
-		m_MaterialSpecification.shader = shader;
+		m_material_specification.mat_shader = shader;
 	}
 
-	const FMaterialTexture& Material::GetMaterialTexture(EMaterialTextureType type)
+	const material_texture& material::get_material_texture(material_texture_type material_texture_type)
 	{
-		return m_MaterialSpecification.textures.find(type)->second;
+		return m_material_specification.textures.find(material_texture_type)->second;
 	}
 
-	Shared<Material> Material::Create()
+	shared<material> material::create()
 	{
-		return CreateShared<Material>();
+		return create_shared<material>();
 	}
 
-	Shared<Material> Material::Create(const FMaterialSpecification& materialSpecification)
+	shared<material> material::create(const material_specification& material_specification)
 	{
-		return CreateShared<Material>(materialSpecification);
+		return create_shared<material>(material_specification);
 	}
 
-	const std::string Material::GetTextureUniformEnabledValue(EMaterialTextureType type)
+	const std::string material::get_material_texture_uniform(material_texture_type material_texture_type)
 	{
-		switch (type)
+		switch (material_texture_type)
 		{
-		case EMaterialTextureType::Albedo: return "material.hasAlbedoMap";
-		case EMaterialTextureType::Normal: return "material.hasNormalMap";
-		case EMaterialTextureType::Roughness: return "material.hasRoughnessMap";
-		case EMaterialTextureType::Metallic: return "material.hasMetallicMap";
+		case material_texture_type::albedo: return "material.hasAlbedoMap";
+		case material_texture_type::normal: return "material.hasNormalMap";
+		case material_texture_type::roughness: return "material.hasRoughnessMap";
+		case material_texture_type::metallic: return "material.hasMetallicMap";
 		}
 		return "";
 	}
 
-	uint32_t Material::GetMaterialTextureBindSlot(EMaterialTextureType type)
+	uint32_t material::get_material_texture_bind_slot(material_texture_type material_texture_type)
 	{
-		switch (type)
+		switch (material_texture_type)
 		{
-		case EMaterialTextureType::Albedo: return 0;
-		case EMaterialTextureType::Normal: return 1;
-		case EMaterialTextureType::Roughness: return 2;
-		case EMaterialTextureType::Metallic: return 3;
+		case material_texture_type::albedo: return 0;
+		case material_texture_type::normal: return 1;
+		case material_texture_type::roughness: return 2;
+		case material_texture_type::metallic: return 3;
 		}
 		return 0;
 	}

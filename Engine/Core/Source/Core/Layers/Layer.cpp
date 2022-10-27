@@ -1,7 +1,8 @@
 ﻿#include "pch.h"
+
 #include "layer.h"
 
-namespace Retro
+namespace retro
 {
 	layer::layer(const std::string &layer_name)
 	{

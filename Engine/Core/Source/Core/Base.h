@@ -25,7 +25,7 @@
 
 #define RETRO_BIND_EVENT_FN(fn) [this](auto &&...args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
-namespace Retro
+namespace retro
 {
 	template <typename T>
 	using unique = std::unique_ptr<T>;

@@ -1,11 +1,12 @@
 #include "pch.h"
 
-#include "Platform/OpenGL/Renderer/OpenGLRenderingAPI.h"
-#include "Core/Base.h"
+#include "open_gl_renderer_api.h"
+
+#include "core/base.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	static std::string GetStringForType(GLenum type)
 	{
@@ -77,23 +78,23 @@ namespace Retro::Renderer
 		const char* message,
 		const void* userParam)
 	{
-		Logger::Error("Message: " + std::string(message));
-		Logger::Error("Type: " + GetStringForType(type));
-		Logger::Error("Source: " + GetStringForSource(source));
-		Logger::Error("Severity: " + GetStringForSeverity(severity));
-		Logger::Error("ID: " + id);
+		logger::error("Message: " + std::string(message));
+		logger::error("Type: " + GetStringForType(type));
+		logger::error("Source: " + GetStringForSource(source));
+		logger::error("Severity: " + GetStringForSeverity(severity));
+		logger::error("ID: " + id);
 	}
 
-	OpenGLRenderingAPI::OpenGLRenderingAPI()
+	open_gl_renderer_api::open_gl_renderer_api()
 	{
-		Logger::Info("OpenGLRenderingAPI::OpenGLRenderingAPI | Created rendering API.");
+		logger::info("open_gl_renderer_api::open_gl_renderer_api | Created rendering API.");
 	}
 
-	OpenGLRenderingAPI::~OpenGLRenderingAPI() = default;
+	open_gl_renderer_api::~open_gl_renderer_api() = default;
 
-	bool OpenGLRenderingAPI::Initialize()
+	bool open_gl_renderer_api::initialize()
 	{
-		Logger::Info("OpenGLRenderingAPI::Initialize | Initializing rendering API.");
+		logger::info("open_gl_renderer_api::initialize | Initializing rendering API.");
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(OpenGLMessageCallback, nullptr);
@@ -104,63 +105,63 @@ namespace Retro::Renderer
 		return true;
 	}
 
-	void OpenGLRenderingAPI::SetClearColor(glm::vec4 color)
+	void open_gl_renderer_api::set_clear_color(glm::vec4 color)
 	{
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
-	void OpenGLRenderingAPI::SetRenderMode(ERenderMode renderMode)
+	void open_gl_renderer_api::set_renderer_mode(renderer_mode renderer_mode)
 	{
-		switch (renderMode)
+		switch (renderer_mode)
 		{
-		case ERenderMode::Normal:
+		case renderer_mode::normal:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			break;
-		case ERenderMode::Wireframe:
+		case renderer_mode::wireframe:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			break;
-		case ERenderMode::Point:
+		case renderer_mode::point:
 			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 			break;
 		}
 	}
 
-	void OpenGLRenderingAPI::SetRendererState(ERendererState renderState, bool enabled)
+	void open_gl_renderer_api::set_renderer_state(renderer_state renderer_state, bool enabled)
 	{
 		if (enabled)
-			glEnable(GetRendererStateToOpenGL(renderState));
+			glEnable(get_renderer_state_to_open_gl(renderer_state));
 		else
-			glDisable(GetRendererStateToOpenGL(renderState));
+			glDisable(get_renderer_state_to_open_gl(renderer_state));
 	}
 
-	void OpenGLRenderingAPI::ClearScreen()
+	void open_gl_renderer_api::clear_screen()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRenderingAPI::ProcessRendereable(int size)
+	void open_gl_renderer_api::process_rendereable(int size)
 	{
 		glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
 		// glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void OpenGLRenderingAPI::BindTexture(uint32_t textureHandle, uint32_t textureSlot)
+	void open_gl_renderer_api::bind_texture(uint32_t texture_handle, uint32_t texture_slot)
 	{
-		glBindTextureUnit(textureSlot, textureHandle);
+		glBindTextureUnit(texture_slot, texture_handle);
 	}
 
-	double OpenGLRenderingAPI::GetTime()
+	double open_gl_renderer_api::get_time()
 	{
 		return glfwGetTime();
 	}
 
-	GLenum OpenGLRenderingAPI::GetRendererStateToOpenGL(ERendererState renderState)
+	GLenum open_gl_renderer_api::get_renderer_state_to_open_gl(renderer_state renderer_state)
 	{
-		switch (renderState)
+		switch (renderer_state)
 		{
-		case ERendererState::DEPTH_TEST: return GL_DEPTH_TEST;
+		case renderer_state::depth_test: return GL_DEPTH_TEST;
 		}
-		RETRO_CORE_ASSERT(false, "OpenGLRenderingAPI::GetRendererStateToOpenGL | Unknown render state");
+		RETRO_CORE_ASSERT(false, "open_gl_renderer_api::get_renderer_state_to_open_gl | Unknown render state");
 		return 0;
 	}
 }

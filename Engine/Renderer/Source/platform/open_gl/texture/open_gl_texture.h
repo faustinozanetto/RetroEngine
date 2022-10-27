@@ -7,7 +7,7 @@
 
 #include "renderer/texture/texture.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class open_gl_texture : public texture, public asset
 	{

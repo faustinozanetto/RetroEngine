@@ -6,7 +6,7 @@
 #include "renderer/renderer/renderer_context.h"
 #include "renderer/renderer/renderer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	std::string texture::get_texture_filtering_to_string(texture_filtering texture_filtering)
 	{

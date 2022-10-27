@@ -6,7 +6,7 @@
 #include "spdlog/sinks/base_sink.h"
 #include "spdlog/sinks/ostream_sink.h"
 
-namespace Retro
+namespace retro
 {
 	std::shared_ptr<spdlog::logger> logger::s_engine_logger;
 
