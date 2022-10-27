@@ -11,10 +11,12 @@
 #include "core/interfaces/interface_layer.h"
 #include "core/layers/layer.h"
 #include "core/scene/scene.h"
+#include "glad/glad.h"
 #include "renderer/buffers/fbo/frame_buffer.h"
 #include "renderer/buffers/ubo/uniform_buffer.h"
 #include "renderer/buffers/vao/vertex_array_buffer.h"
 #include "renderer/camera/camera.h"
+#include "renderer/lighting/lighting_environment.h"
 #include "renderer/lighting/point_light.h"
 #include "renderer/materials/material.h"
 #include "renderer/rendereables/model/model.h"
@@ -42,51 +44,6 @@ struct PointLight
 struct LightsData
 {
 	PointLight pointLight;
-};
-
-float skyboxVertices[] = {
-	// positions
-	-1.0f, 1.0f, -1.0f,
-	-1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-	1.0f, 1.0f, -1.0f,
-	-1.0f, 1.0f, -1.0f,
-
-	-1.0f, -1.0f, 1.0f,
-	-1.0f, -1.0f, -1.0f,
-	-1.0f, 1.0f, -1.0f,
-	-1.0f, 1.0f, -1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, -1.0f, 1.0f,
-
-	1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-
-	-1.0f, -1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, -1.0f, 1.0f,
-	-1.0f, -1.0f, 1.0f,
-
-	-1.0f, 1.0f, -1.0f,
-	1.0f, 1.0f, -1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, -1.0f,
-
-	-1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f, 1.0f,
-	1.0f, -1.0f, -1.0f,
-	1.0f, -1.0f, -1.0f,
-	-1.0f, -1.0f, 1.0f,
-	1.0f, -1.0f, 1.0f
 };
 
 class sandbox_layer : public retro::layer
@@ -123,19 +80,12 @@ public:
 		}
 
 		{
-			m_SkyboxVAO = retro::renderer::vertex_array_buffer::create();
-			auto VBO = retro::renderer::vertex_object_buffer::create(
-				skyboxVertices, sizeof(skyboxVertices));
-			m_SkyboxVAO->bind();
-			VBO->set_layout({{retro::renderer::layout_element_type::FloatVec3, "aPos"}});
-			m_SkyboxVAO->add_vertex_buffer(VBO);
-			m_SkyboxVAO->un_bind();
-
 			m_SkyboxCubemap = retro::renderer::texture_cubemap::create({
 				"Assets/Textures/HDR/belfast_farmhouse_2k.hdr",
 				retro::renderer::texture_filtering::linear,
 				retro::renderer::texture_wrapping::clamp_edge
 			});
+			m_lighting_environment = retro::renderer::lighting_environment::create(m_SkyboxCubemap);
 		}
 
 		m_Scene = retro::scene::create("Sandbox");
@@ -147,12 +97,11 @@ public:
 		                                                 "Assets/Shaders/Screen/Screen.frag");
 		m_LightingShader = retro::renderer::shader::create("Assets/Shaders/Lighting/Lighting.vert",
 		                                                   "Assets/Shaders/Lighting/Lighting.frag");
-		m_SkyboxShader = retro::renderer::shader::create("Assets/Shaders/Skybox/Skybox.vert",
-		                                                 "Assets/Shaders/Skybox/Skybox.frag");
 		m_LightModel = retro::renderer::model::create("Assets/Models/Cube.obj");
 
 		m_Model = retro::renderer::model::create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
 
+		/*
 		auto albedo = retro::renderer::texture::create({
 			"Assets/Models/Cerberus/textures/Cerberus_A.png",
 			retro::renderer::texture_filtering::linear,
@@ -201,6 +150,7 @@ public:
 		m_Material = retro::renderer::material::create(
 			materialSpecification);
 
+*/
 		m_FBO = retro::renderer::frame_buffer::create({
 			2560, 1440, {
 				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
@@ -214,25 +164,25 @@ public:
 		m_Camera = new retro::renderer::camera(50.0f, 0.01f, 1000.0f);
 		m_CameraUBO = retro::renderer::uniform_buffer::create(sizeof(CameraData), 0);
 		m_CameraUBO->set_layout({
-			                          {retro::renderer::layout_element_type::Mat4, "u_ViewProjectionMatrixPos"},
-			                          {retro::renderer::layout_element_type::Mat4, "u_ViewMatrix"},
-			                          {retro::renderer::layout_element_type::Mat4, "u_ProjectionMatrix"},
-			                          {retro::renderer::layout_element_type::FloatVec3, "u_Position"}
-		                          },
-		                          0);
+			                        {retro::renderer::layout_element_type::Mat4, "u_ViewProjectionMatrixPos"},
+			                        {retro::renderer::layout_element_type::Mat4, "u_ViewMatrix"},
+			                        {retro::renderer::layout_element_type::Mat4, "u_ProjectionMatrix"},
+			                        {retro::renderer::layout_element_type::FloatVec3, "u_Position"}
+		                        },
+		                        0);
 
 		m_Light = retro::create_shared<retro::renderer::point_light>();
 
 		m_LightsUBO = retro::renderer::uniform_buffer::create(sizeof(LightsData), 1);
 		m_LightsUBO->set_layout({
-			                          {retro::renderer::layout_element_type::FloatVec3, "position"},
-			                          {retro::renderer::layout_element_type::FloatVec3, "ambient"},
-			                          {retro::renderer::layout_element_type::FloatVec3, "diffuse"},
-			                          {retro::renderer::layout_element_type::Float, "constant"},
-			                          {retro::renderer::layout_element_type::Float, "linear"},
-			                          {retro::renderer::layout_element_type::Float, "quadratic"}
-		                          },
-		                          1, 1 + 1);
+			                        {retro::renderer::layout_element_type::FloatVec3, "position"},
+			                        {retro::renderer::layout_element_type::FloatVec3, "ambient"},
+			                        {retro::renderer::layout_element_type::FloatVec3, "diffuse"},
+			                        {retro::renderer::layout_element_type::Float, "constant"},
+			                        {retro::renderer::layout_element_type::Float, "linear"},
+			                        {retro::renderer::layout_element_type::Float, "quadratic"}
+		                        },
+		                        1, 1 + 1);
 	}
 
 	void on_layer_registered() override
@@ -256,6 +206,8 @@ public:
 		m_CameraUBO->set_data(&m_CameraData, sizeof(CameraData));
 		m_CameraUBO->un_bind();
 
+		m_lighting_environment->set_view_projection(m_CameraData.u_ViewMatrix, m_CameraData.u_ProjectionMatrix);
+
 		if (retro::input::input_manager::is_key_pressed(retro::input::key::Escape))
 		{
 			m_CameraFov = 20.0f;
@@ -274,7 +226,7 @@ public:
 		// Render light model
 		{
 			auto lightMat = glm::mat4(1.0f);
-			lightMat = glm::translate(lightMat, m_Light->get_position());
+			lightMat = translate(lightMat, m_Light->get_position());
 			lightMat = scale(lightMat, {0.25f, 0.25f, 0.25f});
 			m_Shader->set_mat4("uTransform", lightMat);
 			m_Shader->set_int("material.hasAlbedoMap", 0);
@@ -284,6 +236,7 @@ public:
 			});
 		}
 
+		/*
 		auto model = glm::mat4(1.0f);
 		model = translate(model, m_Translate);
 		model = rotate(model, 1.0f, m_Rotation);
@@ -293,8 +246,11 @@ public:
 		for (const auto& renderable : m_Model->get_model_renderables())
 		{
 			m_Shader->set_mat4("uTransform", model);
-			retro::renderer::renderer::submit_command({m_Shader, renderable->get_vertex_array_buffer(), m_Material, model});
+			retro::renderer::renderer::submit_command({
+				m_Shader, renderable->get_vertex_array_buffer(), m_Material, model
+			});
 		}
+		*/
 		m_Shader->un_bind();
 		m_FBO->un_bind();
 
@@ -302,20 +258,10 @@ public:
 		retro::renderer::renderer::set_clear_color({0.2f, 0.3f, 0.3f, 1.0f});
 		retro::renderer::renderer::clear_screen();
 
-		/*
+		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
-		glm::mat4 view = m_Camera->GetViewMatrix();
-		m_SkyboxShader->Bind();
-		view = glm::mat4(glm::mat3(m_Camera->GetViewMatrix())); // remove translation from the view matrix
-		m_SkyboxShader->SetMat4("view", view);
-		m_SkyboxShader->SetMat4("projection", m_Camera->GetProjectionMatrix());
-		m_SkyboxVAO->Bind();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, m_SkyboxCubemap->GetObjectHandle());
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
-		glDepthFunc(GL_LESS); // set depth function back to default
-		*/
+		m_lighting_environment->render_environment();
+		glDepthFunc(GL_LESS);
 
 		// Update lights UBO
 		m_LightsUBO->bind();
@@ -411,13 +357,12 @@ private:
 	LightsData m_LightsData;
 	retro::shared<retro::scene> m_Scene;
 	retro::shared<retro::renderer::texture_cubemap> m_SkyboxCubemap;
+	retro::shared<retro::renderer::lighting_environment> m_lighting_environment;
 	retro::shared<retro::renderer::point_light> m_Light;
 	retro::shared<retro::renderer::shader> m_Shader;
 	retro::shared<retro::renderer::shader> m_LightingShader;
-	retro::shared<retro::renderer::shader> m_SkyboxShader;
 	retro::shared<retro::renderer::shader> m_ScreenShader;
 	retro::shared<retro::renderer::vertex_array_buffer> m_ScreenVAO;
-	retro::shared<retro::renderer::vertex_array_buffer> m_SkyboxVAO;
 	retro::shared<retro::renderer::material> m_Material;
 	retro::shared<retro::renderer::model> m_Model;
 	retro::shared<retro::renderer::model> m_LightModel;
