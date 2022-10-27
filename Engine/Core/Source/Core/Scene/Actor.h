@@ -1,23 +1,26 @@
 #pragma once
 
-#include "entt/entt.hpp"
+#include <entt/entt.hpp>
 
 namespace Retro
 {
-  class Actor
-  {
-  public:
-    Actor();
-    ~Actor() = default;
+	class actor
+	{
+	public:
+		actor();
+		actor(entt::entity handle);
+		~actor();
 
-    entt::entity GetActorHandle() const { return m_ActorHandle; };
+		entt::entity get_actor_handle() const { return m_actor_handle; };
 
-    operator bool() const
-    {
-      return m_ActorHandle != entt::null;
-    }
+		operator bool() const
+		{
+			return m_actor_handle != entt::null;
+		}
 
-  private:
-    entt::entity m_ActorHandle{entt::null};
-  };
+		static shared<actor> create(entt::entity handle);
+
+	private:
+		entt::entity m_actor_handle{entt::null};
+	};
 }

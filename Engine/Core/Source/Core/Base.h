@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PlatformDetection.h"
+#include "platform_detection.h"
 
 #include <memory>
 
@@ -23,28 +23,28 @@
 
 #define BIT(x) (1 << x)
 
-#define RETRO_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+#define RETRO_BIND_EVENT_FN(fn) [this](auto &&...args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 namespace Retro
 {
 	template <typename T>
-	using Unique = std::unique_ptr<T>;
+	using unique = std::unique_ptr<T>;
 
-	template <typename T, typename ... Args>
-	constexpr Unique<T> CreateUnique(Args&& ... args)
+	template <typename T, typename... Args>
+	constexpr unique<T> create_unique(Args &&...args)
 	{
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
 	template <typename T>
-	using Shared = std::shared_ptr<T>;
+	using shared = std::shared_ptr<T>;
 
-	template <typename T, typename ... Args>
-	constexpr Shared<T> CreateShared(Args&& ... args)
+	template <typename T, typename... Args>
+	constexpr shared<T> create_shared(Args &&...args)
 	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 }
 
-#include "Logger/Logger.h"
-#include "Core/Assert.h"
+#include "logger/logger.h"
+#include "core/assert.h"

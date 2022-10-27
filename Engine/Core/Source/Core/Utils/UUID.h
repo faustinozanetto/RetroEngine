@@ -2,16 +2,16 @@
 
 namespace Retro
 {
-	class UUID
+	class uuid
 	{
 	public:
-		UUID();
-		UUID(uint64_t uuid);
-		UUID(const UUID&) = default;
+		uuid();
+		uuid(uint64_t uuid);
+		uuid(const uuid &) = default;
 
-		const uint64_t Get() { return m_UUID; }
+		const uint64_t get() { return m_uuid; }
 
 	private:
-		uint64_t m_UUID;
+		uint64_t m_uuid;
 	};
 }

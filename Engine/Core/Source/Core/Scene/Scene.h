@@ -1,16 +1,27 @@
 #pragma once
 
 #include "entt/entt.hpp"
+#include "Actor.h"
 
 namespace Retro
 {
-  class Scene
+  class scene
   {
   public:
-    Scene();
-    ~Scene();
+    scene();
+    scene(const std::string &scene_name);
+    ~scene();
+
+    shared<actor> create_actor();
+
+    const entt::registry &get_actor_registry() { return m_actors_registry; }
+
+    static shared<scene> create(const std::string &scene_name);
 
   private:
-    entt::registry m_ActorsRegistry;
+    entt::registry m_actors_registry;
+    std::string m_scene_name;
+
+    std::vector<shared<actor>> m_actors;
   };
 }

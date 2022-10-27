@@ -1,33 +1,33 @@
 #pragma once
 
-#include "Core/Utils/UUID.h"
+#include "core/utils/uuid.h"
 #include "Core/Base.h"
 
 namespace Retro
 {
-	enum class AssetType
+	enum class asset_type
 	{
-		None = 0,
-		Model = 1,
-		Texture = 2,
-		Shader = 3,
+		none = 0,
+		model = 1,
+		texture = 2,
+		shader = 3,
 	};
 
-	class Asset
+	class asset
 	{
 	public:
-		Asset();
-		Asset(AssetType assetType);
-		virtual ~Asset() = default;
+		asset();
+		asset(asset_type asset_type);
+		virtual ~asset() = default;
 
-		const Shared<UUID>& GetUUID() const;
-		const AssetType GetAssetType() { return m_AssetType; }
+		const shared<uuid> &get_uuid() const;
+		const asset_type get_asset_type() { return m_asset_type; }
 
-		static std::string GetAssetToString(AssetType assetType);
-		static Shared<Asset> Create(AssetType assetType);
+		static std::string get_asset_to_string(asset_type asset_type);
+		static shared<asset> create(asset_type asset_type);
 
 	private:
-		Shared<UUID> m_UUID;
-		AssetType m_AssetType;
+		shared<uuid> m_uuid;
+		asset_type m_asset_type;
 	};
 }

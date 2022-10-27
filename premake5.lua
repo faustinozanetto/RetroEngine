@@ -21,7 +21,7 @@ IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 IncludeDir["IMGUI"] = "%{wks.location}/ThirdParty/IMGUI"
 IncludeDir["STB"] = "%{wks.location}/ThirdParty/STB"
 IncludeDir["ASSIMP"] = "%{wks.location}/ThirdParty/ASSIMP/include"
-IncludeDir["ENTT"] = "%{wks.location}/ThirdParty/ENTT/src"
+IncludeDir["ENTT"] = "%{wks.location}/ThirdParty/ENTT/include"
 
 group "Dependencies"
     include "ThirdParty/GLFW"

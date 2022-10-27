@@ -1,24 +1,25 @@
 #include "pch.h"
 
-#include "Renderer/Shader/Shader.h"
-#include "Renderer/Renderer/RendererContext.h"
-#include "Renderer/Renderer/Renderer.h"
-#include "Platform/OpenGL/Shader/OpenGLShader.h"
+#include "renderer/shader/shader.h"
+
+#include "renderer/renderer/renderer_context.h"
+#include "renderer/renderer/renderer.h"
+#include "platform/open_gl/shader/open_gl_shader.h"
 
 namespace Retro::Renderer
 {
-	Shared<Shader> Shader::Create(const std::string& vertexPath, const std::string& fragmentPath)
+	shared<shader> shader::create(const std::string& vertex_path, const std::string& fragment_path)
 	{
-		switch (Renderer::GetRenderingAPIType())
+		switch (renderer::get_renderer_api_type())
 		{
-		case RenderingAPIType::None:
+		case renderer_api_type::none:
 			{
-				Logger::Error("Shader::Create | Unknown rendering api!.");
+				logger::error("shader::create | Unknown renderer api!.");
 				return nullptr;
 			}
-		case RenderingAPIType::OpenGL:
+		case renderer_api_type::open_gl:
 			{
-				return CreateShared<OpenGLShader>(vertexPath, fragmentPath);
+				return create_shared<open_gl_shader>(vertex_path, fragment_path);
 			}
 		}
 		return {};

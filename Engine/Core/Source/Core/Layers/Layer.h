@@ -2,21 +2,21 @@
 
 namespace Retro
 {
-	class Layer
+	class layer
 	{
 	public:
 		/* Constructor & Destructor */
-		Layer(const std::string& layerName);
-		virtual ~Layer() = default;
+		layer(const std::string &layer_name);
+		virtual ~layer() = default;
 
 		/* Methods */
-		virtual void OnLayerRegistered() = 0;
-		virtual void OnLayerUnregistered() = 0;
-		virtual void OnLayerUpdated() = 0;
-		const std::string& GetLayerName() const;
+		virtual void on_layer_registered() = 0;
+		virtual void on_layer_unregistered() = 0;
+		virtual void on_layer_updated() = 0;
+		const std::string &get_layer_name() const;
 
 		/* Instantiate */
 	private:
-		std::string m_LayerName;
+		std::string m_layer_name;
 	};
 }

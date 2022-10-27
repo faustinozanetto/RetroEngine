@@ -1,29 +1,29 @@
 ﻿#include "pch.h"
 
-#include "Window.h"
+#include "window.h"
 
 #ifdef RETRO_PLATFORM_WINDOWS
-#include "Platform/OpenGL/Window/OpenGLWindow.h"
+#include "platform/open_gl/window/open_gl_window.h"
 #endif
 
 namespace Retro::Renderer
 {
-	const FWindowSpecification& Window::GetWindowSpecification()
+	const window_specification& window::get_window_specification()
 	{
-		return m_WindowSpecification;
+		return m_window_specification;
 	}
 
-	bool Window::IsVSyncEnabled() const
+	bool window::is_vsync_enabled() const
 	{
-		return m_WindowSpecification.vSync;
+		return m_window_specification.v_sync;
 	}
 
-	Unique<Window> Window::Create(const FWindowSpecification& specification)
+	unique<window> window::create(const window_specification& window_specification)
 	{
 #ifdef RETRO_PLATFORM_WINDOWS
-		return CreateUnique<OpenGLWindow>(specification);
+		return create_unique<open_gl_window>(window_specification);
 #else
-		Logger::Error("Window::Create | Couldnt create window.");
+		logger::error("window::create | Couldnt create window.");
 		return nullptr;
 #endif
 	}

@@ -1,18 +1,18 @@
 ﻿#include "pch.h"
-#include "Manager.h"
+#include "manager.h"
 
 namespace Retro
 {
-	Manager::Manager(const std::string& managerName)
+	manager::manager(const std::string &manager_name)
 	{
-		m_ManagerName = managerName;
+		m_manager_name = manager_name;
 		Logger::Line();
 		Logger::Info("Manager::Manager | Creating manager: " + managerName);
 		Logger::Line();
 	}
 
-	const std::string& Manager::GetManagerName() const
+	const std::string &manager::get_manager_name() const
 	{
-		return m_ManagerName;
+		return m_manager_name;
 	}
 }

@@ -1,15 +1,15 @@
 ﻿#include "pch.h"
-#include "Layer.h"
+#include "layer.h"
 
 namespace Retro
 {
-	Layer::Layer(const std::string& layerName)
+	layer::layer(const std::string &layer_name)
 	{
-		m_LayerName = layerName;
+		m_layer_name = layer_name;
 	}
 
-	const std::string& Layer::GetLayerName() const
+	const std::string &layer::get_layer_name() const
 	{
-		return m_LayerName;
+		return m_layer_name;
 	}
 }

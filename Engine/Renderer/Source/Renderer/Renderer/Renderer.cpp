@@ -1,128 +1,124 @@
 #include "pch.h"
 
-#include "Renderer/Renderer/Renderer.h"
-#include "Core/Base.h"
+#include "renderer/renderer/renderer.h"
+#include "core/base.h"
 #include "glad/glad.h"
 
-namespace Retro::Renderer
+namespace Retro::renderer
 {
-	Unique<RenderingAPI> Renderer::s_RenderingAPI = nullptr;
-	Unique<RendererContext> Renderer::s_Context = nullptr;
-	std::queue<RenderCommand> Renderer::s_CommandQueue = {};
+	unique<renderer_api> renderer::s_renderer_api = nullptr;
+	unique<rendererContext> renderer::s_context = nullptr;
+	std::queue<render_command> renderer::s_command_queue = {};
 
-	bool Renderer::Initialize(RenderingAPIType renderingAPIType, const Window& window)
+	bool renderer::initialize(renderer_api_type renderer_api_type, const Window &window)
 	{
-		Logger::Info("Renderer::Initialize | Initializing Renderer.");
+		Logger::Info("renderer::Initialize | Initializing renderer.");
 
-		// Instantiate Renderer Context.
-		s_Context = RendererContext::Create(window.GetNativeWindow());
-		RETRO_CORE_ASSERT(s_Context, "Renderer::Initialize | Unable to create renderer context");
-		s_Context->Initialize();
+		// Instantiate renderer Context.
+		s_context = rendererContext::create(window.GetNativeWindow());
+		RETRO_CORE_ASSERT(s_context, "renderer::initialize | Unable to create renderer context");
+		s_context->initialize();
 
 		// Instantiate rendering api.
-		s_RenderingAPI = RenderingAPI::Create(renderingAPIType);
-		RETRO_CORE_ASSERT(s_RenderingAPI, "Renderer::Initialize | Unable to create rendering api.");
-		s_RenderingAPI->Initialize();
+		s_renderer_api = renderer_api::create(renderer_api_type);
+		RETRO_CORE_ASSERT(s_renderer_api, "renderer::initialize | Unable to create rendering api.");
+		s_renderer_api->initialize();
 		return true;
 	}
 
-	void Renderer::SetClearColor(glm::vec4 color)
+	void renderer::set_clear_color(glm::vec4 color)
 	{
-		s_RenderingAPI->SetClearColor(color);
+		s_renderer_api->SetClearColor(color);
 	}
 
-	void Renderer::ClearScreen()
+	void renderer::clear_screen()
 	{
-		s_RenderingAPI->ClearScreen();
+		s_renderer_api->clear_screen();
 	}
 
-	void Renderer::SwapBuffers()
+	void renderer::swap_buffers()
 	{
-		s_Context->SwapBuffers();
+		s_context->swap_buffers();
 	}
 
-	void Renderer::PollInput()
+	void renderer::poll_input()
 	{
-		s_Context->PollInput();
+		s_context->poll_input();
 	}
 
-	void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	void renderer::set_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
-		s_Context->SetViewport(x, y, width, height);
+		s_context->set_viewport(x, y, width, height);
 	}
 
-	void Renderer::SetRenderMode(ERenderMode renderMode)
+	void renderer::set_renderer_mode(renderer_mode renderer_mode)
 	{
-		s_RenderingAPI->SetRenderMode(renderMode);
+		s_renderer_api->set_renderer_mode(renderer_mode);
 	}
 
-	void Renderer::SetRendererState(ERendererState renderState, bool enabled)
+	void renderer::set_renderer_state(renderer_state renderer_state, bool enabled)
 	{
-		s_RenderingAPI->SetRendererState(renderState, enabled);
+		s_renderer_api->set_renderer_state(renderer_state, enabled);
 	}
 
-	void Renderer::BindTexture(uint32_t textureHandle, uint32_t textureSlot)
+	void renderer::bind_texture(uint32_t texture_handle, uint32_t texture_slot)
 	{
-		s_RenderingAPI->BindTexture(textureHandle, textureSlot);
+		s_renderer_api->bind_texture(texture_handle, texture_slot);
 	}
 
-	bool Renderer::ShouldClose()
+	bool renderer::should_close()
 	{
-		return s_Context->ShouldClose();
+		return s_context->should_close();
 	}
 
-	void Renderer::Begin()
+	void renderer::begin()
 	{
 		/*SetClearColor({0.2f, 0.3f, 0.3f, 1.0f});
 		ClearScreen();*/
 	}
 
-	void Renderer::End()
+	void renderer::end()
 	{
 		/*
 		while (!s_CommandQueue.empty())
 		{
-		    const RenderCommand command = s_CommandQueue.front();
-		    ProcessRenderCommand(command);
-		    // Remove command from the queue.
-		    s_CommandQueue.pop();
+				const RenderCommand command = s_CommandQueue.front();
+				ProcessRenderCommand(command);
+				// Remove command from the queue.
+				s_CommandQueue.pop();
 		}
 		*/
 
-		SwapBuffers();
-		PollInput();
+		swap_buffers();
+		poll_input();
 	}
 
-	void Renderer::SubmitCommand(const RenderCommand& command)
+	void renderer::submit_command(const render_command &command)
 	{
-		//s_CommandQueue.push(command);
-		ProcessRenderCommand(command);
+		// s_CommandQueue.push(command);
+		process_render_command(command);
 	}
 
-	int Renderer::GetRenderCommandsAmount()
+	renderer_api_type renderer::get_renderer_api_type()
 	{
-		return s_CommandQueue.size();
+		return s_renderer_api->get_renderer_api_type();
 	}
 
-	RenderingAPIType Renderer::GetRenderingAPIType()
+	double renderer::get_time()
 	{
-		return s_RenderingAPI->GetRenderingAPIType();
+		return s_renderer_api->get_time();
 	}
 
-	double Renderer::GetTime()
-	{
-		return s_RenderingAPI->GetTime();
-	}
-
-	void Renderer::ProcessRenderCommand(const RenderCommand& command)
+	void renderer::process_render_command(const render_command &command)
 	{
 		if (command.material)
 			command.material->Bind();
 		command.vao->Bind();
 		// Pass the data to the rendering api and perform the actual rendering.
 		uint32_t size = 0;
-		if (command.vao->GetIndexBuffer()) size = command.vao->GetIndexBuffer()->GetSize();
-		s_RenderingAPI->ProcessRendereable(size);
+		if (command.vao->GetIndexBuffer())
+			size = command.vao->GetIndexBuffer()->GetSize();
+		s_rendering_api->ProcessRendereable(size);
 		// Unbind after usage.
 		command.vao->UnBind();
 		if (command.material)
