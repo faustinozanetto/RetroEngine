@@ -2,10 +2,10 @@
 
 #include <stack>
 
-#include "Layer.h"
-#include "Core/Managers/Manager.h"
+#include "layer.h"
+#include "core/managers/manager.h"
 
-namespace Retro
+namespace retro
 {
 	class layer_manager : public manager
 	{

@@ -1,31 +1,32 @@
 ﻿#include "pch.h"
 
-#include "OpenGLInterfaceImplementation.h"
-#include "Core/Application/RetroApplication.h"
+#include "open_gl_interface_implementation.h"
 
 #include "imgui.h"
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 #include <backends/imgui_impl_opengl3.cpp>
 #include <backends/imgui_impl_glfw.cpp>
 
-namespace Retro::Renderer
+#include "core/application/retro_application.h"
+
+namespace retro::renderer
 {
-	OpenGLInterfaceImplementation::OpenGLInterfaceImplementation()
+	open_gl_interface_implementation::open_gl_interface_implementation()
 	{
-		Logger::Line();
-		Logger::Info(
-			"OpenGLInterfaceImplementation::OpenGLInterfaceImplementation | Creating interface implementation.");
-		Logger::Line();
+		logger::line();
+		logger::info(
+			"open_gl_interface_implementation::open_gl_interface_implementation | Creating interface implementation.");
+		logger::line();
 	}
 
-	OpenGLInterfaceImplementation::~OpenGLInterfaceImplementation()
+	open_gl_interface_implementation::~open_gl_interface_implementation()
 	{
 	}
 
-	void OpenGLInterfaceImplementation::InitializeInterface()
+	void open_gl_interface_implementation::initialize_interface()
 	{
-		const RetroApplication& retroApp = RetroApplication::GetApplication();
-		const auto window = static_cast<GLFWwindow*>(retroApp.GetWindow()->GetNativeWindow());
+		const retro_application& retroApp = retro_application::get_application();
+		const auto window = static_cast<GLFWwindow*>(retroApp.get_window()->get_native_window());
 		// ImGui initialization
 		IMGUI_CHECKVERSION();
 		// Create the ImGui context
@@ -40,7 +41,7 @@ namespace Retro::Renderer
 		ImGui_ImplOpenGL3_Init("#version 460");
 	}
 
-	void OpenGLInterfaceImplementation::ShutdownInterface()
+	void open_gl_interface_implementation::shutdown_interface()
 	{
 		// Cleanup
 		ImGui_ImplOpenGL3_Shutdown();
@@ -48,7 +49,7 @@ namespace Retro::Renderer
 		ImGui::DestroyContext();
 	}
 
-	void OpenGLInterfaceImplementation::BeginInterfaceRender()
+	void open_gl_interface_implementation::begin_interface_render()
 	{
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -56,7 +57,7 @@ namespace Retro::Renderer
 		ImGui::NewFrame();
 	}
 
-	void OpenGLInterfaceImplementation::EndInterfaceRender()
+	void open_gl_interface_implementation::end_interface_render()
 	{
 		// Rendering
 		ImGui::Render();

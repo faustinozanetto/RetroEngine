@@ -4,7 +4,7 @@
 
 #include "glad/glad.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	open_gl_vertex_object_buffer::open_gl_vertex_object_buffer(const float* vertices, uint32_t size)
 	{

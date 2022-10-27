@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class open_gl_window : public window
 	{

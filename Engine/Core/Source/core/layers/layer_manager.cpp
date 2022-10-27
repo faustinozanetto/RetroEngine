@@ -1,7 +1,8 @@
 ﻿#include "pch.h"
+
 #include "layer_manager.h"
 
-namespace Retro
+namespace retro
 {
 	layer_manager::layer_manager(const std::string &layer_manager_name) : manager(layer_manager_name)
 	{
@@ -28,10 +29,10 @@ namespace Retro
 	{
 		m_layer_stack.push_front(layer);
 		layer->on_layer_registered();
-		Logger::Info("LayerManager::RegisterLayer | Registered layer: " + layer->get_layer_name());
+		logger::info("layer_manager::register_layer | Registered layer: " + layer->get_layer_name());
 	}
 
-	const std::deque<Shared<Layer>> &layer_manager::get_layer_stack() const
+	const std::deque<shared<layer>> &layer_manager::get_layer_stack() const
 	{
 		return m_layer_stack;
 	}

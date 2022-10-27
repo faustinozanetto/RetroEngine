@@ -2,7 +2,7 @@
 
 #include "renderer/buffers/vbo/vertex_object_buffer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class open_gl_vertex_object_buffer : public vertex_object_buffer
 	{

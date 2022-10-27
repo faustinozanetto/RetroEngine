@@ -2,11 +2,11 @@
 
 #include <cstdint>
 
-namespace Retro::Input
+namespace retro::input
 {
 	using key_code = uint16_t;
 
-	namespace Key
+	namespace key
 	{
 		enum : key_code
 		{

@@ -30,8 +30,8 @@
 #include <cstdlib>
 #include <minmax.h>
 
-#include "Core/Base.h"
-#include "Logger/Logger.h"
+#include "core/base.h"
+#include "logger/logger.h"
 
 #ifdef RETRO_PLATFORM_WINDOWS
 #include <Windows.h>

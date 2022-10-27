@@ -2,7 +2,7 @@
 
 #include <entt/entt.hpp>
 
-namespace Retro
+namespace retro
 {
 	class actor
 	{

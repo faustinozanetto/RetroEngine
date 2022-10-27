@@ -1,9 +1,9 @@
 #pragma once
 
 #include "core/utils/uuid.h"
-#include "Core/Base.h"
+#include "core/base.h"
 
-namespace Retro
+namespace retro
 {
 	enum class asset_type
 	{

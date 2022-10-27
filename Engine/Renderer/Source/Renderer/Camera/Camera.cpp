@@ -1,67 +1,68 @@
 ﻿#include "pch.h"
-#include "Camera.h"
+
+#include "camera.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
-	Camera::Camera(float fov, float nearPlane, float farPlane)
+	camera::camera(float fov, float near_plane, float far_plane)
 	{
-		m_FOV = fov;
-		m_Near = nearPlane;
-		m_Far = farPlane;
+		m_fov = fov;
+		m_near_plane = near_plane;
+		m_far_plane = far_plane;
 
 		// Setup projection matrix
-		SetupProjectionMatrix();
+		setup_projection_matrix();
 
 		// Update view matrix.
-		UpdateViewMatrix();
+		update_view_matrix();
 	}
 
-	void Camera::SetViewportSize(int width, int height)
+	void camera::set_viewport_size(int width, int height)
 	{
-		m_ViewSize = {width, height};
-		SetupProjectionMatrix();
+		m_view_size = {width, height};
+		setup_projection_matrix();
 	}
 
-	void Camera::SetupProjectionMatrix()
+	void camera::setup_projection_matrix()
 	{
-		m_AspectRatio = m_ViewSize.x / m_ViewSize.y;
+		m_aspect_ratio = m_view_size.x / m_view_size.y;
 		// Create perspective matrix
-		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_Near, m_Far);
+		m_projection_matrix = glm::perspective(glm::radians(m_fov), m_aspect_ratio, m_near_plane, m_far_plane);
 	}
 
-	void Camera::UpdateViewMatrix()
+	void camera::update_view_matrix()
 	{
 		// Update view matrix.
-		m_Position = CalculatePosition();
-		m_ViewMatrix = translate(glm::mat4(1.0f), m_Position) * toMat4(GetOrientation());
-		m_ViewMatrix = inverse(m_ViewMatrix);
+		m_position = calculate_position();
+		m_view_matrix = translate(glm::mat4(1.0f), m_position) * toMat4(get_orientation());
+		m_view_matrix = inverse(m_view_matrix);
 	}
 
-	const glm::vec3& Camera::CalculatePosition() const
+	const glm::vec3& camera::calculate_position() const
 	{
-		return m_FocalPoint - GetForwardDirection() * m_Distance;
+		return m_focal_point - get_forward_direction() * m_distance;
 	}
 
-	const glm::quat& Camera::GetOrientation() const
+	const glm::quat& camera::get_orientation() const
 	{
-		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
+		return glm::quat(glm::vec3(-m_pitch, -m_yaw, 0.0f));
 	}
 
-	const glm::vec3& Camera::GetUpDirection() const
+	const glm::vec3& camera::get_up_direction() const
 	{
-		return rotate(GetOrientation(), glm::vec3(0.0f, 1.0f, 0.0f));
+		return rotate(get_orientation(), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
-	const glm::vec3& Camera::GetRightDirection() const
+	const glm::vec3& camera::get_right_direction() const
 	{
-		return rotate(GetOrientation(), glm::vec3(1.0f, 0.0f, 0.0f));
+		return rotate(get_orientation(), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
-	const glm::vec3& Camera::GetForwardDirection() const
+	const glm::vec3& camera::get_forward_direction() const
 	{
-		return rotate(GetOrientation(), glm::vec3(0.0f, 0.0f, -1.0f));
+		return rotate(get_orientation(), glm::vec3(0.0f, 0.0f, -1.0f));
 	}
 }

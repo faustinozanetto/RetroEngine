@@ -6,7 +6,7 @@
 #include "platform/open_gl/window/open_gl_window.h"
 #endif
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	const window_specification& window::get_window_specification()
 	{

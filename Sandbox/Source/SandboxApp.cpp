@@ -3,25 +3,24 @@
 #include <ranges>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.inl>
-#include "glad/glad.h"
 
-#include "EngineCore.h"
 #include "imgui.h"
-#include "Core/EntryPoint.h"
-#include "Core/Interfaces/InterfaceLayer.h"
-#include "Core/Input/InputKey.h"
-#include "Core/Scene/Scene.h"
-#include "Renderer/Buffers/FBO/FrameBuffer.h"
-#include "Renderer/Buffers/UBO/UniformBuffer.h"
-#include "Renderer/Lighting/PointLight.h"
-#include "Renderer/Camera/Camera.h"
-#include "Renderer/Renderables/Renderable.h"
-#include "Renderer/Renderables/Model/Model.h"
-#include "Renderer/Renderer/RenderCommand.h"
-#include "Renderer/Renderer/Renderer.h"
-#include "Renderer/Shader/Shader.h"
-#include "Renderer/Textures/TextureCubemap.h"
-#include "Renderer/Textures/Texture.h"
+#include "core/application/retro_application.h"
+#include "core/entry_point.h"
+#include "core/input/input_manager.h"
+#include "core/interfaces/interface_layer.h"
+#include "core/layers/layer.h"
+#include "core/scene/scene.h"
+#include "renderer/buffers/fbo/frame_buffer.h"
+#include "renderer/buffers/ubo/uniform_buffer.h"
+#include "renderer/buffers/vao/vertex_array_buffer.h"
+#include "renderer/camera/camera.h"
+#include "renderer/lighting/point_light.h"
+#include "renderer/materials/material.h"
+#include "renderer/rendereables/model/model.h"
+#include "renderer/renderer/renderer.h"
+#include "renderer/shader/shader.h"
+#include "renderer/texture/texture_cubemap.h"
 
 struct CameraData
 {
@@ -46,245 +45,262 @@ struct LightsData
 };
 
 float skyboxVertices[] = {
-		// positions
-		-1.0f, 1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
-		1.0f, 1.0f, -1.0f,
-		-1.0f, 1.0f, -1.0f,
+	// positions
+	-1.0f, 1.0f, -1.0f,
+	-1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, 1.0f, -1.0f,
+	-1.0f, 1.0f, -1.0f,
 
-		-1.0f, -1.0f, 1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, 1.0f, -1.0f,
-		-1.0f, 1.0f, -1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f, -1.0f, 1.0f,
+	-1.0f, -1.0f, 1.0f,
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, 1.0f, -1.0f,
+	-1.0f, 1.0f, -1.0f,
+	-1.0f, 1.0f, 1.0f,
+	-1.0f, -1.0f, 1.0f,
 
-		1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
 
-		-1.0f, -1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f,
-		-1.0f, -1.0f, 1.0f,
+	-1.0f, -1.0f, 1.0f,
+	-1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, -1.0f, 1.0f,
+	-1.0f, -1.0f, 1.0f,
 
-		-1.0f, 1.0f, -1.0f,
-		1.0f, 1.0f, -1.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f, -1.0f,
+	-1.0f, 1.0f, -1.0f,
+	1.0f, 1.0f, -1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f, -1.0f,
 
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, -1.0f,
-		1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f};
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f, 1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f, 1.0f,
+	1.0f, -1.0f, 1.0f
+};
 
-class SandboxLayer : public Retro::Layer
+class sandbox_layer : public retro::layer
 {
 public:
-	SandboxLayer() : Layer("Sandbox Layer")
+	sandbox_layer() : layer("Sandbox Layer")
 	{
 		{
 			float squareVertices[5 * 4] = {
-					1.0f, 1.0f, 0.0f, 1.0f, 1.0f,		// top right
-					1.0f, -1.0f, 0.0f, 1.0f, 0.0f,	// bottom right
-					-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-					-1.0f, 1.0f, 0.0f, 0.0f, 1.0f		// top left
+				1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
+				1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
+				-1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left
 			};
 
 			// Fill index buffer
 			uint32_t squareIndices[6] = {
-					0, 3, 1, // first triangle
-					1, 3, 2, // second triangle
+				0, 3, 1, // first triangle
+				1, 3, 2, // second triangle
 			};
-			m_ScreenVAO = Retro::Renderer::VertexArrayBuffer::Create();
-			Retro::Shared<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
-					squareVertices, sizeof(squareVertices));
-			Retro::Shared<Retro::Renderer::IndexBuffer> IBO = Retro::Renderer::IndexBuffer::Create(
-					squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
-			m_ScreenVAO->Bind();
-			VBO->SetVBOLayout({{Retro::Renderer::VBOElementType::FloatVec3, "aPos"},
-												 {Retro::Renderer::VBOElementType::FloatVec2, "aTexCoord"}});
-			m_ScreenVAO->AddVertexObjectBuffer(VBO);
-			m_ScreenVAO->SetIndexBuffer(IBO);
-			m_ScreenVAO->UnBind();
+			m_ScreenVAO = retro::renderer::vertex_array_buffer::create();
+			auto VBO = retro::renderer::vertex_object_buffer::create(
+				squareVertices, sizeof(squareVertices));
+			auto IBO = retro::renderer::index_buffer::create(
+				squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
+			m_ScreenVAO->bind();
+			VBO->set_layout({
+				{retro::renderer::layout_element_type::FloatVec3, "aPos"},
+				{retro::renderer::layout_element_type::FloatVec2, "aTexCoord"}
+			});
+			m_ScreenVAO->add_vertex_buffer(VBO);
+			m_ScreenVAO->set_index_buffer(IBO);
+			m_ScreenVAO->un_bind();
 		}
 
 		{
-			m_SkyboxVAO = Retro::Renderer::VertexArrayBuffer::Create();
-			Retro::Shared<Retro::Renderer::VertexObjectBuffer> VBO = Retro::Renderer::VertexObjectBuffer::Create(
-					skyboxVertices, sizeof(skyboxVertices));
-			m_SkyboxVAO->Bind();
-			VBO->SetVBOLayout({{Retro::Renderer::VBOElementType::FloatVec3, "aPos"}});
-			m_SkyboxVAO->AddVertexObjectBuffer(VBO);
-			m_SkyboxVAO->UnBind();
+			m_SkyboxVAO = retro::renderer::vertex_array_buffer::create();
+			auto VBO = retro::renderer::vertex_object_buffer::create(
+				skyboxVertices, sizeof(skyboxVertices));
+			m_SkyboxVAO->bind();
+			VBO->set_layout({{retro::renderer::layout_element_type::FloatVec3, "aPos"}});
+			m_SkyboxVAO->add_vertex_buffer(VBO);
+			m_SkyboxVAO->un_bind();
 
-			m_SkyboxCubemap = Retro::Renderer::TextureCubemap::Create({"Assets/Textures/HDR/belfast_farmhouse_2k.hdr",
-																																 Retro::Renderer::TextureFiltering::Linear,
-																																 Retro::Renderer::TextureWrapping::ClampEdge});
+			m_SkyboxCubemap = retro::renderer::texture_cubemap::create({
+				"Assets/Textures/HDR/belfast_farmhouse_2k.hdr",
+				retro::renderer::texture_filtering::linear,
+				retro::renderer::texture_wrapping::clamp_edge
+			});
 		}
 
-		m_Scene = Retro::Scene::Create("Sandbox");
-		auto actor = m_Scene->CreateActor();
+		m_Scene = retro::scene::create("Sandbox");
+		auto actor = m_Scene->create_actor();
 
-		m_Shader = Retro::Renderer::Shader::Create("Assets/Shaders/Geometry/Geometry.vert",
-																							 "Assets/Shaders/Geometry/Geometry.frag");
-		m_ScreenShader = Retro::Renderer::Shader::Create("Assets/Shaders/Screen/Screen.vert",
-																										 "Assets/Shaders/Screen/Screen.frag");
-		m_LightingShader = Retro::Renderer::Shader::Create("Assets/Shaders/Lighting/Lighting.vert",
-																											 "Assets/Shaders/Lighting/Lighting.frag");
-		m_SkyboxShader = Retro::Renderer::Shader::Create("Assets/Shaders/Skybox/Skybox.vert",
-																										 "Assets/Shaders/Skybox/Skybox.frag");
-		m_LightModel = Retro::Renderer::Model::Create("Assets/Models/Cube.obj");
+		m_Shader = retro::renderer::shader::create("Assets/Shaders/Geometry/Geometry.vert",
+		                                           "Assets/Shaders/Geometry/Geometry.frag");
+		m_ScreenShader = retro::renderer::shader::create("Assets/Shaders/Screen/Screen.vert",
+		                                                 "Assets/Shaders/Screen/Screen.frag");
+		m_LightingShader = retro::renderer::shader::create("Assets/Shaders/Lighting/Lighting.vert",
+		                                                   "Assets/Shaders/Lighting/Lighting.frag");
+		m_SkyboxShader = retro::renderer::shader::create("Assets/Shaders/Skybox/Skybox.vert",
+		                                                 "Assets/Shaders/Skybox/Skybox.frag");
+		m_LightModel = retro::renderer::model::create("Assets/Models/Cube.obj");
 
-		m_Model = Retro::Renderer::Model::Create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
+		m_Model = retro::renderer::model::create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
 
-		auto albedo = Retro::Renderer::Texture::Create({
-				"Assets/Models/Cerberus/textures/Cerberus_A.png",
-				Retro::Renderer::TextureFiltering::Linear,
-				Retro::Renderer::TextureWrapping::ClampEdge,
+		auto albedo = retro::renderer::texture::create({
+			"Assets/Models/Cerberus/textures/Cerberus_A.png",
+			retro::renderer::texture_filtering::linear,
+			retro::renderer::texture_wrapping::clamp_edge,
 		});
-		Retro::Renderer::FMaterialTexture albedoTexture = {
-				albedo, true};
-		auto normal = Retro::Renderer::Texture::Create({
-				"Assets/Models/Cerberus/textures/Cerberus_N.png",
-				Retro::Renderer::TextureFiltering::Linear,
-				Retro::Renderer::TextureWrapping::ClampEdge,
-		});
-		Retro::Renderer::FMaterialTexture normalTexture = {
-				normal, true};
-		auto roughness = Retro::Renderer::Texture::Create({
-				"Assets/Models/Cerberus/textures/Cerberus_R.png",
-				Retro::Renderer::TextureFiltering::Linear,
-				Retro::Renderer::TextureWrapping::ClampEdge,
-		});
-		Retro::Renderer::FMaterialTexture roughnessTexture = {
-				roughness, true};
-		auto metallic = Retro::Renderer::Texture::Create({
-				"Assets/Models/Cerberus/textures/Cerberus_M.png",
-				Retro::Renderer::TextureFiltering::Linear,
-				Retro::Renderer::TextureWrapping::ClampEdge,
-		});
-		Retro::Renderer::FMaterialTexture metallicTexture = {
-				metallic, true};
-		const std::map<Retro::Renderer::EMaterialTextureType, Retro::Renderer::FMaterialTexture> textures = {
-				{Retro::Renderer::EMaterialTextureType::Albedo, albedoTexture},
-				{Retro::Renderer::EMaterialTextureType::Normal, normalTexture},
-				{Retro::Renderer::EMaterialTextureType::Metallic, roughnessTexture},
-				{Retro::Renderer::EMaterialTextureType::Roughness, metallicTexture},
+		retro::renderer::material_texture albedoTexture = {
+			albedo, true
 		};
-		const Retro::Renderer::FMaterialSpecification materialSpecification = {
-				m_Shader,
-				textures,
-				glm::vec4(1.0f, 0.23f, 0.5f, 1.0f),
-				0.3f,
-				0.4f,
+		auto normal = retro::renderer::texture::create({
+			"Assets/Models/Cerberus/textures/Cerberus_N.png",
+			retro::renderer::texture_filtering::linear,
+			retro::renderer::texture_wrapping::clamp_edge,
+		});
+		retro::renderer::material_texture normalTexture = {
+			normal, true
 		};
-		m_Material = Retro::Renderer::Material::Create(
-				materialSpecification);
+		auto roughness = retro::renderer::texture::create({
+			"Assets/Models/Cerberus/textures/Cerberus_R.png",
+			retro::renderer::texture_filtering::linear,
+			retro::renderer::texture_wrapping::clamp_edge,
+		});
+		retro::renderer::material_texture roughnessTexture = {
+			roughness, true
+		};
+		auto metallic = retro::renderer::texture::create({
+			"Assets/Models/Cerberus/textures/Cerberus_M.png",
+			retro::renderer::texture_filtering::linear,
+			retro::renderer::texture_wrapping::clamp_edge,
+		});
+		retro::renderer::material_texture metallicTexture = {
+			metallic, true
+		};
+		const std::map<retro::renderer::material_texture_type, retro::renderer::material_texture> textures = {
+			{retro::renderer::material_texture_type::albedo, albedoTexture},
+			{retro::renderer::material_texture_type::normal, normalTexture},
+			{retro::renderer::material_texture_type::metallic, roughnessTexture},
+			{retro::renderer::material_texture_type::roughness, metallicTexture},
+		};
+		const retro::renderer::material_specification materialSpecification = {
+			m_Shader,
+			textures,
+			glm::vec4(1.0f, 0.23f, 0.5f, 1.0f),
+			0.3f,
+			0.4f,
+		};
+		m_Material = retro::renderer::material::create(
+			materialSpecification);
 
-		m_FBO = Retro::Renderer::FrameBuffer::Create({2560, 1440, {
-																																	Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
-																																	Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
-																																	Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
-																																	Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
-																																	Retro::Renderer::EFrameBufferColorAttachmentFormat::RGBA16F,
-																															}});
+		m_FBO = retro::renderer::frame_buffer::create({
+			2560, 1440, {
+				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
+				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
+				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
+				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
+				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
+			}
+		});
 
-		m_Camera = new Retro::Renderer::Camera(50.0f, 0.01f, 1000.0f);
-		m_CameraUBO = Retro::Renderer::UniformBuffer::Create(sizeof(CameraData), 0);
-		m_CameraUBO->SetIBOLayout({{Retro::Renderer::VBOElementType::Mat4, "u_ViewProjectionMatrixPos"},
-															 {Retro::Renderer::VBOElementType::Mat4, "u_ViewMatrix"},
-															 {Retro::Renderer::VBOElementType::Mat4, "u_ProjectionMatrix"},
-															 {Retro::Renderer::VBOElementType::FloatVec3, "u_Position"}},
-															0);
+		m_Camera = new retro::renderer::camera(50.0f, 0.01f, 1000.0f);
+		m_CameraUBO = retro::renderer::uniform_buffer::create(sizeof(CameraData), 0);
+		m_CameraUBO->set_layout({
+			                          {retro::renderer::layout_element_type::Mat4, "u_ViewProjectionMatrixPos"},
+			                          {retro::renderer::layout_element_type::Mat4, "u_ViewMatrix"},
+			                          {retro::renderer::layout_element_type::Mat4, "u_ProjectionMatrix"},
+			                          {retro::renderer::layout_element_type::FloatVec3, "u_Position"}
+		                          },
+		                          0);
 
-		m_Light = Retro::CreateShared<Retro::Renderer::PointLight>();
+		m_Light = retro::create_shared<retro::renderer::point_light>();
 
-		m_LightsUBO = Retro::Renderer::UniformBuffer::Create(sizeof(LightsData), 1);
-		m_LightsUBO->SetIBOLayout({{Retro::Renderer::VBOElementType::FloatVec3, "position"},
-															 {Retro::Renderer::VBOElementType::FloatVec3, "ambient"},
-															 {Retro::Renderer::VBOElementType::FloatVec3, "diffuse"},
-															 {Retro::Renderer::VBOElementType::Float, "constant"},
-															 {Retro::Renderer::VBOElementType::Float, "linear"},
-															 {Retro::Renderer::VBOElementType::Float, "quadratic"}},
-															1, 1 + 1);
+		m_LightsUBO = retro::renderer::uniform_buffer::create(sizeof(LightsData), 1);
+		m_LightsUBO->set_layout({
+			                          {retro::renderer::layout_element_type::FloatVec3, "position"},
+			                          {retro::renderer::layout_element_type::FloatVec3, "ambient"},
+			                          {retro::renderer::layout_element_type::FloatVec3, "diffuse"},
+			                          {retro::renderer::layout_element_type::Float, "constant"},
+			                          {retro::renderer::layout_element_type::Float, "linear"},
+			                          {retro::renderer::layout_element_type::Float, "quadratic"}
+		                          },
+		                          1, 1 + 1);
 	}
 
-	void OnLayerRegistered() override
+	void on_layer_registered() override
 	{
 	}
 
-	void OnLayerUnregistered() override
+	void on_layer_unregistered() override
 	{
 	}
 
-	void OnLayerUpdated() override
+	void on_layer_updated() override
 	{
 		// Update camera UBO.
-		m_CameraUBO->Bind();
-		m_Camera->SetFocalPoint(m_CameraLocation);
-		m_Camera->SetFOV(m_CameraFov);
-		m_CameraData.u_ViewProjectionMatrix = m_Camera->GetViewProjection();
-		m_CameraData.u_ViewMatrix = m_Camera->GetViewMatrix();
-		m_CameraData.u_ProjectionMatrix = m_Camera->GetProjectionMatrix();
-		m_CameraData.u_Position = m_Camera->GetPosition();
-		m_CameraUBO->SetData(&m_CameraData, sizeof(CameraData));
-		m_CameraUBO->UnBind();
+		m_CameraUBO->bind();
+		m_Camera->set_focal_point(m_CameraLocation);
+		m_Camera->set_fov(m_CameraFov);
+		m_CameraData.u_ViewProjectionMatrix = m_Camera->get_view_projection();
+		m_CameraData.u_ViewMatrix = m_Camera->get_view_matrix();
+		m_CameraData.u_ProjectionMatrix = m_Camera->get_projection_matrix();
+		m_CameraData.u_Position = m_Camera->get_position();
+		m_CameraUBO->set_data(&m_CameraData, sizeof(CameraData));
+		m_CameraUBO->un_bind();
 
-		if (Retro::Input::InputManager::IsKeyPressed(Retro::Input::Key::Escape))
+		if (retro::input::input_manager::is_key_pressed(retro::input::key::Escape))
 		{
 			m_CameraFov = 20.0f;
 		}
-		else if (Retro::Input::InputManager::IsKeyPressed(Retro::Input::Key::T))
+		else if (retro::input::input_manager::is_key_pressed(retro::input::key::T))
 		{
 			m_CameraFov = 50.0f;
 		}
 
-		m_FBO->Bind();
-		Retro::Renderer::Renderer::SetRendererState(Retro::Renderer::ERendererState::DEPTH_TEST, true);
-		Retro::Renderer::Renderer::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-		Retro::Renderer::Renderer::ClearScreen();
-		m_Shader->Bind();
+		m_FBO->bind();
+		retro::renderer::renderer::set_renderer_state(retro::renderer::renderer_state::depth_test, true);
+		retro::renderer::renderer::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f});
+		retro::renderer::renderer::clear_screen();
+		m_Shader->bind();
 
 		// Render light model
 		{
-			glm::mat4 lightMat = glm::mat4(1.0f);
-			lightMat = glm::translate(lightMat, m_Light->GetPosition());
-			lightMat = glm::scale(lightMat, {0.25f, 0.25f, 0.25f});
-			m_Shader->SetMat4("uTransform", lightMat);
-			m_Shader->SetInt("material.hasAlbedoMap", 0);
-			m_Shader->SetVecFloat4("material.albedo", glm::vec4(m_Light->GetColor(), 1.0f));
-			Retro::Renderer::Renderer::SubmitCommand({m_Shader, m_LightModel->GetModelRenderables()[0]->GetVertexArrayBuffer(), nullptr, lightMat});
+			auto lightMat = glm::mat4(1.0f);
+			lightMat = glm::translate(lightMat, m_Light->get_position());
+			lightMat = scale(lightMat, {0.25f, 0.25f, 0.25f});
+			m_Shader->set_mat4("uTransform", lightMat);
+			m_Shader->set_int("material.hasAlbedoMap", 0);
+			m_Shader->set_vec_float4("material.albedo", glm::vec4(m_Light->get_color(), 1.0f));
+			retro::renderer::renderer::submit_command({
+				m_Shader, m_LightModel->get_model_renderables()[0]->get_vertex_array_buffer(), nullptr, lightMat
+			});
 		}
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, m_Translate);
-		model = glm::rotate(model, 1.0f, m_Rotation);
+		auto model = glm::mat4(1.0f);
+		model = translate(model, m_Translate);
+		model = rotate(model, 1.0f, m_Rotation);
 		// translate it down so it's at the center of the scene
-		model = glm::scale(model, m_Scale); // it's a bit too big for our scene, so scale it down
+		model = scale(model, m_Scale); // it's a bit too big for our scene, so scale it down
 
-		for (const auto &renderable : m_Model->GetModelRenderables())
+		for (const auto& renderable : m_Model->get_model_renderables())
 		{
-			m_Shader->SetMat4("uTransform", model);
-			Retro::Renderer::Renderer::SubmitCommand({m_Shader, renderable->GetVertexArrayBuffer(), m_Material, model});
+			m_Shader->set_mat4("uTransform", model);
+			retro::renderer::renderer::submit_command({m_Shader, renderable->get_vertex_array_buffer(), m_Material, model});
 		}
-		m_Shader->UnBind();
-		m_FBO->UnBind();
+		m_Shader->un_bind();
+		m_FBO->un_bind();
 
-		Retro::Renderer::Renderer::SetRendererState(Retro::Renderer::ERendererState::DEPTH_TEST, false);
-		Retro::Renderer::Renderer::SetClearColor({0.2f, 0.3f, 0.3f, 1.0f});
-		Retro::Renderer::Renderer::ClearScreen();
+		retro::renderer::renderer::set_renderer_state(retro::renderer::renderer_state::depth_test, false);
+		retro::renderer::renderer::set_clear_color({0.2f, 0.3f, 0.3f, 1.0f});
+		retro::renderer::renderer::clear_screen();
 
 		/*
 		glDepthFunc(GL_LEQUAL);
@@ -302,37 +318,37 @@ public:
 		*/
 
 		// Update lights UBO
-		m_LightsUBO->Bind();
-		m_LightsData.pointLight.color = m_Light->GetColor();
-		m_LightsData.pointLight.linear = m_Light->GetLinear();
-		m_LightsData.pointLight.constant = m_Light->GetConstant();
-		m_LightsData.pointLight.quadratic = m_Light->GetQuadratic();
-		m_LightsData.pointLight.position = m_Light->GetPosition();
-		m_LightsUBO->SetData(&m_LightsData, sizeof(LightsData));
-		m_LightsUBO->UnBind();
+		m_LightsUBO->bind();
+		m_LightsData.pointLight.color = m_Light->get_color();
+		m_LightsData.pointLight.linear = m_Light->get_linear();
+		m_LightsData.pointLight.constant = m_Light->get_constant();
+		m_LightsData.pointLight.quadratic = m_Light->get_quadratic();
+		m_LightsData.pointLight.position = m_Light->get_position();
+		m_LightsUBO->set_data(&m_LightsData, sizeof(LightsData));
+		m_LightsUBO->un_bind();
 
-		m_LightingShader->Bind();
-		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(0), 0);
-		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(1), 1);
-		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(2), 2);
-		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(3), 3);
-		Retro::Renderer::Renderer::BindTexture(m_FBO->GetColorAttachmentID(4), 4);
-		Retro::Renderer::Renderer::SubmitCommand({m_LightingShader, m_ScreenVAO, nullptr, glm::mat4(1.0f)});
-		m_LightingShader->UnBind();
+		m_LightingShader->bind();
+		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(0), 0);
+		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(1), 1);
+		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(2), 2);
+		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(3), 3);
+		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(4), 4);
+		retro::renderer::renderer::submit_command({m_LightingShader, m_ScreenVAO, nullptr, glm::mat4(1.0f)});
+		m_LightingShader->un_bind();
 
 		ImGui::Begin("Edit");
-		ImGui::SliderFloat3("Scale", glm::value_ptr(m_Scale), 0.02f, 5.0f);
-		ImGui::SliderFloat3("Location", glm::value_ptr(m_Translate), -5.0f, 5.0f);
-		ImGui::SliderFloat3("Rotation", glm::value_ptr(m_Rotation), -5.0f, 5.0f);
-		ImGui::SliderFloat3("Camera Pos", glm::value_ptr(m_CameraLocation), -10.0f, 10.0f);
+		ImGui::SliderFloat3("Scale", value_ptr(m_Scale), 0.02f, 5.0f);
+		ImGui::SliderFloat3("Location", value_ptr(m_Translate), -5.0f, 5.0f);
+		ImGui::SliderFloat3("Rotation", value_ptr(m_Rotation), -5.0f, 5.0f);
+		ImGui::SliderFloat3("Camera Pos", value_ptr(m_CameraLocation), -10.0f, 10.0f);
 		ImGui::SliderFloat("Camera FOV", &m_CameraFov, 1.0f, 90.0f);
-		if (ImGui::SliderFloat3("Light Position", glm::value_ptr(m_LightPos), -5.0f, 5.0f))
+		if (ImGui::SliderFloat3("Light Position", value_ptr(m_LightPos), -5.0f, 5.0f))
 		{
-			m_Light->SetPosition(m_LightPos);
+			m_Light->set_position(m_LightPos);
 		}
-		if (ImGui::ColorEdit3("Light Color", glm::value_ptr(m_LightColor)))
+		if (ImGui::ColorEdit3("Light Color", value_ptr(m_LightColor)))
 		{
-			m_Light->SetColor(m_LightColor);
+			m_Light->set_color(m_LightColor);
 		}
 		ImGui::End();
 
@@ -340,13 +356,14 @@ public:
 
 		if (ImGui::TreeNode("List"))
 		{
-			for (auto &assetsCategory : Retro::RetroApplication::GetApplication().GetAssetsManager()->GetAssets())
+			for (auto& assetsCategory : retro::retro_application::get_application().get_assets_manager()->get_assets())
 			{
-				if (ImGui::TreeNode(reinterpret_cast<void *>(static_cast<intptr_t>(assetsCategory.first)), "Asset %s", Retro::Asset::GetAssetToString(assetsCategory.first).c_str()))
+				if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(assetsCategory.first)), "Asset %s",
+				                    retro::asset::get_asset_to_string(assetsCategory.first).c_str()))
 				{
-					for (const auto &key : assetsCategory.second | std::views::keys)
+					for (const auto& key : assetsCategory.second | std::views::keys)
 					{
-						ImGui::Text("UUID: %lld", key->Get());
+						ImGui::Text("UUID: %lld", key->get());
 					}
 					ImGui::TreePop();
 				}
@@ -390,34 +407,34 @@ private:
 	glm::vec2 m_ViewportBounds[2];
 	glm::vec2 m_ViewportSize = {1920.0f, 1080.0f};
 	CameraData m_CameraData;
-	Retro::Renderer::Camera *m_Camera;
+	retro::renderer::camera* m_Camera;
 	LightsData m_LightsData;
-	Retro::Shared<Retro::Scene> m_Scene;
-	Retro::Shared<Retro::Renderer::TextureCubemap> m_SkyboxCubemap;
-	Retro::Shared<Retro::Renderer::PointLight> m_Light;
-	Retro::Shared<Retro::Renderer::Shader> m_Shader;
-	Retro::Shared<Retro::Renderer::Shader> m_LightingShader;
-	Retro::Shared<Retro::Renderer::Shader> m_SkyboxShader;
-	Retro::Shared<Retro::Renderer::Shader> m_ScreenShader;
-	Retro::Shared<Retro::Renderer::VertexArrayBuffer> m_ScreenVAO;
-	Retro::Shared<Retro::Renderer::VertexArrayBuffer> m_SkyboxVAO;
-	Retro::Shared<Retro::Renderer::Material> m_Material;
-	Retro::Shared<Retro::Renderer::Model> m_Model;
-	Retro::Shared<Retro::Renderer::Model> m_LightModel;
-	Retro::Shared<Retro::Renderer::FrameBuffer> m_FBO;
-	Retro::Shared<Retro::Renderer::UniformBuffer> m_CameraUBO;
-	Retro::Shared<Retro::Renderer::UniformBuffer> m_LightsUBO;
+	retro::shared<retro::scene> m_Scene;
+	retro::shared<retro::renderer::texture_cubemap> m_SkyboxCubemap;
+	retro::shared<retro::renderer::point_light> m_Light;
+	retro::shared<retro::renderer::shader> m_Shader;
+	retro::shared<retro::renderer::shader> m_LightingShader;
+	retro::shared<retro::renderer::shader> m_SkyboxShader;
+	retro::shared<retro::renderer::shader> m_ScreenShader;
+	retro::shared<retro::renderer::vertex_array_buffer> m_ScreenVAO;
+	retro::shared<retro::renderer::vertex_array_buffer> m_SkyboxVAO;
+	retro::shared<retro::renderer::material> m_Material;
+	retro::shared<retro::renderer::model> m_Model;
+	retro::shared<retro::renderer::model> m_LightModel;
+	retro::shared<retro::renderer::frame_buffer> m_FBO;
+	retro::shared<retro::renderer::uniform_buffer> m_CameraUBO;
+	retro::shared<retro::renderer::uniform_buffer> m_LightsUBO;
 };
 
-class SandboxInterfaceLayer : public Retro::InterfaceLayer
+class sandbox_interface_layer : public retro::interface_layer
 {
 public:
-	SandboxInterfaceLayer() : InterfaceLayer("SandboxInterfaceLayer")
+	sandbox_interface_layer() : interface_layer("SandboxInterfaceLayer")
 	{
-		m_UseVsync = Retro::RetroApplication::GetApplication().GetWindow()->IsVSyncEnabled();
+		m_use_vsync = retro::retro_application::get_application().get_window()->is_vsync_enabled();
 	}
 
-	void OnInterfaceRenderer() override
+	void on_interface_renderer() override
 	{
 		ImGui::ShowDemoWindow();
 		ImGui::Begin("Sandbox");
@@ -429,54 +446,54 @@ public:
 		ImGui::Begin("Renderer");
 		if (ImGui::Button("Normal"))
 		{
-			Retro::Renderer::Renderer::SetRenderMode(Retro::Renderer::ERenderMode::Normal);
+			retro::renderer::renderer::set_renderer_mode(retro::renderer::renderer_mode::normal);
 		}
 		if (ImGui::Button("Wireframe"))
 		{
-			Retro::Renderer::Renderer::SetRenderMode(Retro::Renderer::ERenderMode::Wireframe);
+			retro::renderer::renderer::set_renderer_mode(retro::renderer::renderer_mode::wireframe);
 		}
 		if (ImGui::Button("Point"))
 		{
-			Retro::Renderer::Renderer::SetRenderMode(Retro::Renderer::ERenderMode::Point);
+			retro::renderer::renderer::set_renderer_mode(retro::renderer::renderer_mode::point);
 		}
-		if (ImGui::Checkbox("VSync", &m_UseVsync))
+		if (ImGui::Checkbox("VSync", &m_use_vsync))
 		{
-			Retro::RetroApplication::GetApplication().GetWindow()->SetEnableVSync(m_UseVsync);
+			retro::retro_application::get_application().get_window()->set_vsync_enabled(m_use_vsync);
 		}
 		ImGui::End();
 	}
 
-	void OnLayerRegistered() override
+	void on_layer_registered() override
 	{
 	}
 
-	void OnLayerUnregistered() override
+	void on_layer_unregistered() override
 	{
 	}
 
-	void OnLayerUpdated() override
+	void on_layer_updated() override
 	{
 	}
 
 private:
-	bool m_UseVsync;
+	bool m_use_vsync;
 };
 
-class SandboxApplication : public Retro::RetroApplication
+class sandbox_application : public retro::retro_application
 {
 public:
-	SandboxApplication() : RetroApplication({"Sandbox"})
+	sandbox_application() : retro_application({"Sandbox"})
 	{
-		GetLayersManager()->RegisterLayer(Retro::CreateShared<SandboxLayer>());
-		GetInterfaceLayersManager()->RegisterLayer(Retro::CreateShared<SandboxInterfaceLayer>());
+		get_layers_manager()->register_layer(retro::create_shared<sandbox_layer>());
+		get_interfaces_layer_manager()->register_layer(retro::create_shared<sandbox_interface_layer>());
 	}
 
-	~SandboxApplication() override
+	~sandbox_application() override
 	{
-	}
+	};
 };
 
-Retro::RetroApplication *Retro::create_retro_application()
+retro::retro_application* retro::create_retro_application()
 {
-	return new SandboxApplication();
+	return new sandbox_application();
 }

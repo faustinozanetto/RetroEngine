@@ -8,7 +8,7 @@
 #include <spdlog/fmt/ostr.h>
 #pragma warning(pop)
 
-namespace Retro
+namespace retro
 {
 	class logger
 	{
@@ -27,16 +27,16 @@ namespace Retro
 	};
 }
 
-#define RETRO_CORE_TRACE(...) ::Retro::Logger::GetEngineLogger()->trace(__VA_ARGS__)
-#define RETRO_CORE_INFO(...) ::Retro::Logger::GetEngineLogger()->info(__VA_ARGS__)
-#define RETRO_CORE_DEBUG(...) ::Retro::Logger::GetEngineLogger()->debug(__VA_ARGS__)
-#define RETRO_CORE_WARN(...) ::Retro::Logger::GetEngineLogger()->warn(__VA_ARGS__)
-#define RETRO_CORE_ERROR(...) ::Retro::Logger::GetEngineLogger()->error(__VA_ARGS__)
-#define RETRO_CORE_CRITICAL(...) ::Retro::Logger::GetEngineLogger()->critical(__VA_ARGS__)
+#define RETRO_CORE_TRACE(...) ::retro::logger::get_engine_logger()->trace(__VA_ARGS__)
+#define RETRO_CORE_INFO(...) ::retro::logger::get_engine_logger()->info(__VA_ARGS__)
+#define RETRO_CORE_DEBUG(...) ::retro::logger::get_engine_logger()->debug(__VA_ARGS__)
+#define RETRO_CORE_WARN(...) ::retro::logger::get_engine_logger()->warn(__VA_ARGS__)
+#define RETRO_CORE_ERROR(...) ::retro::logger::get_engine_logger()->error(__VA_ARGS__)
+#define RETRO_CORE_CRITICAL(...) ::retro::logger::get_engine_logger()->critical(__VA_ARGS__)
 
-#define RETRO_APP_TRACE(...) ::Retro::Logger::GetEngineLogger()->trace(__VA_ARGS__)
-#define RETRO_APP_INFO(...) ::Retro::Logger::GetEngineLogger()->info(__VA_ARGS__)
-#define RETRO_APP_DEBUG(...) ::Retro::Logger::GetEngineLogger()->debug(__VA_ARGS__)
-#define RETRO_APP_WARN(...) ::Retro::Logger::GetEngineLogger()->warn(__VA_ARGS__)
-#define RETRO_APP_ERROR(...) ::Retro::Logger::GetEngineLogger()->error(__VA_ARGS__)
-#define RETRO_APP_CRITICAL(...) ::Retro::Logger::GetEngineLogger()->critical(__VA_ARGS__)
+#define RETRO_APP_TRACE(...) ::retro::logger::get_engine_logger()->trace(__VA_ARGS__)
+#define RETRO_APP_INFO(...) ::retro::logger::get_engine_logger()->info(__VA_ARGS__)
+#define RETRO_APP_DEBUG(...) ::retro::logger::get_engine_logger()->debug(__VA_ARGS__)
+#define RETRO_APP_WARN(...) ::retro::logger::get_engine_logger()->warn(__VA_ARGS__)
+#define RETRO_APP_ERROR(...) ::retro::logger::get_engine_logger()->error(__VA_ARGS__)
+#define RETRO_APP_CRITICAL(...) ::retro::logger::get_engine_logger()->critical(__VA_ARGS__)

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class graphics_object
 	{

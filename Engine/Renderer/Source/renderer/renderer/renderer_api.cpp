@@ -1,9 +1,9 @@
 #include "pch.h"
 
 #include "renderer/renderer/renderer_api.h"
-#include "Platform/OpenGL/Renderer/OpenGLRenderingAPI.h"
+#include "platform/open_gl/renderer/open_gl_renderer_api.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	renderer_api_type renderer_api::s_renderer_api_type = renderer_api_type::open_gl;
 

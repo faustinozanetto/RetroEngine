@@ -3,12 +3,12 @@
 #include "core/base.h"
 #include "renderer/renderer/graphics_object.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	enum class frame_buffer_color_attachment_format
 	{
-		RGBA8 = 0,
-		RGBA16F = 1,
+		rgba8 = 0,
+		rgba16f = 1,
 	};
 
 	struct frame_buffer_color_texture_specification
@@ -32,8 +32,9 @@ namespace Retro::Renderer
 		}
 
 		frame_buffer_specification(uint32_t width, uint32_t height,
-															 std::initializer_list<frame_buffer_color_texture_specification> color_attachments) : width(width),
-																																																								height(height), colorAttachments(colorAttachments)
+		                           std::initializer_list<frame_buffer_color_texture_specification> color_attachments) :
+			width(width),
+			height(height), color_attachments(color_attachments)
 		{
 		}
 	};
@@ -49,7 +50,7 @@ namespace Retro::Renderer
 		void un_bind() override = 0;
 
 		virtual void add_color_texture_attachment(
-				const frame_buffer_color_texture_specification&frame_buffer_color_texture_specification) = 0;
+			const frame_buffer_color_texture_specification& frame_buffer_color_texture_specification) = 0;
 
 		virtual void resize(uint32_t newWidth, uint32_t newHeight) = 0;
 		virtual uint32_t get_color_attachment_id(uint32_t slot = 0) = 0;
@@ -58,6 +59,6 @@ namespace Retro::Renderer
 		virtual uint32_t get_height() const = 0;
 
 		/* Instantiate */
-		static shared<frame_buffer> create(const frame_buffer_specification &frame_buffer_specification);
+		static shared<frame_buffer> create(const frame_buffer_specification& frame_buffer_specification);
 	};
 }

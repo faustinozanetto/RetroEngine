@@ -4,7 +4,7 @@
 #include "renderer/renderer/graphics_object.h"
 #include "renderer/buffers/vbo/vertex_object_buffer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class uniform_buffer : public graphics_object
 	{

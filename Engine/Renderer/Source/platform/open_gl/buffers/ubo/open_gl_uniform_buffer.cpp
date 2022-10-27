@@ -3,7 +3,7 @@
 #include "open_gl_uniform_buffer.h"
 #include "glad/glad.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	open_gl_uniform_buffer::open_gl_uniform_buffer(uint32_t size, uint32_t binding)
 	{

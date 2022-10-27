@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Retro
+namespace retro
 {
 	class layer
 	{

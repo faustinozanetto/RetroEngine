@@ -10,7 +10,7 @@
 #include "core/layers/layer_manager.h"
 
 #include "core/assets/asset.h"
-#include "core/assets/assets_mangaer.h"
+#include "core/assets/assets_manager.h"
 
 #include "core/input/input_key.h"
 #include "core/input/input_manager.h"

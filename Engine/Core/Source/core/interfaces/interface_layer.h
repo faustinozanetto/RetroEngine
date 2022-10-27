@@ -2,7 +2,7 @@
 
 #include "core/layers/layer.h"
 
-namespace Retro
+namespace retro
 {
 	class interface_layer : public layer
 	{

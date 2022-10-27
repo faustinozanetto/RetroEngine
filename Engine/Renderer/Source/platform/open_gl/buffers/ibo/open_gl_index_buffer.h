@@ -2,7 +2,7 @@
 
 #include "renderer/buffers/ibo/index_buffer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class open_gl_index_buffer : public index_buffer
 	{

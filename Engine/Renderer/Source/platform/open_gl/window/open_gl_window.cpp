@@ -5,7 +5,7 @@
 #include "core/base.h"
 #include "renderer/renderer/renderer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	open_gl_window::open_gl_window(const window_specification& window_specification)
 	{

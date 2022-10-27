@@ -6,11 +6,11 @@
 #include "renderer/renderer/renderer_context.h"
 #include "renderer/renderer/renderer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	uint32_t layout_element::calculate_element_count() const
 	{
-		switch (layout_element_type)
+		switch (type)
 		{
 		case Float: return 1;
 		case FloatVec2: return 2;
@@ -34,7 +34,7 @@ namespace Retro::Renderer
 
 	layout_element::layout_element(layout_element_type type, std::string elementName)
 	{
-		type = type;
+		this->type = type;
 		name = elementName;
 		size = CalculateElementSize(type);
 		offset = 0;

@@ -3,7 +3,7 @@
 #include "core/base.h"
 #include "renderer/renderer/graphics_object.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class index_buffer : public graphics_object
 	{

@@ -2,7 +2,7 @@
 
 #include "renderer/buffers/ubo/uniform_buffer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class open_gl_uniform_buffer : public uniform_buffer
 	{

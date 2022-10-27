@@ -2,20 +2,20 @@
 
 #include <queue>
 
-#include "render_command.h"
 #include "core/base.h"
+#include "render_command.h"
 #include "renderer/renderer/renderer_api.h"
 #include "renderer/renderer/renderer_context.h"
-#include "Renderer/Window/Window.h"
+#include "renderer/window/window.h"
 #include "glm/glm.hpp"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class renderer
 	{
 	public:
 		/* Methods */
-		static bool initialize(renderer_api_type renderer_api_type, const Window &window);
+		static bool initialize(renderer_api_type renderer_api_type, const window &window);
 
 		static void set_clear_color(glm::vec4 color);
 		static void clear_screen();

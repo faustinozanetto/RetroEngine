@@ -3,7 +3,7 @@
 #include "renderer/buffers/ibo/index_buffer.h"
 #include "renderer/buffers/vao/vertex_array_buffer.h"
 
-namespace Retro::Renderer
+namespace retro::renderer
 {
 	class open_gl_vertex_array_buffer : public vertex_array_buffer
 	{

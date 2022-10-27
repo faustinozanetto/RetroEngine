@@ -3,12 +3,15 @@
 #include "retro_application.h"
 
 #include "core/interfaces/interface_layer.h"
-#include "Logger/Logger.h"
-#include "Renderer/Renderer/Renderer.h"
+#include "renderer/renderer/renderer.h"
 
-namespace Retro
+namespace retro
 {
 	retro_application *retro_application::s_instance = nullptr;
+
+	retro_application::retro_application() : retro_application({ "Retro Application" })
+	{
+	}
 
 	retro_application::retro_application(const retro_application_specification &retro_application_specification)
 	{
@@ -17,16 +20,16 @@ namespace Retro
 		s_instance = this;
 		m_application_specification = retro_application_specification;
 		// Initialize Logger.
-		Logger::Initialize();
-		Logger::Line();
+		logger::initialize();
+		logger::line();
 		// Create window.
-		const auto windowSpecification = Renderer::FWindowSpecification(
+		const auto windowSpecification = renderer::window_specification(
 				"Retro Engine", 1920, 1080, false);
-		m_window = Renderer::Window::Create(windowSpecification);
+		m_window = renderer::window::create(windowSpecification);
 		// Initialize Renderer
-		Renderer::Renderer::Initialize(Renderer::RenderingAPIType::OpenGL, *m_window.get());
+		renderer::renderer::initialize(renderer::renderer_api_type::open_gl, *m_window.get());
 		// Initialize Layers and SubSystems.
-		m_assets_manager = assets_mangaer::create();
+		m_assets_manager = assets_manager::create();
 		m_layers_manager = layer_manager::create("LayersManager");
 		m_interface_layers_manager = layer_manager::create("InterfaceLayersManager");
 		m_interfaces_subsystem = interface_subsystem::create();
@@ -41,9 +44,9 @@ namespace Retro
 
 	void retro_application::run_application() const
 	{
-		while (!Renderer::Renderer::ShouldClose())
+		while (!renderer::renderer::should_close())
 		{
-			Renderer::Renderer::Begin();
+			renderer::renderer::begin();
 			m_interfaces_subsystem->initialize_imgui();
 			// Main Render Loop.
 			{
@@ -70,11 +73,11 @@ namespace Retro
 			}
 			m_interfaces_subsystem->terminate_imgui();
 
-			Renderer::Renderer::End();
+			renderer::renderer::end();
 		}
 	}
 
-	const unique<Renderer::Window> &retro_application::get_window() const
+	const unique<renderer::window> &retro_application::get_window() const
 	{
 		return m_window;
 	}
@@ -89,7 +92,7 @@ namespace Retro
 		return m_interface_layers_manager;
 	}
 
-	const unique<assets_mangaer> &retro_application::get_assets_manager() const
+	const unique<assets_manager> &retro_application::get_assets_manager() const
 	{
 		return m_assets_manager;
 	}
