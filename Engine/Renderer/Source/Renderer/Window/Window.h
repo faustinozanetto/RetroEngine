@@ -4,39 +4,39 @@
 
 namespace Retro::Renderer
 {
-	struct FWindowSpecification
+	struct window_specification
 	{
-		std::string windowTitle;
+		std::string window_title;
 		int width;
 		int height;
-		bool vSync;
+		bool v_sync;
 
-		FWindowSpecification(const std::string& windowTitle = "Retro Engine", int width = 1920,
-		                     int height = 1080, bool vSync = false) : windowTitle(windowTitle), width(width),
-		                                                              height(height), vSync(vSync)
+		window_specification(const std::string& window_title = "Retro Engine", int width = 1920,
+		                     int height = 1080, bool v_sync = false) : window_title(window_title), width(width),
+		                                                              height(height), v_sync(v_sync)
 		{
 		}
 	};
 
-	class Window
+	class window
 	{
 	public:
 		/* Destructor */
-		virtual ~Window() = default;
+		virtual ~window() = default;
 
 		/* Methods */
-		virtual void SetEnableVSync(bool useVSync) = 0;
-		virtual void SetWindowTitle(const std::string& title) = 0;
-		virtual void SetupWindowCallbacks() = 0;
+		virtual void set_vsync_enabled(bool useVSync) = 0;
+		virtual void set_window_title(const std::string& title) = 0;
+		virtual void setup_window_callbacks() = 0;
 
 		/* Getters */
-		const FWindowSpecification& GetWindowSpecification();
-		virtual void* GetNativeWindow() const = 0;
-		bool IsVSyncEnabled() const;
+		const window_specification& get_window_specification();
+		virtual void* get_native_window() const = 0;
+		bool is_vsync_enabled() const;
 
 		/* Instantiate */
-		static Unique<Window> Create(const FWindowSpecification& specification = FWindowSpecification());
+		static unique<window> create(const window_specification& window_specification = window_specification());
 	protected:
-		FWindowSpecification m_WindowSpecification;
+		window_specification m_window_specification;
 	};
 }

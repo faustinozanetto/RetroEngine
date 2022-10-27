@@ -1,42 +1,46 @@
 #include "pch.h"
-#include "Asset.h"
-#include "Core/Application/RetroApplication.h"
+#include "asset.h"
+#include "core/application/retro_application.h"
 
 namespace Retro
 {
-	Asset::Asset()
+	asset::asset()
 	{
-		m_UUID = CreateShared<UUID>();
-		m_AssetType = AssetType::None;
-		RetroApplication::GetApplication().GetAssetsManager()->RegisterAsset(Shared<Asset>(this));
+		m_uuid = create_shared<uuid>();
+		m_asset_type = asset_type::None;
+		retro_application::get_application().get_assets_manager()->RegisterAsset(Shared<Asset>(this));
 	}
 
-	Asset::Asset(AssetType assetType)
+	asset::asset(asset_type asset_type)
 	{
-		m_UUID = CreateShared<UUID>();
-		m_AssetType = assetType;
-		RetroApplication::GetApplication().GetAssetsManager()->RegisterAsset(Shared<Asset>(this));
+		m_uuid = create_shared<uuid>();
+		m_asset_type = assetType;
+		RetroApplication::get_application().get_assets_manager()->RegisterAsset(Shared<Asset>(this));
 	}
 
-	const Shared<UUID>& Asset::GetUUID() const
+	const shared<uuid> &asset::get_uuid() const
 	{
-		return m_UUID;
+		return m_uuid;
 	}
 
-	std::string Asset::GetAssetToString(AssetType assetType)
+	std::string asset::get_asset_to_string(asset_type asset_type)
 	{
-		switch (assetType)
+		switch (asset_type)
 		{
-		case AssetType::None: return "None";
-		case AssetType::Model: return "Model";
-		case AssetType::Texture: return "Texture";
-		case AssetType::Shader: return "Shader";
+		case asset_type::none:
+			return "None";
+		case asset_type::model:
+			return "Model";
+		case asset_type::texture:
+			return "Texture";
+		case asset_type::shader:
+			return "Shader";
 		}
 		return "";
 	}
 
-	static Shared<Asset> Create(AssetType assetType)
+	static shared<asset> asset(asset_type asset_type)
 	{
-		return CreateShared<Asset>(assetType);
+		return create_shared<asset>(asset_type);
 	}
 }

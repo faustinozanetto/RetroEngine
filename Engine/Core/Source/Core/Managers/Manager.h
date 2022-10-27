@@ -2,17 +2,17 @@
 
 namespace Retro
 {
-	class Manager
+	class manager
 	{
 	public:
-		Manager(const std::string& managerName);
-		virtual ~Manager() = default;
+		manager(const std::string& manager_name);
+		virtual ~manager() = default;
 
-		virtual void Shutdown() = 0;
+		virtual void shutdown() = 0;
 
 		/* Methods */
-		const std::string& GetManagerName() const;
+		const std::string& get_manager_name() const;
 	private:
-		std::string m_ManagerName;
+		std::string m_manager_name;
 	};
 }
