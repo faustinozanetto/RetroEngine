@@ -1,20 +1,16 @@
 #version 460
-
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
 layout (location = 2) in vec3 aNormal;
 
-layout(location = 0) out vec3 localPos;
+layout(location = 0) out vec3 WorldPos;
 
 // Camera UB
-uniform Camera
-{
-  mat4 u_ViewMatrix;
-  mat4 u_ProjectionMatrix;
-} camera;
+uniform mat4 projection;
+uniform mat4 view;
 
 void main()
 {
-    localPos = aPos;  
-    gl_Position =  camera.u_ProjectionMatrix * camera.u_ViewMatrix * vec4(localPos, 1.0);
+    WorldPos = aPos;  
+    gl_Position =  projection * view * vec4(WorldPos, 1.0);
 }

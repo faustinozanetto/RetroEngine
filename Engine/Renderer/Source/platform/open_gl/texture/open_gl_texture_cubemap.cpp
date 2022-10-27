@@ -20,6 +20,7 @@ namespace retro::renderer
 		// Variables for stb.
 		int width, height, channels;
 		// Load file using STB.
+		stbi_set_flip_vertically_on_load(1);
 		float* data = stbi_loadf(m_texture_specification.path.c_str(), &width, &height, &channels, 0);
 
 		RETRO_CORE_ASSERT(data, "Failed to load data from image");

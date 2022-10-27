@@ -101,7 +101,6 @@ public:
 
 		m_Model = retro::renderer::model::create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
 
-		/*
 		auto albedo = retro::renderer::texture::create({
 			"Assets/Models/Cerberus/textures/Cerberus_A.png",
 			retro::renderer::texture_filtering::linear,
@@ -150,13 +149,19 @@ public:
 		m_Material = retro::renderer::material::create(
 			materialSpecification);
 
-*/
-		m_FBO = retro::renderer::frame_buffer::create({
+
+		m_geometry_frame_buffer = retro::renderer::frame_buffer::create({
 			2560, 1440, {
 				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
 				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
 				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
 				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
+				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
+			}
+		});
+
+		m_final_frame_buffer = retro::renderer::frame_buffer::create({
+			2560, 1440, {
 				retro::renderer::frame_buffer_color_attachment_format::rgba16f,
 			}
 		});
@@ -206,6 +211,16 @@ public:
 		m_CameraUBO->set_data(&m_CameraData, sizeof(CameraData));
 		m_CameraUBO->un_bind();
 
+		// Update lights UBO
+		m_LightsUBO->bind();
+		m_LightsData.pointLight.color = m_Light->get_color();
+		m_LightsData.pointLight.linear = m_Light->get_linear();
+		m_LightsData.pointLight.constant = m_Light->get_constant();
+		m_LightsData.pointLight.quadratic = m_Light->get_quadratic();
+		m_LightsData.pointLight.position = m_Light->get_position();
+		m_LightsUBO->set_data(&m_LightsData, sizeof(LightsData));
+		m_LightsUBO->un_bind();
+
 		m_lighting_environment->set_view_projection(m_CameraData.u_ViewMatrix, m_CameraData.u_ProjectionMatrix);
 
 		if (retro::input::input_manager::is_key_pressed(retro::input::key::Escape))
@@ -217,11 +232,11 @@ public:
 			m_CameraFov = 50.0f;
 		}
 
-		m_FBO->bind();
+		m_geometry_frame_buffer->bind();
 		retro::renderer::renderer::set_renderer_state(retro::renderer::renderer_state::depth_test, true);
 		retro::renderer::renderer::set_clear_color({0.1f, 0.1f, 0.1f, 1.0f});
-		retro::renderer::renderer::clear_screen();
 		m_Shader->bind();
+		retro::renderer::renderer::clear_screen();
 
 		// Render light model
 		{
@@ -236,7 +251,6 @@ public:
 			});
 		}
 
-		/*
 		auto model = glm::mat4(1.0f);
 		model = translate(model, m_Translate);
 		model = rotate(model, 1.0f, m_Rotation);
@@ -250,37 +264,37 @@ public:
 				m_Shader, renderable->get_vertex_array_buffer(), m_Material, model
 			});
 		}
-		*/
+		
 		m_Shader->un_bind();
-		m_FBO->un_bind();
+		m_geometry_frame_buffer->un_bind();
 
 		retro::renderer::renderer::set_renderer_state(retro::renderer::renderer_state::depth_test, false);
-		retro::renderer::renderer::set_clear_color({0.2f, 0.3f, 0.3f, 1.0f});
-		retro::renderer::renderer::clear_screen();
+
+		m_final_frame_buffer->bind();
+		m_LightingShader->bind();
+		retro::renderer::renderer::bind_texture(m_geometry_frame_buffer->get_color_attachment_id(0), 0);
+		retro::renderer::renderer::bind_texture(m_geometry_frame_buffer->get_color_attachment_id(1), 1);
+		retro::renderer::renderer::bind_texture(m_geometry_frame_buffer->get_color_attachment_id(2), 2);
+		retro::renderer::renderer::bind_texture(m_geometry_frame_buffer->get_color_attachment_id(3), 3);
+		retro::renderer::renderer::bind_texture(m_geometry_frame_buffer->get_color_attachment_id(4), 4);
+		retro::renderer::renderer::bind_texture(m_lighting_environment->get_irradiance_texture(), 5);
+		retro::renderer::renderer::bind_texture(m_lighting_environment->get_prefilter_texture(), 6);
+		retro::renderer::renderer::bind_texture(m_lighting_environment->get_brdf_lut_texture(), 7);
+		retro::renderer::renderer::submit_command({m_LightingShader, m_ScreenVAO, nullptr, glm::mat4(1.0f)});
+		m_LightingShader->un_bind();
+
+		m_final_frame_buffer->bind();
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_geometry_frame_buffer->get_object_handle());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_final_frame_buffer->get_object_handle());
+		glBlitFramebuffer(0, 0, m_final_frame_buffer->get_width(), m_final_frame_buffer->get_height(), 0, 0, m_final_frame_buffer->get_width(), m_final_frame_buffer->get_height(),
+		                  GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		m_lighting_environment->render_environment();
 		glDepthFunc(GL_LESS);
 
-		// Update lights UBO
-		m_LightsUBO->bind();
-		m_LightsData.pointLight.color = m_Light->get_color();
-		m_LightsData.pointLight.linear = m_Light->get_linear();
-		m_LightsData.pointLight.constant = m_Light->get_constant();
-		m_LightsData.pointLight.quadratic = m_Light->get_quadratic();
-		m_LightsData.pointLight.position = m_Light->get_position();
-		m_LightsUBO->set_data(&m_LightsData, sizeof(LightsData));
-		m_LightsUBO->un_bind();
-
-		m_LightingShader->bind();
-		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(0), 0);
-		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(1), 1);
-		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(2), 2);
-		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(3), 3);
-		retro::renderer::renderer::bind_texture(m_FBO->get_color_attachment_id(4), 4);
-		retro::renderer::renderer::submit_command({m_LightingShader, m_ScreenVAO, nullptr, glm::mat4(1.0f)});
-		m_LightingShader->un_bind();
+		m_final_frame_buffer->un_bind();
 
 		ImGui::Begin("Edit");
 		ImGui::SliderFloat3("Scale", value_ptr(m_Scale), 0.02f, 5.0f);
@@ -318,7 +332,7 @@ public:
 		}
 		ImGui::End();
 
-		/*
+		
 		ImGui::Begin("Viewport");
 		const auto viewportMinRegin = ImGui::GetWindowContentRegionMin();
 		const auto viewportMaxRegin = ImGui::GetWindowContentRegionMax();
@@ -333,12 +347,12 @@ public:
 
 		// Draw viewport
 		ImGui::Image(
-			reinterpret_cast<ImTextureID>(m_FBO->GetColorAttachmentID(1)),
+			reinterpret_cast<ImTextureID>(m_final_frame_buffer->get_color_attachment_id(0)),
 			ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 },
 			ImVec2{ 1, 0 });
 
 		ImGui::End();
-		*/
+		
 	}
 
 private:
@@ -366,7 +380,8 @@ private:
 	retro::shared<retro::renderer::material> m_Material;
 	retro::shared<retro::renderer::model> m_Model;
 	retro::shared<retro::renderer::model> m_LightModel;
-	retro::shared<retro::renderer::frame_buffer> m_FBO;
+	retro::shared<retro::renderer::frame_buffer> m_geometry_frame_buffer;
+	retro::shared<retro::renderer::frame_buffer> m_final_frame_buffer;
 	retro::shared<retro::renderer::uniform_buffer> m_CameraUBO;
 	retro::shared<retro::renderer::uniform_buffer> m_LightsUBO;
 };
