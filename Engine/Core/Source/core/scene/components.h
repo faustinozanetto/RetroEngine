@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include "renderer/materials/material.h"
 #include "renderer/rendereables/model/model.h"
 
 namespace retro
@@ -13,6 +14,7 @@ namespace retro
 		name_component(const name_component&) = default;
 		name_component(const std::string& name);
 	};
+	
 	struct transform_component
 	{
 		glm::vec3 position;
@@ -33,5 +35,15 @@ namespace retro
 		model_renderer_component() = default;
 		model_renderer_component(const model_renderer_component&) = default;
 		model_renderer_component(const shared<renderer::model>& model);
+		model_renderer_component(const std::string& model_path);
+	};
+
+	struct material_component
+	{
+		shared<renderer::material> material;
+
+		material_component() = default;
+		material_component(const material_component&) = default;
+		material_component(const shared<renderer::material>& material);
 	};
 }

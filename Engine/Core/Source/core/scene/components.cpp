@@ -36,4 +36,14 @@ namespace retro
 	{
 		this->model = model;
 	}
+
+	model_renderer_component::model_renderer_component(const std::string& model_path)
+	{
+		model = renderer::model::create(model_path);
+	}
+
+	material_component::material_component(const shared<renderer::material>& material)
+	{
+		this->material = material;
+	}
 }

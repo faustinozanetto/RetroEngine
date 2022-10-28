@@ -27,7 +27,7 @@ namespace retro
 		template<typename T>
 		bool has_component() const
 		{
-			return s_scene->get_actor_registry().any_of<T>(m_actor_handle);
+			return s_scene->get_actor_registry().has<T>(m_actor_handle);
 		}
 
 		template<typename T>
