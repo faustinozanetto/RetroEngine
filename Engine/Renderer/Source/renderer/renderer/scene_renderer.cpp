@@ -27,11 +27,9 @@ namespace retro::renderer
     {
         // Update camera UBO.
         s_scene_renderer_data.m_camera_ubo->bind();
-        s_scene_renderer_data.m_camera_data.u_ViewProjectionMatrix = s_scene_renderer_data.m_camera->
-            get_view_projection();
+        s_scene_renderer_data.m_camera_data.u_ViewProjectionMatrix = s_scene_renderer_data.m_camera->get_view_projection();
         s_scene_renderer_data.m_camera_data.u_ViewMatrix = s_scene_renderer_data.m_camera->get_view_matrix();
-        s_scene_renderer_data.m_camera_data.u_ProjectionMatrix = s_scene_renderer_data.m_camera->
-            get_projection_matrix();
+        s_scene_renderer_data.m_camera_data.u_ProjectionMatrix = s_scene_renderer_data.m_camera->get_projection_matrix();
         s_scene_renderer_data.m_camera_data.u_Position = s_scene_renderer_data.m_camera->get_position();
         s_scene_renderer_data.m_camera_ubo->set_data(&s_scene_renderer_data.m_camera_data, sizeof(camera_data));
         s_scene_renderer_data.m_camera_ubo->un_bind();
@@ -57,16 +55,17 @@ namespace retro::renderer
         s_scene_renderer_data.m_geometry_shader->bind();
         renderer::clear_screen();
 
-        const auto view = s_scene_renderer_data.m_scene->get_actor_registry().group<model_renderer_component>
-            (entt::get<name_component, transform_component, material_component>);
-        for (auto&& [actor,model_renderer, name, transform,material] : view.each())
+        const auto view = s_scene_renderer_data.m_scene->get_actor_registry().group<model_renderer_component>(entt::get<name_component, transform_component, material_component>);
+        for (auto &&[actor, model_renderer, name, transform, material] : view.each())
         {
             material.material->set_shader(s_scene_renderer_data.m_geometry_shader);
-            for (const auto& renderable : model_renderer.model->get_model_renderables())
+            for (const auto &renderable : model_renderer.model->get_model_renderables())
             {
                 s_scene_renderer_data.m_geometry_shader->set_mat4("uTransform", transform.get_transform_matrix());
                 renderer::submit_command({
-                    s_scene_renderer_data.m_geometry_shader, renderable->get_vertex_array_buffer(), material.material,
+                    s_scene_renderer_data.m_geometry_shader,
+                    renderable->get_vertex_array_buffer(),
+                    material.material,
                 });
             }
         }
@@ -87,9 +86,7 @@ namespace retro::renderer
         renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_prefilter_texture(), 6);
         renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_brdf_lut_texture(), 7);
         s_scene_renderer_data.m_lighting_shader->set_mat4("uTransform", glm::mat4(1.0f));
-        renderer::submit_command({
-            s_scene_renderer_data.m_lighting_shader, s_scene_renderer_data.m_screen_vao, nullptr
-        });
+        renderer::submit_command({s_scene_renderer_data.m_lighting_shader, s_scene_renderer_data.m_screen_vao, nullptr});
         s_scene_renderer_data.m_lighting_shader->un_bind();
 
         /*==================== FINAL PASS ====================*/
@@ -112,7 +109,7 @@ namespace retro::renderer
     {
     }
 
-    void scene_renderer::set_scene(const shared<scene>& scene)
+    void scene_renderer::set_scene(const shared<scene> &scene)
     {
         s_scene_renderer_data.m_scene = scene;
     }
@@ -135,30 +132,26 @@ namespace retro::renderer
 
     void scene_renderer::generate_frame_buffers()
     {
-        s_scene_renderer_data.m_geometry_frame_buffer = frame_buffer::create({
-            2560, 1440, {
-                frame_buffer_color_attachment_format::rgba16f,
-                frame_buffer_color_attachment_format::rgba16f,
-                frame_buffer_color_attachment_format::rgba16f,
-                frame_buffer_color_attachment_format::rgba16f,
-                frame_buffer_color_attachment_format::rgba16f,
-            }
-        });
+        s_scene_renderer_data.m_geometry_frame_buffer = frame_buffer::create({2560, 1440, {
+                                                                                              frame_buffer_color_attachment_format::rgba16f,
+                                                                                              frame_buffer_color_attachment_format::rgba16f,
+                                                                                              frame_buffer_color_attachment_format::rgba16f,
+                                                                                              frame_buffer_color_attachment_format::rgba16f,
+                                                                                              frame_buffer_color_attachment_format::rgba16f,
+                                                                                          }});
 
-        s_scene_renderer_data.m_final_frame_buffer = frame_buffer::create({
-            2560, 1440, {
-                frame_buffer_color_attachment_format::rgba16f,
-            }
-        });
+        s_scene_renderer_data.m_final_frame_buffer = frame_buffer::create({2560, 1440, {
+                                                                                           frame_buffer_color_attachment_format::rgba16f,
+                                                                                       }});
     }
 
     void scene_renderer::create_screen_vao()
     {
         float squareVertices[5 * 4] = {
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,   // top right
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top left
         };
 
         // Fill index buffer
@@ -172,10 +165,8 @@ namespace retro::renderer
         auto IBO = index_buffer::create(
             squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
         s_scene_renderer_data.m_screen_vao->bind();
-        VBO->set_layout({
-            {FloatVec3, "aPos"},
-            {FloatVec2, "aTexCoord"}
-        });
+        VBO->set_layout({{FloatVec3, "aPos"},
+                         {FloatVec2, "aTexCoord"}});
         s_scene_renderer_data.m_screen_vao->add_vertex_buffer(VBO);
         s_scene_renderer_data.m_screen_vao->set_index_buffer(IBO);
         s_scene_renderer_data.m_screen_vao->un_bind();
@@ -185,36 +176,30 @@ namespace retro::renderer
     {
         s_scene_renderer_data.m_camera = create_unique<camera>(50.0f, 0.01f, 1000.0f);
         s_scene_renderer_data.m_camera_ubo = uniform_buffer::create(sizeof(camera_data), 0);
-        s_scene_renderer_data.m_camera_ubo->set_layout({
-                                                           {Mat4, "u_ViewProjectionMatrixPos"},
-                                                           {Mat4, "u_ViewMatrix"},
-                                                           {Mat4, "u_ProjectionMatrix"},
-                                                           {FloatVec3, "u_Position"}
-                                                       },
+        s_scene_renderer_data.m_camera_ubo->set_layout({{Mat4, "u_ViewProjectionMatrixPos"},
+                                                        {Mat4, "u_ViewMatrix"},
+                                                        {Mat4, "u_ProjectionMatrix"},
+                                                        {FloatVec3, "u_Position"}},
                                                        0);
     }
 
     void scene_renderer::setup_lights()
     {
         s_scene_renderer_data.m_lights_ubo = uniform_buffer::create(sizeof(lights_data), 1);
-        s_scene_renderer_data.m_lights_ubo->set_layout({
-                                                           {FloatVec3, "position"},
-                                                           {FloatVec3, "ambient"},
-                                                           {FloatVec3, "diffuse"},
-                                                           {Float, "constant"},
-                                                           {Float, "linear"},
-                                                           {Float, "quadratic"}
-                                                       },
+        s_scene_renderer_data.m_lights_ubo->set_layout({{FloatVec3, "position"},
+                                                        {FloatVec3, "ambient"},
+                                                        {FloatVec3, "diffuse"},
+                                                        {Float, "constant"},
+                                                        {Float, "linear"},
+                                                        {Float, "quadratic"}},
                                                        1, 1 + 1);
     }
 
     void scene_renderer::setup_environment()
     {
-        const shared<texture_cubemap> sky_cubemap = texture_cubemap::create({
-            "Assets/Textures/HDR/belfast_farmhouse_2k.hdr",
-            texture_filtering::linear,
-            texture_wrapping::clamp_edge
-        });
+        const shared<texture_cubemap> sky_cubemap = texture_cubemap::create({"Assets/Textures/HDR/belfast_farmhouse_2k.hdr",
+                                                                             texture_filtering::linear,
+                                                                             texture_wrapping::clamp_edge});
         s_scene_renderer_data.m_lighting_environment = lighting_environment::create(sky_cubemap);
     }
 }
