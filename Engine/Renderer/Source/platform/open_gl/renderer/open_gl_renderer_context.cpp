@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "open_gl_renderer_context.h"
+#include "core/assert.h"
 
 namespace retro::renderer
 {

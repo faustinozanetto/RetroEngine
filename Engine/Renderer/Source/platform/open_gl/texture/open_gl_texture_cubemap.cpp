@@ -2,7 +2,7 @@
 
 #include <stb_image.h>
 #include "open_gl_texture_cubemap.h"
-
+#include "core/assert.h"
 #include "open_gl_texture.cpp"
 
 namespace retro::renderer

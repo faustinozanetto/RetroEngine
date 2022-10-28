@@ -10,7 +10,9 @@
 #include "core/input/input_manager.h"
 #include "core/interfaces/interface_layer.h"
 #include "core/layers/layer.h"
+#include "core/scene/components.h"
 #include "core/scene/scene.h"
+#include "core/scene/actor.h"
 #include "glad/glad.h"
 #include "renderer/buffers/fbo/frame_buffer.h"
 #include "renderer/buffers/ubo/uniform_buffer.h"
@@ -88,8 +90,13 @@ public:
 			m_lighting_environment = retro::renderer::lighting_environment::create(m_SkyboxCubemap);
 		}
 
+		m_Model = retro::renderer::model::create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
+
 		m_Scene = retro::scene::create("Sandbox");
 		auto actor = m_Scene->create_actor();
+		actor->add_component<retro::name_component>("Test Actor");
+		actor->add_component<retro::transform_component>();
+		actor->add_component<retro::model_renderer_component>(m_Model);
 
 		m_Shader = retro::renderer::shader::create("Assets/Shaders/Geometry/Geometry.vert",
 		                                           "Assets/Shaders/Geometry/Geometry.frag");
@@ -98,8 +105,6 @@ public:
 		m_LightingShader = retro::renderer::shader::create("Assets/Shaders/Lighting/Lighting.vert",
 		                                                   "Assets/Shaders/Lighting/Lighting.frag");
 		m_LightModel = retro::renderer::model::create("Assets/Models/Cube.obj");
-
-		m_Model = retro::renderer::model::create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
 
 		auto albedo = retro::renderer::texture::create({
 			"Assets/Models/Cerberus/textures/Cerberus_A.png",
@@ -327,6 +332,24 @@ public:
 					}
 					ImGui::TreePop();
 				}
+			}
+			ImGui::TreePop();
+		}
+		ImGui::End();
+
+		ImGui::Begin("Actors");
+
+		if (ImGui::TreeNode("List"))
+		{
+			int i = 0;
+			for (auto& actor : m_Scene->get_actor_registry().view<retro::name_component>())
+			{
+				if (ImGui::TreeNode(reinterpret_cast<void*>(i), "Actor %d", i))
+				{
+					ImGui::Text(m_Scene->get_actor_registry().get<retro::name_component>(actor).name.c_str());
+					ImGui::TreePop();
+				}
+				i++;
 			}
 			ImGui::TreePop();
 		}

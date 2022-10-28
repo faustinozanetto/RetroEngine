@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "actor.h"
 #include "scene.h"
 
 namespace retro
@@ -11,6 +12,7 @@ namespace retro
   scene::scene(const std::string &scene_name)
   {
     logger::line();
+    actor::s_scene = this;
     m_scene_name = scene_name;
     logger::info("Creating scene with name: " + scene_name);
   }

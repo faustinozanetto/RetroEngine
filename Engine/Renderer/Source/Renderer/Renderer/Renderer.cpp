@@ -2,6 +2,7 @@
 
 #include "renderer/renderer/renderer.h"
 #include "core/base.h"
+#include "core/assert.h"
 
 namespace retro::renderer
 {

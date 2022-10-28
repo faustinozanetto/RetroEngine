@@ -3,6 +3,7 @@
 #include "open_gl_renderer_api.h"
 
 #include "core/base.h"
+#include "core/assert.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 

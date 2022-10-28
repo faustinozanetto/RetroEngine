@@ -3,6 +3,7 @@
 #include "open_gl_window.h"
 
 #include "core/base.h"
+#include "core/assert.h"
 #include "renderer/renderer/renderer.h"
 
 namespace retro::renderer
