@@ -47,4 +47,3 @@ namespace retro
 }
 
 #include "logger/logger.h"
-#include "core/assert.h"

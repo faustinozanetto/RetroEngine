@@ -1,17 +1,41 @@
 #pragma once
 
 #include <entt/entt.hpp>
+#include "core/assert.h"
+#include "scene.h"
 
 namespace retro
 {
 	class actor
 	{
 	public:
+		static scene* s_scene;
+
 		actor();
 		actor(entt::entity handle);
 		~actor();
 
 		entt::entity get_actor_handle() const { return m_actor_handle; };
+
+		template <typename T, typename ... Args>
+		T& add_component(Args&& ...args)
+		{
+			RETRO_CORE_ASSERT(!has_component<T>(), "The actor already has that component.");
+			return s_scene->get_actor_registry().emplace<T>(m_actor_handle, std::forward<Args>(args)...);
+		}
+
+		template<typename T>
+		bool has_component() const
+		{
+			return s_scene->get_actor_registry().any_of<T>(m_actor_handle);
+		}
+
+		template<typename T>
+		void remove_component()
+		{
+			RETRO_CORE_ASSERT(has_component<T>(), "The actor does not have that component.");
+			s_scene->get_actor_registry().remove<T>(m_actor_handle);
+		}
 
 		operator bool() const
 		{

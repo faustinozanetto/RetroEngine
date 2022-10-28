@@ -4,6 +4,8 @@
 
 namespace retro
 {
+	scene* actor::s_scene = nullptr;
+
 	actor::actor()
 	{
 	}
