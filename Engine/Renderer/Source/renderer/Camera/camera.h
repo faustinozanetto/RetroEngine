@@ -18,12 +18,14 @@ namespace retro::renderer
 		const glm::mat4& get_view_matrix() const { return m_view_matrix; }
 		const glm::mat4& get_projection_matrix() const { return m_projection_matrix; }
 		const glm::mat4& get_view_projection() const { return m_projection_matrix * m_view_matrix; }
-		const glm::vec3& get_position() const { return m_position; }
 		const glm::quat& get_orientation() const;
 		const glm::vec3& get_up_direction() const;
 		const glm::vec3& get_right_direction() const;
 		const glm::vec3& get_forward_direction() const;
 
+		const glm::vec3& get_position() const { return m_position; }
+		void set_position(const glm::vec3& position) { m_position = position;}
+		
 		const glm::vec3& get_focal_point() const { return m_focal_point; }
 
 		void set_focal_point(const glm::vec3& focal_point)
@@ -59,7 +61,7 @@ namespace retro::renderer
 			setup_projection_matrix();
 		}
 
-		float get_fra_plane() const { return m_far_plane; }
+		float get_far_plane() const { return m_far_plane; }
 
 		void set_far_plane(float far_plane)
 		{

@@ -175,13 +175,7 @@ namespace retro::renderer
 			};
 			glDrawBuffers(m_color_attachments.size(), buffers);
 		}
-		else
-		{
-			// Only depth-pass
-			glDrawBuffer(GL_NONE);
-			glReadBuffer(GL_NONE);
-		}
-
+		
 		const auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 		if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		{

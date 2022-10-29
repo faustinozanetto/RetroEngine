@@ -58,23 +58,23 @@ void main() {
     gNormal = normalize(geometryInput.tbn * normal);
 
     /* Roughness */
-    float roughness = 0.0;
+    float roughness;
     if (material.hasRoughnessMap == 1) {
-        roughness = texture(uRoughnessMap, geometryInput.texCoords).r;
+        roughness = texture(uRoughnessMap, geometryInput.texCoords).b;
     } else {
         roughness = material.roughness;
 	}
 
     /* Metallic */
-    float metallic = 0.0;
+    float metallic;
     if (material.hasMetallicMap == 1) {
-        metallic = texture(uMetallicMap, geometryInput.texCoords).r;
+        metallic = texture(uMetallicMap, geometryInput.texCoords).g;
     } else {
         metallic = material.metallic;
     }
 
     /* AO */
-    float ao = 0.0;
+    float ao;
     if (material.hasAmbientOcclusionMap == 1) {
         ao = texture(uAmbientOcclusionMap, geometryInput.texCoords).r;
     } else {

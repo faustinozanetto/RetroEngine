@@ -22,6 +22,8 @@ namespace retro::renderer
         shared<texture> mat_texture;
         bool enabled;
 
+        material_texture() = default;
+
         material_texture(const shared<texture>& texture, bool is_enabled) : mat_texture(texture), enabled(is_enabled)
         {
         }
@@ -67,20 +69,23 @@ namespace retro::renderer
         void un_bind() override;
 
         void set_shader(const shared<shader>& shader);
+        void set_texture_enabled(material_texture_type type, bool enabled);
 
         const material_texture& get_material_texture(material_texture_type material_texture_type);
-        const material_specification& get_material_specification() const { return m_material_specification; }
+        material_specification& get_material_specification() { return m_material_specification; }
 
         void set_roughness(float roughness) { m_material_specification.roughness = roughness; }
         void set_metallic(float metallic) { m_material_specification.metallic = metallic; }
+
+        static std::string get_texture_type_to_string(material_texture_type material_texture_type);
 
         /* Instantiate */
         static shared<material> create();
         static shared<material> create(const material_specification& material_specification);
 
     private:
-        const std::string get_material_texture_uniform(material_texture_type material_texture_type);
-        uint32_t get_material_texture_bind_slot(material_texture_type material_texture_type);
+        static std::string get_material_texture_uniform(material_texture_type material_texture_type);
+        static uint32_t get_material_texture_bind_slot(material_texture_type material_texture_type);
 
     private:
         material_specification m_material_specification;
