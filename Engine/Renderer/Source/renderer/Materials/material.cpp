@@ -30,7 +30,7 @@ namespace retro::renderer
         {
             const std::string& uniformName = get_material_texture_uniform(type);
             m_material_specification.mat_shader->set_int(uniformName, texture.enabled ? 1 : 0);
-            if (texture.enabled) texture.mat_texture->bind(get_material_texture_bind_slot(type));
+            if (texture.enabled) texture.mat_texture->bind(static_cast<int>(get_material_texture_bind_slot(type)));
         }
     }
 
@@ -50,9 +50,27 @@ namespace retro::renderer
         m_material_specification.mat_shader = shader;
     }
 
+    void material::set_texture_enabled(material_texture_type type, bool enabled)
+    {
+        m_material_specification.textures[type].enabled = enabled;
+    }
+
     const material_texture& material::get_material_texture(material_texture_type material_texture_type)
     {
         return m_material_specification.textures.find(material_texture_type)->second;
+    }
+
+    std::string material::get_texture_type_to_string(material_texture_type material_texture_type)
+    {
+        switch (material_texture_type)
+        {
+        case material_texture_type::albedo: return "albedo";
+        case material_texture_type::normal: return "normal";
+        case material_texture_type::roughness: return "roughness";
+        case material_texture_type::metallic: return "metallic";
+        case material_texture_type::ambient_occlusion: return "ambient_occlusion";
+        }
+        return "";
     }
 
     shared<material> material::create()
@@ -65,7 +83,7 @@ namespace retro::renderer
         return create_shared<material>(material_specification);
     }
 
-    const std::string material::get_material_texture_uniform(material_texture_type material_texture_type)
+    std::string material::get_material_texture_uniform(material_texture_type material_texture_type)
     {
         switch (material_texture_type)
         {

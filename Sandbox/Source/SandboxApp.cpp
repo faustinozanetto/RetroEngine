@@ -23,84 +23,149 @@ class sandbox_layer : public retro::layer
 public:
     sandbox_layer() : layer("Sandbox Layer")
     {
-        m_Model = retro::renderer::model::create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
-
-        m_LightModel = retro::renderer::model::create("Assets/Models/Cube.obj");
-
-        auto albedo = retro::renderer::texture::create({
-            "Assets/Models/Cerberus/textures/Cerberus_A.png",
-            retro::renderer::texture_filtering::linear,
-            retro::renderer::texture_wrapping::clamp_edge,
-        });
-        retro::renderer::material_texture albedoTexture = {
-            albedo, true
-        };
-        auto normal = retro::renderer::texture::create({
-            "Assets/Models/Cerberus/textures/Cerberus_N.png",
-            retro::renderer::texture_filtering::linear,
-            retro::renderer::texture_wrapping::clamp_edge,
-        });
-        retro::renderer::material_texture normalTexture = {
-            normal, true
-        };
-        auto roughness = retro::renderer::texture::create({
-            "Assets/Models/Cerberus/textures/Cerberus_R.png",
-            retro::renderer::texture_filtering::linear,
-            retro::renderer::texture_wrapping::clamp_edge,
-        });
-        retro::renderer::material_texture roughnessTexture = {
-            roughness, true
-        };
-        auto metallic = retro::renderer::texture::create({
-            "Assets/Models/Cerberus/textures/Cerberus_M.png",
-            retro::renderer::texture_filtering::linear,
-            retro::renderer::texture_wrapping::clamp_edge,
-        });
-        retro::renderer::material_texture metallicTexture = {
-            metallic, true
-        };
-        auto ambient_occlusion = retro::renderer::texture::create({
-            "Assets/Models/Cerberus/textures/Cerberus_AO.png",
-            retro::renderer::texture_filtering::linear,
-            retro::renderer::texture_wrapping::clamp_edge,
-        });
-        retro::renderer::material_texture ambient_occlusion_texture = {
-            ambient_occlusion, true
-        };
-        const std::map<retro::renderer::material_texture_type, retro::renderer::material_texture> textures = {
-            {retro::renderer::material_texture_type::albedo, albedoTexture},
-            {retro::renderer::material_texture_type::normal, normalTexture},
-            {retro::renderer::material_texture_type::metallic, roughnessTexture},
-            {retro::renderer::material_texture_type::roughness, metallicTexture},
-            {retro::renderer::material_texture_type::ambient_occlusion, ambient_occlusion_texture}
-        };
-        const retro::renderer::material_specification materialSpecification = {
-            textures,
-            glm::vec4(1.0f, 0.23f, 0.5f, 1.0f),
-            1.0f,
-            1.0f,
-        };
-        m_Material = retro::renderer::material::create(
-            materialSpecification);
-
-
         m_Scene = retro::scene::create("Test Scene");
-        auto cerberus = m_Scene->create_actor();
-        cerberus->add_component<retro::name_component>("Cerberus");
-        cerberus->add_component<retro::model_renderer_component>(m_Model);
-        cerberus->add_component<retro::material_component>(m_Material);
-        auto transform = cerberus->add_component<retro::transform_component>();
-        transform.scale = glm::vec3(0.05f);
-        transform.rotation = glm::vec3(-1.5f, -2.1f, 0.0f);
-        transform.position = glm::vec3(1.2f, 0.0f, 5.8f);
+        //m_LightModel = retro::renderer::model::create("Assets/Models/Cube.obj");
+
+        /*
+        {
+            auto albedo = retro::renderer::texture::create({
+                "Assets/Models/Cerberus/textures/Cerberus_A.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture albedoTexture = {
+                albedo, true
+            };
+            auto normal = retro::renderer::texture::create({
+                "Assets/Models/Cerberus/textures/Cerberus_N.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture normalTexture = {
+                normal, true
+            };
+            auto roughness = retro::renderer::texture::create({
+                "Assets/Models/Cerberus/textures/Cerberus_R.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture roughnessTexture = {
+                roughness, true
+            };
+            auto metallic = retro::renderer::texture::create({
+                "Assets/Models/Cerberus/textures/Cerberus_M.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture metallicTexture = {
+                metallic, true
+            };
+            auto ambient_occlusion = retro::renderer::texture::create({
+                "Assets/Models/Cerberus/textures/Cerberus_AO.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture ambient_occlusion_texture = {
+                ambient_occlusion, true
+            };
+            const std::map<retro::renderer::material_texture_type, retro::renderer::material_texture> textures = {
+                {retro::renderer::material_texture_type::albedo, albedoTexture},
+                {retro::renderer::material_texture_type::normal, normalTexture},
+                {retro::renderer::material_texture_type::metallic, roughnessTexture},
+                {retro::renderer::material_texture_type::roughness, metallicTexture},
+                {retro::renderer::material_texture_type::ambient_occlusion, ambient_occlusion_texture}
+            };
+            const retro::renderer::material_specification materialSpecification = {
+                textures,
+                glm::vec4(1.0f, 0.23f, 0.5f, 1.0f),
+                1.0f,
+                1.0f,
+            };
+            auto mat = retro::renderer::material::create(
+                materialSpecification);
+            auto model = retro::renderer::model::create("Assets/Models/Cerberus/source/Cerberus_LP.FBX.fbx");
+            auto cerberus = m_Scene->create_actor();
+            cerberus->add_component<retro::name_component>("Cerberus");
+            cerberus->add_component<retro::model_renderer_component>(model);
+            cerberus->add_component<retro::material_component>(mat);
+            auto& transform = cerberus->add_component<retro::transform_component>();
+            transform.scale = glm::vec3(0.1f);
+            transform.rotation = glm::vec3(-1.55f, -4.0f, 0.0f);
+            transform.position = glm::vec3(-8.5f, -0.3f, 0.0f);
+        }
+*/
+        {
+            auto albedo = retro::renderer::texture::create({
+                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_BaseColor.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture albedoTexture = {
+                albedo, true
+            };
+            auto normal = retro::renderer::texture::create({
+                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_Normal.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture normalTexture = {
+                normal, true
+            };
+            auto roughness = retro::renderer::texture::create({
+                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_MetallicRoughness.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture roughnessTexture = {
+                roughness, true
+            };
+            auto metallic = retro::renderer::texture::create({
+                                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_MetallicRoughness.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture metallicTexture = {
+                metallic, true
+            };
+            auto ambient_occlusion = retro::renderer::texture::create({
+                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_AmbientOcclusion.png",
+                retro::renderer::texture_filtering::linear,
+                retro::renderer::texture_wrapping::clamp_edge,
+            });
+            retro::renderer::material_texture ambient_occlusion_texture = {
+                ambient_occlusion, true
+            };
+            const std::map<retro::renderer::material_texture_type, retro::renderer::material_texture> textures = {
+                {retro::renderer::material_texture_type::albedo, albedoTexture},
+                {retro::renderer::material_texture_type::normal, normalTexture},
+                {retro::renderer::material_texture_type::metallic, roughnessTexture},
+                {retro::renderer::material_texture_type::roughness, metallicTexture},
+                {retro::renderer::material_texture_type::ambient_occlusion, ambient_occlusion_texture}
+            };
+            const retro::renderer::material_specification materialSpecification = {
+                textures,
+                glm::vec4(1.0f, 0.23f, 0.5f, 1.0f),
+                1.0f,
+                1.0f,
+            };
+            auto material = retro::renderer::material::create(
+                materialSpecification);
+            auto sphere = m_Scene->create_actor();
+            sphere->add_component<retro::name_component>("SciFiHelmet");
+            auto sphereModel = retro::renderer::model::create("Assets/Models/SciFiHelmet/glTF/SciFiHelmet.obj");
+            sphere->add_component<retro::model_renderer_component>(sphereModel);
+            sphere->add_component<retro::material_component>(material);
+            sphere->add_component<retro::transform_component>();
+        }
 
         auto light = m_Scene->create_actor();
         light->add_component<retro::name_component>("Point Light");
-        light->add_component<retro::model_renderer_component>(m_LightModel);
+       // light->add_component<retro::model_renderer_component>(m_LightModel);
         light->add_component<retro::transform_component>();
         auto point_light = retro::create_shared<retro::renderer::point_light>();
         light->add_component<retro::light_renderer_component>(point_light, retro::light_type::point);
         m_camera = retro::create_shared<retro::renderer::camera>(50.0f, 0.01f, 2000.0f);
+        m_camera->set_focal_point({-8.235f, 0.020f, 1.0f});
         retro::renderer::scene_renderer::set_scene(m_Scene);
         retro::renderer::scene_renderer::initialize(m_camera);
     }
@@ -190,6 +255,25 @@ public:
                         ImGui::NextColumn();
                     }
 
+                    if (m_Scene->get_actor_registry().has<retro::material_component>(actor))
+                    {
+                        auto& material_component = m_Scene->get_actor_registry().get<retro::material_component>(actor);
+                        for (auto& texture : material_component.material->get_material_specification().textures)
+                        {
+                            auto label = "Enabled " + retro::renderer::material::get_texture_type_to_string(
+                                texture.first);
+                            ImGui::Checkbox(label.c_str(), &texture.second.enabled);
+                        }
+                        ImGui::ColorPicker4(
+                            "Albedo", glm::value_ptr(material_component.material->get_material_specification().albedo));
+                        ImGui::SliderFloat("Roughness",
+                                           &material_component.material->get_material_specification().roughness, 0.0f,
+                                           1.0f);
+                        ImGui::SliderFloat(
+                            "Metallic", &material_component.material->get_material_specification().metallic, 0.0f,
+                            1.0f);
+                    }
+
                     ImGui::TreePop();
                 }
             }
@@ -274,8 +358,6 @@ private:
     glm::vec2 m_ViewportSize = {1920.0f, 1080.0f};
     retro::shared<retro::scene> m_Scene;
     retro::shared<retro::renderer::camera> m_camera;
-    retro::shared<retro::renderer::material> m_Material;
-    retro::shared<retro::renderer::model> m_Model;
     retro::shared<retro::renderer::model> m_LightModel;
 };
 

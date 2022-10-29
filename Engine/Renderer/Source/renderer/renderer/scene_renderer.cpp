@@ -33,7 +33,7 @@ namespace retro::renderer
         s_scene_renderer_data.m_camera_data.u_ViewMatrix = s_scene_renderer_data.m_camera->get_view_matrix();
         s_scene_renderer_data.m_camera_data.u_ProjectionMatrix = s_scene_renderer_data.m_camera->
             get_projection_matrix();
-        s_scene_renderer_data.m_camera_data.u_Position = s_scene_renderer_data.m_camera->get_position();
+        s_scene_renderer_data.m_camera_data.u_Position = s_scene_renderer_data.m_camera->calculate_position();
         s_scene_renderer_data.m_camera_ubo->set_data(&s_scene_renderer_data.m_camera_data, sizeof(camera_data));
         s_scene_renderer_data.m_camera_ubo->un_bind();
 
@@ -115,10 +115,10 @@ namespace retro::renderer
         s_scene_renderer_data.m_final_frame_buffer->bind();
         glBindFramebuffer(GL_READ_FRAMEBUFFER, s_scene_renderer_data.m_geometry_frame_buffer->get_object_handle());
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_scene_renderer_data.m_final_frame_buffer->get_object_handle());
-        glBlitFramebuffer(0, 0, s_scene_renderer_data.m_final_frame_buffer->get_width(),
-                          s_scene_renderer_data.m_final_frame_buffer->get_height(), 0, 0,
-                          s_scene_renderer_data.m_final_frame_buffer->get_width(),
-                          s_scene_renderer_data.m_final_frame_buffer->get_height(),
+        glBlitFramebuffer(0, 0, static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_width()),
+                          static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_height()), 0, 0,
+                          static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_width()),
+                          static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_height()),
                           GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -195,17 +195,17 @@ namespace retro::renderer
             1, 3, 2, // second triangle
         };
         s_scene_renderer_data.m_screen_vao = vertex_array_buffer::create();
-        auto VBO = vertex_object_buffer::create(
+        const auto vbo = vertex_object_buffer::create(
             squareVertices, sizeof(squareVertices));
-        auto IBO = index_buffer::create(
+        const auto ibo = index_buffer::create(
             squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
         s_scene_renderer_data.m_screen_vao->bind();
-        VBO->set_layout({
+        vbo->set_layout({
             {FloatVec3, "aPos"},
             {FloatVec2, "aTexCoord"}
         });
-        s_scene_renderer_data.m_screen_vao->add_vertex_buffer(VBO);
-        s_scene_renderer_data.m_screen_vao->set_index_buffer(IBO);
+        s_scene_renderer_data.m_screen_vao->add_vertex_buffer(vbo);
+        s_scene_renderer_data.m_screen_vao->set_index_buffer(ibo);
         s_scene_renderer_data.m_screen_vao->un_bind();
     }
 
@@ -239,7 +239,7 @@ namespace retro::renderer
     void scene_renderer::setup_environment()
     {
         const shared<texture_cubemap> sky_cubemap = texture_cubemap::create({
-            "Assets/Textures/HDR/brown_photostudio_02_4k.hdr",
+            "Assets/Textures/HDR/drakensberg_solitary_mountain_4k.hdr",
             texture_filtering::linear,
             texture_wrapping::clamp_edge
         });
