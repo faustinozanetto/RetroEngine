@@ -7,4 +7,8 @@ namespace retro::renderer
 	point_light::point_light()
 	{
 	}
+
+	point_light::~point_light()
+	{
+	}
 }

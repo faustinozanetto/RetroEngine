@@ -38,7 +38,7 @@ namespace retro::renderer
 	{
 		camera_data m_camera_data;
 		lights_data m_lights_data;
-		unique<camera> m_camera;
+		shared<camera> m_camera;
 		shared<scene> m_scene;
 		shared<uniform_buffer> m_camera_ubo;
 		shared<uniform_buffer> m_lights_ubo;
@@ -54,19 +54,21 @@ namespace retro::renderer
 	class scene_renderer
 	{
 	public:
-		static void initialize();
+		static void initialize(const shared<camera>& camera);
 
 		static void begin_render();
 		static void end_render();
 		static void set_scene(const shared<scene>& scene);
 
+		static shared<frame_buffer>& get_geometry_frame_buffer();
+		static shared<frame_buffer>& get_final_frame_buffer();
 		static uint32_t get_final_texture();
 
 	private:
 		static void load_shaders();
 		static void generate_frame_buffers();
 		static void create_screen_vao();
-		static void create_camera();
+		static void create_camera(const shared<camera>& camera);
 		static void setup_lights();
 		static void setup_environment();
 	};

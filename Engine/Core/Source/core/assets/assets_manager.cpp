@@ -4,7 +4,7 @@
 
 namespace retro
 {
-	assets_manager::assets_manager() : manager("AssetssManager")
+	assets_manager::assets_manager() : manager("AssetsManager")
 	{
 	}
 
@@ -14,7 +14,7 @@ namespace retro
 
 	void assets_manager::shutdown()
 	{
-		m_assets.clear();
+
 	}
 
 	void assets_manager::register_asset(const shared<asset> asset)

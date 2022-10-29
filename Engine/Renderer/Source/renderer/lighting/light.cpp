@@ -7,4 +7,8 @@ namespace retro::renderer
 	light::light()
 	{
 	}
+
+	light::~light()
+	{
+	}
 }

@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 
 #include "open_gl_frame_buffer.h"
+
+#include "core/assert.h"
 #include "renderer/texture/texture.h"
 #include "glad/glad.h"
 
@@ -81,7 +83,7 @@ namespace retro::renderer
 		return m_color_attachments[slot];
 	}
 
-	uint32_t open_gl_frame_buffer::get_deptch_attachment_id()
+	uint32_t open_gl_frame_buffer::get_depth_attachment_id()
 	{
 		return m_depth_attachment;
 	}
@@ -98,6 +100,9 @@ namespace retro::renderer
 
 	void open_gl_frame_buffer::resize(uint32_t newWidth, uint32_t newHeight)
 	{
+		m_frame_buffer_specification.width = newWidth;
+		m_frame_buffer_specification.height = newHeight;
+		reconstruct();
 	}
 
 	void open_gl_frame_buffer::reconstruct()

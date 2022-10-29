@@ -6,6 +6,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "renderer/lighting/point_light.h"
+
 namespace retro
 {
 	name_component::name_component(const std::string& name)
@@ -45,5 +47,29 @@ namespace retro
 	material_component::material_component(const shared<renderer::material>& material)
 	{
 		this->material = material;
+	}
+
+	light_renderer_component::light_renderer_component()
+	{
+		type = light_type::point;
+		light = create_shared<renderer::point_light>();
+	}
+
+	light_renderer_component::light_renderer_component(const light_renderer_component& other)
+	{
+		type = other.type;
+		if (type == light_type::point)
+		{
+			const auto point_light = reinterpret_cast<renderer::point_light*>(other.light.get());
+			light = create_shared<renderer::point_light>();
+			light->set_color(point_light->get_color());
+			light->set_position(point_light->get_position());
+		} else if (type == light_type::directional) {}
+	}
+
+	light_renderer_component::light_renderer_component(const shared<renderer::light>& light, light_type type)
+	{
+		this->light = light;
+		this->type = type;
 	}
 }

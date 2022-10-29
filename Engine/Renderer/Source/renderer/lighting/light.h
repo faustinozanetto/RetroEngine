@@ -8,7 +8,7 @@ namespace retro::renderer
 	{
 	public:
 		light();
-		~light() = default;
+		virtual ~light();
 
 		const glm::vec3& get_color() const { return m_color; }
 		void set_color(const glm::vec3& color) { m_color = color; }
