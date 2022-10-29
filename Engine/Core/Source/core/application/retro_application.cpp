@@ -34,6 +34,7 @@ namespace retro
 		m_interface_layers_manager = layer_manager::create("InterfaceLayersManager");
 		m_interfaces_subsystem = interface_subsystem::create();
 		m_interfaces_subsystem->on_sub_system_start();
+		m_scene_manager = scene_manager::create("SceneManager");
 	}
 
 	retro_application::~retro_application()
@@ -95,6 +96,11 @@ namespace retro
 	const unique<assets_manager> &retro_application::get_assets_manager() const
 	{
 		return m_assets_manager;
+	}
+
+	const unique<scene_manager>& retro_application::get_scene_manager() const
+	{
+		return m_scene_manager;
 	}
 
 	retro_application &retro_application::get_application()

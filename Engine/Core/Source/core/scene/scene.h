@@ -16,7 +16,8 @@ namespace retro
 		shared<actor> create_actor();
 
 		entt::registry& get_actor_registry() { return m_actors_registry; }
-
+		const std::vector<shared<actor>>& get_actors() { return m_actors;}
+		
 		static shared<scene> create(const std::string& scene_name);
 
 	private:

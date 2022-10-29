@@ -2,7 +2,7 @@
 
 #include "core/entry_point.h"
 #include "editor_layer.h"
-#include "interfaces/editor_main_interface.h"
+#include "editor_main_interface.h"
 
 namespace retro::editor
 {
