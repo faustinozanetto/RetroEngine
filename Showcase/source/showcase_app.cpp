@@ -7,9 +7,9 @@
 #include "core/application/retro_application.h"
 #include "core/interfaces/interface_layer.h"
 #include "core/layers/layer.h"
+#include "core/entry_point.h"
 #include "core/scene/actor.h"
 #include "core/scene/components.h"
-#include "core/entry_point.h"
 #include "renderer/camera/camera.h"
 #include "renderer/lighting/point_light.h"
 #include "renderer/materials/material.h"
@@ -17,11 +17,10 @@
 #include "renderer/renderer/renderer.h"
 #include "renderer/renderer/scene_renderer.h"
 
-
-class sandbox_layer : public retro::layer
+class showcase_layer : public retro::layer
 {
 public:
-    sandbox_layer() : layer("Sandbox Layer")
+    showcase_layer() : layer("Sandbox Layer")
     {
         m_Scene = retro::scene::create("Test Scene");
         //m_LightModel = retro::renderer::model::create("Assets/Models/Cube.obj");
@@ -361,10 +360,10 @@ private:
     retro::shared<retro::renderer::model> m_LightModel;
 };
 
-class sandbox_interface_layer : public retro::interface_layer
+class showcase_interface_layer : public retro::interface_layer
 {
 public:
-    sandbox_interface_layer() : interface_layer("SandboxInterfaceLayer")
+    showcase_interface_layer() : interface_layer("Showcase Interface Layer")
     {
         m_use_vsync = retro::retro_application::get_application().get_window()->is_vsync_enabled();
     }
@@ -414,21 +413,21 @@ private:
     bool m_use_vsync;
 };
 
-class sandbox_application : public retro::retro_application
+class showcase_application : public retro::retro_application
 {
 public:
-    sandbox_application() : retro_application({"Sandbox"})
+    showcase_application() : retro_application({"Showcase"})
     {
-        get_layers_manager()->register_layer(retro::create_shared<sandbox_layer>());
-        get_interfaces_layer_manager()->register_layer(retro::create_shared<sandbox_interface_layer>());
+        get_layers_manager()->register_layer(retro::create_shared<showcase_layer>());
+        get_interfaces_layer_manager()->register_layer(retro::create_shared<showcase_interface_layer>());
     }
 
-    ~sandbox_application() override
+    ~showcase_application() override
     {
     };
 };
 
 retro::retro_application* retro::create_retro_application()
 {
-    return new sandbox_application();
+    return new showcase_application();
 }

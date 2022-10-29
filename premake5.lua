@@ -1,6 +1,6 @@
 workspace "Retro"
 architecture "x86_64"
-startproject "Sandbox"
+startproject "Showcase"
 
 configurations {
     "Debug",
@@ -40,11 +40,11 @@ project "EngineCore"
     objdir("Intermediates/" .. outputDir .. "/%{prj.name}")
 
     pchheader "pch.h"
-    pchsource "Engine/Core/Source/pch.cpp"
+    pchsource "Engine/Core/source/pch.cpp"
 
     files {
-        "%{wks.location}/Engine/Core/Source/**.h",
-        "%{wks.location}/Engine/Core/Source/**.cpp",
+        "%{wks.location}/Engine/Core/source/**.h",
+        "%{wks.location}/Engine/Core/source/**.cpp",
         "%{wks.location}/ThirdParty/STB/**.h",
         "%{wks.location}/ThirdParty/STB/**.cpp",
     }
@@ -58,8 +58,8 @@ project "EngineCore"
     }
 
     includedirs {
-        "%{wks.location}/Engine/Core/Source",
-        "%{wks.location}/Engine/Renderer/Source",
+        "%{wks.location}/Engine/Core/source",
+        "%{wks.location}/Engine/Renderer/source",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
@@ -96,11 +96,11 @@ project "EngineRenderer"
     objdir("Intermediates/" .. outputDir .. "/%{prj.name}")
 
     pchheader "pch.h"
-    pchsource "Engine/Renderer/Source/pch.cpp"
+    pchsource "Engine/Renderer/source/pch.cpp"
 
     files {
-        "%{wks.location}/Engine/Renderer/Source/**.h",
-        "%{wks.location}/Engine/Renderer/Source/**.cpp",
+        "%{wks.location}/Engine/Renderer/source/**.h",
+        "%{wks.location}/Engine/Renderer/source/**.cpp",
         "%{wks.location}/ThirdParty/STB/**.h",
         "%{wks.location}/ThirdParty/STB/**.cpp",
     }
@@ -111,8 +111,8 @@ project "EngineRenderer"
     }
     
     includedirs {
-        "%{wks.location}/Engine/Renderer/Source",
-        "%{wks.location}/Engine/Core/Source",
+        "%{wks.location}/Engine/Renderer/source",
+        "%{wks.location}/Engine/Core/source",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.GLM}",    
@@ -149,8 +149,64 @@ project "EngineRenderer"
     filter "configurations:Dist"
         optimize "Full"
 
-project "Sandbox"
-    location "Sandbox"
+project "EngineEditor"
+    location "Engine/Editor"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++20"
+
+    targetdir("Binaries/" .. outputDir .. "/%{prj.name}")
+    objdir("Intermediates/" .. outputDir .. "/%{prj.name}")
+    
+    files {
+        "%{wks.location}/Engine/Editor/source/**.h",
+        "%{wks.location}/Engine/Editor/source/**.cpp",
+    }
+
+    includedirs {
+        "%{wks.location}/Engine/Core/source",
+        "%{wks.location}/Engine/Renderer/source",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.GLAD}",
+        "%{IncludeDir.GLM}",
+        "%{IncludeDir.STB}",
+        "%{IncludeDir.SPDLOG}",
+        "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.ASSIMP}",
+        "%{IncludeDir.ENTT}"
+    }
+
+    libdirs {
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
+    }
+
+    links {
+        "EngineCore",
+        "EngineRenderer",
+    }
+    
+    filter "system:windows"
+        staticruntime "off"
+        systemversion "latest"
+    
+    filter "configurations:Debug"
+        defines { "RETRO_ENABLE_ASSERTS","RETRO_DEBUG", "WIN32_LEAN_AND_MEAN" }
+        symbols "on"
+        links {
+            "assimp-vc143-mtd.lib"
+        }
+    
+    filter "configurations:release"
+        defines {  "WIN32_LEAN_AND_MEAN" }
+        optimize "on"
+    
+    filter "configurations:Dist"
+        defines { "WIN32_LEAN_AND_MEAN" }
+        optimize "on"
+
+project "Showcase"
+    location "Showcase"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++20"
@@ -159,13 +215,13 @@ project "Sandbox"
     objdir("Intermediates/" .. outputDir .. "/%{prj.name}")
 
     files {
-        "%{wks.location}/Sandbox/Source/**.h",
-        "%{wks.location}/Sandbox/Source/**.cpp"
+        "%{wks.location}/Showcase/source/**.h",
+        "%{wks.location}/Showcase/source/**.cpp"
     }
 
     includedirs {
-        "%{wks.location}/Engine/Core/Source",
-        "%{wks.location}/Engine/Renderer/Source",
+        "%{wks.location}/Engine/Core/source",
+        "%{wks.location}/Engine/Renderer/source",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.GLM}",    
