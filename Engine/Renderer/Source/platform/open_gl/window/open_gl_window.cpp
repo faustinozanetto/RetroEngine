@@ -5,6 +5,7 @@
 #include "core/base.h"
 #include "core/assert.h"
 #include "renderer/renderer/renderer.h"
+#include "renderer/renderer/scene_renderer.h"
 
 namespace retro::renderer
 {
@@ -100,6 +101,8 @@ namespace retro::renderer
 			std::stringstream ss;
 			ss << "WindowResizeEvent: " << width << ", " << height;
 			renderer::set_viewport(0, 0, width, height);
+			scene_renderer::get_final_frame_buffer()->resize(width, height);
+			scene_renderer::get_geometry_frame_buffer()->resize(width,height);
 			logger::info(ss.str());
 		});
 	}

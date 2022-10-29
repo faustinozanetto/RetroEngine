@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include "renderer/lighting/light.h"
 #include "renderer/materials/material.h"
 #include "renderer/rendereables/model/model.h"
 
@@ -45,5 +46,21 @@ namespace retro
 		material_component() = default;
 		material_component(const material_component&) = default;
 		material_component(const shared<renderer::material>& material);
+	};
+
+	enum class light_type
+	{
+		point = 0,
+		directional = 1
+	};
+	
+	struct light_renderer_component
+	{
+		shared<renderer::light> light;
+		light_type type;
+
+		light_renderer_component();
+		light_renderer_component(const light_renderer_component& other);
+		light_renderer_component(const shared<renderer::light>& light, light_type type);
 	};
 }

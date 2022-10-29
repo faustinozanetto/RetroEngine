@@ -54,7 +54,7 @@ namespace retro::renderer
 
 		virtual void resize(uint32_t newWidth, uint32_t newHeight) = 0;
 		virtual uint32_t get_color_attachment_id(uint32_t slot = 0) = 0;
-		virtual uint32_t get_deptch_attachment_id() = 0;
+		virtual uint32_t get_depth_attachment_id() = 0;
 		virtual uint32_t get_width() const = 0;
 		virtual uint32_t get_height() const = 0;
 

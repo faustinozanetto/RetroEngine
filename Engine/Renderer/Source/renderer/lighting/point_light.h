@@ -8,7 +8,7 @@ namespace retro::renderer
 	{
 	public:
 		point_light();
-		~point_light() = default;
+		~point_light() override;
 
 		const float& get_constant() const { return m_constant; }
 		void set_constant(float constant) { m_constant = constant; }

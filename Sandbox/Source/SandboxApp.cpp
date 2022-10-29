@@ -11,6 +11,7 @@
 #include "core/scene/components.h"
 #include "core/entry_point.h"
 #include "renderer/camera/camera.h"
+#include "renderer/lighting/point_light.h"
 #include "renderer/materials/material.h"
 #include "renderer/rendereables/model/model.h"
 #include "renderer/renderer/renderer.h"
@@ -58,17 +59,26 @@ public:
         retro::renderer::material_texture metallicTexture = {
             metallic, true
         };
+        auto ambient_occlusion = retro::renderer::texture::create({
+            "Assets/Models/Cerberus/textures/Cerberus_AO.png",
+            retro::renderer::texture_filtering::linear,
+            retro::renderer::texture_wrapping::clamp_edge,
+        });
+        retro::renderer::material_texture ambient_occlusion_texture = {
+            ambient_occlusion, true
+        };
         const std::map<retro::renderer::material_texture_type, retro::renderer::material_texture> textures = {
             {retro::renderer::material_texture_type::albedo, albedoTexture},
             {retro::renderer::material_texture_type::normal, normalTexture},
             {retro::renderer::material_texture_type::metallic, roughnessTexture},
             {retro::renderer::material_texture_type::roughness, metallicTexture},
+            {retro::renderer::material_texture_type::ambient_occlusion, ambient_occlusion_texture}
         };
         const retro::renderer::material_specification materialSpecification = {
             textures,
             glm::vec4(1.0f, 0.23f, 0.5f, 1.0f),
-            0.3f,
-            0.4f,
+            1.0f,
+            1.0f,
         };
         m_Material = retro::renderer::material::create(
             materialSpecification);
@@ -84,9 +94,15 @@ public:
         transform.rotation = glm::vec3(-1.5f, -2.1f, 0.0f);
         transform.position = glm::vec3(1.2f, 0.0f, 5.8f);
 
-        
+        auto light = m_Scene->create_actor();
+        light->add_component<retro::name_component>("Point Light");
+        light->add_component<retro::model_renderer_component>(m_LightModel);
+        light->add_component<retro::transform_component>();
+        auto point_light = retro::create_shared<retro::renderer::point_light>();
+        light->add_component<retro::light_renderer_component>(point_light, retro::light_type::point);
+        m_camera = retro::create_shared<retro::renderer::camera>(50.0f, 0.01f, 2000.0f);
         retro::renderer::scene_renderer::set_scene(m_Scene);
-        retro::renderer::scene_renderer::initialize();
+        retro::renderer::scene_renderer::initialize(m_camera);
     }
 
     void on_layer_registered() override
@@ -99,9 +115,40 @@ public:
 
     void on_layer_updated() override
     {
+        m_camera->set_focal_point(m_camera_pos);
+        m_camera->set_fov(m_fov);
         retro::renderer::scene_renderer::begin_render();
 
         retro::renderer::scene_renderer::end_render();
+
+        // Setup dockspace
+        {
+            bool open = true;
+            const ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+            ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+            const ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->Pos);
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowViewport(viewport->ID);
+            windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoMove;
+            windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+            ImGui::Begin("DockSpace", &open, windowFlags);
+
+            // DockSpace
+            const ImGuiIO& io = ImGui::GetIO();
+            ImGuiStyle& style = ImGui::GetStyle();
+            const float minWinSizeX = style.WindowMinSize.x;
+            style.WindowMinSize.x = 370.0f;
+            if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+            {
+                const ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+                ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
+            }
+            style.WindowMinSize.x = minWinSizeX;
+        }
+
 
         const auto view = m_Scene->get_actor_registry().group<retro::model_renderer_component>
             (entt::get<retro::name_component, retro::transform_component>);
@@ -113,8 +160,6 @@ public:
                 if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(actor)), "Asset %s",
                                     name.name.c_str()))
                 {
-                    ImGui::Text("Name %s", name.name);
-
                     {
                         ImGui::TextUnformatted("Scale");
                         ImGui::NextColumn();
@@ -144,7 +189,7 @@ public:
                         ImGui::PopItemWidth();
                         ImGui::NextColumn();
                     }
-                    
+
                     ImGui::TreePop();
                 }
             }
@@ -152,37 +197,13 @@ public:
         }
         ImGui::End();
 
-        /*
-        // Render light model
-        {
-            auto lightMat = glm::mat4(1.0f);
-            lightMat = translate(lightMat, m_Light->get_position());
-            lightMat = scale(lightMat, {0.25f, 0.25f, 0.25f});
-            m_Shader->set_mat4("uTransform", lightMat);
-            m_Shader->set_int("material.hasAlbedoMap", 0);
-            m_Shader->set_vec_float4("material.albedo", glm::vec4(m_Light->get_color(), 1.0f));
-            retro::renderer::renderer::submit_command({
-                m_Shader, m_LightModel->get_model_renderables()[0]->get_vertex_array_buffer(), nullptr, lightMat
-            });
-        }
-        
 
-        ImGui::Begin("Edit");
-        ImGui::SliderFloat3("Scale", value_ptr(m_Scale), 0.02f, 5.0f);
-        ImGui::SliderFloat3("Location", value_ptr(m_Translate), -5.0f, 5.0f);
-        ImGui::SliderFloat3("Rotation", value_ptr(m_Rotation), -5.0f, 5.0f);
-        ImGui::SliderFloat3("Camera Pos", value_ptr(m_CameraLocation), -10.0f, 10.0f);
-        ImGui::SliderFloat("Camera FOV", &m_CameraFov, 1.0f, 90.0f);
-        if (ImGui::SliderFloat3("Light Position", value_ptr(m_LightPos), -5.0f, 5.0f))
-        {
-            m_Light->set_position(m_LightPos);
-        }
-        if (ImGui::ColorEdit3("Light Color", value_ptr(m_LightColor)))
-        {
-            m_Light->set_color(m_LightColor);
-        }
+        ImGui::Begin("Camera");
+        ImGui::SliderFloat3("Camera Pos", value_ptr(m_camera_pos), -10.0f, 10.0f);
+        ImGui::SliderFloat("Camera FOV", &m_fov, 1.0f, 90.0f);
         ImGui::End();
 
+        /*
         ImGui::Begin("Assets");
 
         if (ImGui::TreeNode("List"))
@@ -202,6 +223,7 @@ public:
             ImGui::TreePop();
         }
         ImGui::End();
+        
 
         ImGui::Begin("Actors");
 
@@ -221,7 +243,8 @@ public:
         }
         ImGui::End();
 
-        */
+*/
+
         ImGui::Begin("Viewport");
         const auto viewportMinRegin = ImGui::GetWindowContentRegionMin();
         const auto viewportMaxRegin = ImGui::GetWindowContentRegionMax();
@@ -241,17 +264,16 @@ public:
             ImVec2{1, 0});
 
         ImGui::End();
+        ImGui::End();
     }
 
 private:
-    glm::vec3 m_Scale = glm::vec3(1.0f);
-    glm::vec3 m_LightPos = glm::vec3(-0.2f, -1.0f, -0.3f);
-    glm::vec3 m_LightColor = glm::vec3(0.2f, 0.2f, 0.2f);
-    glm::vec3 m_Rotation = glm::vec3(1.0f);
-    glm::vec3 m_Translate = glm::vec3(1.0f);
+    glm::vec3 m_camera_pos = glm::vec3(1.0f);
+    float m_fov = 50.0f;
     glm::vec2 m_ViewportBounds[2];
     glm::vec2 m_ViewportSize = {1920.0f, 1080.0f};
     retro::shared<retro::scene> m_Scene;
+    retro::shared<retro::renderer::camera> m_camera;
     retro::shared<retro::renderer::material> m_Material;
     retro::shared<retro::renderer::model> m_Model;
     retro::shared<retro::renderer::model> m_LightModel;
