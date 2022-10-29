@@ -19,8 +19,7 @@ namespace retro::editor
 
     private:
         void initialize_editor_scene();
-
-        shared<scene> m_scene;
+        
         shared<renderer::camera> m_camera;
     };
 }
