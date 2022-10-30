@@ -62,6 +62,7 @@ namespace retro::renderer
 
 		static shared<frame_buffer>& get_geometry_frame_buffer();
 		static shared<frame_buffer>& get_final_frame_buffer();
+		static shared<camera>& get_camera();
 		static uint32_t get_final_texture();
 
 	private:

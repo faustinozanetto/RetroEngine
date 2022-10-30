@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "core/application/retro_application.h"
 #include "panels/actor_details_panel.h"
+#include "panels/camera_panel.h"
 #include "panels/hierarchy_panel.h"
 #include "panels/statistics_panel.h"
 #include "renderer/renderer/renderer.h"
@@ -29,6 +30,8 @@ namespace retro::editor
         m_panels.emplace_back(hierarchy_panel);
         auto actor_details_panel = create_shared<editor::actor_details_panel>();
         m_panels.emplace_back(actor_details_panel);
+        auto camera_panel = create_shared<editor::camera_panel>();
+        m_panels.emplace_back(camera_panel);
     }
 
     void editor_main_interface::on_layer_unregistered()

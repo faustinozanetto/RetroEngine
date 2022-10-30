@@ -33,7 +33,9 @@ namespace retro::editor
                 {
                     auto& name_component = active_scene->get_actor_registry().get<retro::name_component>(
                         actor->get_actor_handle());
-                    if (ImGui::TreeNode("Actor %s", name_component.name.c_str()))
+                    if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(actor->get_actor_handle())),
+                                        "Actor %s",
+                                        name_component.name.c_str()))
                     {
                         editor_main_interface::s_selected_actor = actor->get_actor_handle();
                         ImGui::TreePop();

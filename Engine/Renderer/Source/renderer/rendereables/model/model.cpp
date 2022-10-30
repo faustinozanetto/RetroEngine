@@ -125,33 +125,27 @@ namespace retro::renderer
             "Mesh has " + std::to_string(mesh->mNumVertices) + " vertices and " + std::to_string(mesh->mNumFaces) +
             " faces.");
 
-        /*
-        if (mesh->mMaterialIndex >= 0)
+        if (mesh->mMaterialIndex > 0)
         {
             // process materials
-            aiMaterial* material = m_AssimpScene->mMaterials[mesh->mMaterialIndex];
+            aiMaterial* material = m_assimp_scene->mMaterials[mesh->mMaterialIndex];
 
             // 1. diffuse maps
-            std::vector<RendereableTexture> diffuseMaps = ParseMaterialTextures(
+            std::vector<renderable_texture> diffuseMaps = parse_material_texture(
                 material, aiTextureType_DIFFUSE, "texture_diffuse");
             textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
             // 2. specular maps
-            std::vector<RendereableTexture> specularMaps = ParseMaterialTextures(
+            std::vector<renderable_texture> specularMaps = parse_material_texture(
                 material, aiTextureType_SPECULAR, "texture_specular");
             textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
             // 3. normal maps
-            std::vector<RendereableTexture> normalMaps = ParseMaterialTextures(
-                material, aiTextureType_DISPLACEMENT, "texture_normal");
-            std::vector<RendereableTexture> normalMaps2 = ParseMaterialTextures(
+            std::vector<renderable_texture> normalMaps = parse_material_texture(
                 material, aiTextureType_HEIGHT, "texture_normal");
-            textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-            textures.insert(textures.end(), normalMaps2.begin(), normalMaps2.end());
-            // 4. height maps
-            std::vector<RendereableTexture> heightMaps = ParseMaterialTextures(
+            textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());// 4. height maps
+            std::vector<renderable_texture> heightMaps = parse_material_texture(
                 material, aiTextureType_AMBIENT, "texture_height");
             textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
         }
-        */
 
         if (textures.empty())
         {
@@ -169,46 +163,29 @@ namespace retro::renderer
         {
             aiString str;
             mat->GetTexture(type, i, &str);
-            std::string file = str.C_Str();
-            logger::info("Material texture: " + file);
+            logger::info("Material texture: " + *str.C_Str());
             bool skip = false;
-            for (auto& j : m_textures_loaded)
+            for (unsigned int j = 0; j < m_textures_loaded.size(); j++)
             {
-                if (std::strcmp(j.path.data(), str.C_Str()) == 0)
+                if (std::strcmp(m_textures_loaded[j].path.data(), str.C_Str()) == 0)
                 {
-                    textures.push_back(j);
+                    textures.push_back(m_textures_loaded[j]);
                     skip = true;
+                    // a texture with the same filepath has already been loaded, continue to next one. (optimization)
                     break;
                 }
             }
             if (!skip)
             {
-                // if texture hasn't been loaded already, load it
-                file = m_directory_path + '\\' + file;
-
-                shared<texture> texture;
-                if (const auto& tex = m_assimp_scene->GetEmbeddedTexture(str.C_Str()))
-                {
-                    logger::info("Found embedded texture" + *tex->mFilename.C_Str());
-                    const uint32_t width = tex->mWidth;
-                    const uint32_t height = tex->mHeight;
-                    texture = texture::create(
-                        width, height, reinterpret_cast<unsigned char*>(tex->pcData));
-                }
-                else
-                {
-                    texture = texture::create({file, texture_filtering::nearest, texture_wrapping::repeat});
-                }
-                if (texture)
-                {
-                    renderable_texture rendereable_texture;
-                    m_textures.push_back(texture);
-                    rendereable_texture.id = texture->get_object_handle();
-                    rendereable_texture.type = type_name;
-                    rendereable_texture.path = str.C_Str();
-                    textures.push_back(rendereable_texture);
-                    m_textures_loaded.push_back(rendereable_texture); // add to loaded textures
-                }
+                auto texture = renderer::texture::create(
+                    {str.C_Str(), texture_filtering::linear, texture_wrapping::clamp_edge});
+                renderable_texture rendereable_texture;
+                m_textures.push_back(texture);
+                rendereable_texture.id = texture->get_object_handle();
+                rendereable_texture.type = type_name;
+                rendereable_texture.path = str.C_Str();
+                textures.push_back(rendereable_texture);
+                m_textures_loaded.push_back(rendereable_texture); // add to loaded textures
             }
         }
         return textures;

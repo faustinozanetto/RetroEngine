@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "open_gl_texture.h"
-
+#include "core/assert.h"
 #include "core/assets/asset.h"
 
 namespace retro::renderer
@@ -64,7 +64,7 @@ namespace retro::renderer
 			data = stbi_load(m_texture_specification.path.c_str(), &width, &height, &channels, 0);
 		}
 
-		//RETRO_CORE_ASSERT(data, "Failed to load data from image");
+		RETRO_CORE_ASSERT(data, "Failed to load data from image");
 
 		// Updating size.
 		m_width = width;

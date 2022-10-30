@@ -146,6 +146,11 @@ namespace retro::renderer
         return s_scene_renderer_data.m_final_frame_buffer;
     }
 
+    shared<camera>& scene_renderer::get_camera()
+    {
+        return s_scene_renderer_data.m_camera;
+    }
+
     uint32_t scene_renderer::get_final_texture()
     {
         return s_scene_renderer_data.m_final_frame_buffer->get_color_attachment_id(0);
