@@ -25,6 +25,7 @@ namespace retro::renderer
         m_material_specification.mat_shader->set_vec_float4("material.albedo", m_material_specification.albedo);
         m_material_specification.mat_shader->set_float("material.metallic", m_material_specification.metallic);
         m_material_specification.mat_shader->set_float("material.roughness", m_material_specification.roughness);
+        m_material_specification.mat_shader->set_float("material.ambient_occlusion", m_material_specification.ambient_occlusion);
         // Bind each texture in the material.
         for (const auto& [type, texture] : m_material_specification.textures)
         {

@@ -45,7 +45,7 @@ namespace retro::renderer
 		float get_distance() const { return m_distance; }
 		void set_distance(float distance) { m_distance = distance; }
 
-		float get_fov() const { return m_fov; }
+		float get_fov() { return m_fov; }
 
 		void set_fov(float fov)
 		{

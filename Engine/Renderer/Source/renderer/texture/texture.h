@@ -32,8 +32,8 @@ namespace retro::renderer
 	struct texture_specification
 	{
 		std::string path;
-		texture_filtering filtering;
-		texture_wrapping wrapping;
+		texture_filtering filtering = texture_filtering::linear;
+		texture_wrapping wrapping = texture_wrapping::clamp_edge;
 
 		texture_specification() = default;
 

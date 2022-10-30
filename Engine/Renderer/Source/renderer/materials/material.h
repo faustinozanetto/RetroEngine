@@ -36,6 +36,7 @@ namespace retro::renderer
         glm::vec4 albedo = glm::vec4(1.0f);
         float metallic = 0.0f;
         float roughness = 1.0f;
+        float ambient_occlusion = 0.0f;
 
         material_specification() = default;
 

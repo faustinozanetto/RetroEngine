@@ -11,7 +11,7 @@ struct Material {
     vec4 albedo;
     float metallic;
     float roughness;
-    float ao;
+    float ambient_occlusion;
     int hasAlbedoMap;
     int hasNormalMap;
     int hasRoughnessMap;
@@ -49,6 +49,9 @@ void main() {
     }
     gAlbedo = albedo;
 
+    if (gAlbedo.a < 0.05)
+    discard;
+
     /* Normal */
     vec3 normal = vec3(1.0);
     if (material.hasNormalMap == 1) {
@@ -60,7 +63,7 @@ void main() {
     /* Roughness */
     float roughness;
     if (material.hasRoughnessMap == 1) {
-        roughness = texture(uRoughnessMap, geometryInput.texCoords).b;
+        roughness = texture(uRoughnessMap, geometryInput.texCoords).g;
     } else {
         roughness = material.roughness;
 	}
@@ -68,7 +71,7 @@ void main() {
     /* Metallic */
     float metallic;
     if (material.hasMetallicMap == 1) {
-        metallic = texture(uMetallicMap, geometryInput.texCoords).g;
+        metallic = texture(uMetallicMap, geometryInput.texCoords).b;
     } else {
         metallic = material.metallic;
     }
@@ -78,7 +81,7 @@ void main() {
     if (material.hasAmbientOcclusionMap == 1) {
         ao = texture(uAmbientOcclusionMap, geometryInput.texCoords).r;
     } else {
-        ao = material.ao;
+        ao = material.ambient_occlusion;
     }
 
     gRoughMetalAO = vec3(roughness, metallic, ao);
