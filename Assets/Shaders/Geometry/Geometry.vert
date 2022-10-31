@@ -6,7 +6,7 @@ layout (location = 2) in vec3 aNormal;
 layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBiTangent;
 
-uniform mat4 uTransform;
+layout(location = 0) uniform mat4 m_model;
 
 // Camera UB
 layout(std140, binding = 0) uniform Camera
@@ -27,12 +27,12 @@ struct GeometryOutput {
 layout (location = 0) out GeometryOutput geometryOutput;
 
 void main() {
-    gl_Position = camera.u_ViewProjectionMatrix * uTransform * vec4(aPos, 1.0);
+    gl_Position = camera.u_ViewProjectionMatrix * m_model * vec4(aPos, 1.0);
 
-    geometryOutput.position = vec3(uTransform * vec4(aPos, 1.0));
+    geometryOutput.position = vec3(m_model * vec4(aPos, 1.0));
     geometryOutput.texCoords = aTexCoord;
-    geometryOutput.normal = mat3(uTransform) * aNormal;
-    mat3 normalMatrix = transpose(inverse(mat3(uTransform)));
+    geometryOutput.normal = mat3(m_model) * aNormal;
+    mat3 normalMatrix = transpose(inverse(mat3(m_model)));
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
     T = normalize(T - dot(T, N) * N);

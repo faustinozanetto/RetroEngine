@@ -49,9 +49,6 @@ void main() {
     }
     gAlbedo = albedo;
 
-    if (gAlbedo.a < 0.05)
-    discard;
-
     /* Normal */
     vec3 normal = vec3(1.0);
     if (material.hasNormalMap == 1) {

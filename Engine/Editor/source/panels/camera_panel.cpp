@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "../editor_interface_utils.h"
+#include "../editor_main_interface.h"
 #include "renderer/renderer/scene_renderer.h"
 
 namespace retro::editor

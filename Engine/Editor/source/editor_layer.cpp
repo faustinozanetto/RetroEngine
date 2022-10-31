@@ -1,6 +1,7 @@
 ﻿#include "editor_layer.h"
 
 #include "core/application/retro_application.h"
+#include "core/input/input_manager.h"
 #include "core/scene/actor.h"
 #include "core/scene/components.h"
 #include "renderer/materials/material.h"
@@ -74,7 +75,7 @@ namespace retro::editor
             transform.position = {0.0f, -0.4f, 9.0f};
 
             auto pipe = retro_application::get_application().get_scene_manager()->get_active_scene()->
-                                                       create_actor();
+                                                             create_actor();
             pipe->add_component<name_component>("FighterHelmet Pipe");
             pipe->add_component<model_renderer_component>(
                 renderer::model::create("Assets/Models/FlightHelmet/glTF/Pipe.fbx"));
@@ -283,6 +284,13 @@ namespace retro::editor
             transform.scale = glm::vec3(0.01f);
             transform.position = {0.0f, -0.4f, 9.0f};
         }
+        auto light = retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                          create_actor();
+        light->add_component<name_component>("Light");
+        light->add_component<light_renderer_component>();
+        light->add_component<model_renderer_component>(
+            renderer::model::create("Assets/Models/Cube.obj"));
+        light->add_component<transform_component>();
     }
 
     void editor_layer::on_layer_unregistered()
@@ -292,13 +300,32 @@ namespace retro::editor
     void editor_layer::on_layer_updated()
     {
         renderer::scene_renderer::begin_render();
+        /*
         float time = renderer::renderer::get_time();
-        auto  registry = retro_application::get_application().get_scene_manager()->get_active_scene()->get_actor_registry().view<transform_component>();
+        auto registry = retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                             get_actor_registry().view<transform_component>();
+
         for (auto& actor : registry)
         {
             auto& transform = registry.get<transform_component>(actor);
             transform.rotation = {0.0f, glm::sin(time) * 2.0f, 0.0f};
         }
+
+*/
+        auto cam_pos = m_camera->get_focal_point();
+        if (input::input_manager::is_key_pressed(input::key::W))
+            cam_pos += m_camera->get_forward_direction() * PanSpeed().first;
+        if (input::input_manager::is_key_pressed(input::key::S))
+            cam_pos -= m_camera->get_forward_direction() * PanSpeed().first;
+        if (input::input_manager::is_key_pressed(input::key::A))
+            cam_pos -= m_camera->get_right_direction() * PanSpeed().second;
+        if (input::input_manager::is_key_pressed(input::key::D))
+            cam_pos += m_camera->get_right_direction() * PanSpeed().second;
+        if (input::input_manager::is_key_pressed(input::key::Q))
+            cam_pos += m_camera->get_up_direction() * PanSpeed().second;
+        if (input::input_manager::is_key_pressed(input::key::E))
+            cam_pos -= m_camera->get_up_direction() * PanSpeed().second;
+        m_camera->set_focal_point(cam_pos);
         renderer::scene_renderer::end_render();
     }
 
@@ -307,5 +334,18 @@ namespace retro::editor
         const shared<scene> scene = scene::create("Editor Scene");
         retro_application::get_application().get_scene_manager()->set_active_scene(scene);
         m_camera = retro::create_shared<renderer::camera>(50.0f, 0.01f, 2000.0f);
+    }
+
+    std::pair<float, float> editor_layer::PanSpeed() const
+    {
+        float x = std::min(renderer::scene_renderer::get_geometry_frame_buffer()->get_width() / 1000.0f, 2.4f);
+        // max = 2.4f
+        float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
+
+        float y = std::min(renderer::scene_renderer::get_geometry_frame_buffer()->get_height() / 1000.0f, 2.4f);
+        // max = 2.4f
+        float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
+
+        return {xFactor * 0.25f, yFactor * 0.25f};
     }
 }

@@ -16,6 +16,7 @@ namespace retro::editor
         void on_layer_registered() override;
         void on_layer_unregistered() override;
         void on_layer_updated() override;
+        std::pair<float, float> PanSpeed() const;
 
     private:
         void initialize_editor_scene();

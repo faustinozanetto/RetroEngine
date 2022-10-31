@@ -16,12 +16,34 @@ namespace retro::editor
         ImGui::NextColumn();
     }
 
+    void editor_interface_utils::draw_property(const std::string& name, const std::string& content)
+    {
+        ImGui::PushID(name.c_str());
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, 200.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(name.c_str());
+        ImGui::PopStyleVar();
+        ImGui::NextColumn();
+        
+        ImGui::Text(content.c_str());
+        
+        ImGui::Columns(1);
+        ImGui::PopID();
+    }
+
     bool editor_interface_utils::draw_property(const std::string& name, bool& value)
     {
         bool modified = false;
-        ImGui::TextUnformatted(name.c_str());
+        ImGui::PushID(name.c_str());
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, 200.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(name.c_str());
+        ImGui::PopStyleVar();
         ImGui::NextColumn();
-        ImGui::PushItemWidth(-1);
 
         const std::string id = "##" + name;
         if (ImGui::Checkbox(id.c_str(), &value))
@@ -29,8 +51,8 @@ namespace retro::editor
             modified = true;
         }
 
-        ImGui::PopItemWidth();
-        ImGui::NextColumn();
+        ImGui::Columns(1);
+        ImGui::PopID();
 
         return modified;
     }
@@ -38,9 +60,14 @@ namespace retro::editor
     bool editor_interface_utils::draw_property(const std::string& name, int& value, int min, int max, int step)
     {
         bool modified = false;
-        ImGui::TextUnformatted(name.c_str());
+        ImGui::PushID(name.c_str());
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, 200.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(name.c_str());
+        ImGui::PopStyleVar();
         ImGui::NextColumn();
-        ImGui::PushItemWidth(-1);
 
         const std::string id = "##" + name;
         if (ImGui::DragInt(id.c_str(), &value, step, min, max))
@@ -48,8 +75,8 @@ namespace retro::editor
             modified = true;
         }
 
-        ImGui::PopItemWidth();
-        ImGui::NextColumn();
+        ImGui::Columns(1);
+        ImGui::PopID();
 
         return modified;
     }
@@ -57,9 +84,14 @@ namespace retro::editor
     bool editor_interface_utils::draw_property(const std::string& name, float& value, float min, float max, float step)
     {
         bool modified = false;
-        ImGui::TextUnformatted(name.c_str());
+        ImGui::PushID(name.c_str());
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, 200.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(name.c_str());
+        ImGui::PopStyleVar();
         ImGui::NextColumn();
-        ImGui::PushItemWidth(-1);
 
         const std::string id = "##" + name;
         if (ImGui::DragFloat(id.c_str(), &value, step, min, max))
@@ -67,8 +99,8 @@ namespace retro::editor
             modified = true;
         }
 
-        ImGui::PopItemWidth();
-        ImGui::NextColumn();
+        ImGui::Columns(1);
+        ImGui::PopID();
 
         return modified;
     }
@@ -78,7 +110,7 @@ namespace retro::editor
     {
         ImGui::PushID(name.c_str());
         ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, 100.0f);
+        ImGui::SetColumnWidth(0, 200.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 5});
         ImGui::AlignTextToFramePadding();
         ImGui::Text(name.c_str());
