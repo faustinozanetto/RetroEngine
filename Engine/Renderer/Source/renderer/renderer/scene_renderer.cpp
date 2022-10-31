@@ -46,7 +46,7 @@ namespace retro::renderer
             if (light.type == light_type::point)
             {
                 const auto point_light = dynamic_cast<retro::renderer::point_light*>(light.light.get());
-                s_scene_renderer_data.m_lights_data.pointLight.color = point_light->get_color() * 5.0f;
+                s_scene_renderer_data.m_lights_data.pointLight.color = point_light->get_color();
                 s_scene_renderer_data.m_lights_data.pointLight.linear = point_light->get_linear();
                 s_scene_renderer_data.m_lights_data.pointLight.constant = point_light->get_constant();
                 s_scene_renderer_data.m_lights_data.pointLight.quadratic = point_light->get_quadratic();
@@ -80,7 +80,7 @@ namespace retro::renderer
             }
             for (const auto& renderable : model_renderer.model->get_model_renderables())
             {
-                s_scene_renderer_data.m_geometry_shader->set_mat4("uTransform", transform.get_transform_matrix());
+                s_scene_renderer_data.m_geometry_shader->set_mat4("m_model", transform.get_transform_matrix());
                 renderer::submit_command({
                     s_scene_renderer_data.m_geometry_shader,
                     renderable->get_vertex_array_buffer(),
@@ -146,6 +146,11 @@ namespace retro::renderer
         return s_scene_renderer_data.m_final_frame_buffer;
     }
 
+    shared<lighting_environment>& scene_renderer::get_lighting_environment()
+    {
+        return s_scene_renderer_data.m_lighting_environment;
+    }
+
     shared<camera>& scene_renderer::get_camera()
     {
         return s_scene_renderer_data.m_camera;
@@ -171,16 +176,16 @@ namespace retro::renderer
     {
         s_scene_renderer_data.m_geometry_frame_buffer = frame_buffer::create({
             2560, 1440, {
-                frame_buffer_color_attachment_format::rgba16f, // position
-                frame_buffer_color_attachment_format::rgba16f, // albedo
-                frame_buffer_color_attachment_format::rgba16f, // normal
-                frame_buffer_color_attachment_format::rgba16f, // roughness - metallic - ao
+                {"position", frame_buffer_color_attachment_format::rgba16f},
+                {"albedo", frame_buffer_color_attachment_format::rgba16f},
+                {"normal", frame_buffer_color_attachment_format::rgba16f},
+                {"rough-meta-ao", frame_buffer_color_attachment_format::rgba16f}
             }
         });
 
         s_scene_renderer_data.m_final_frame_buffer = frame_buffer::create({
             2560, 1440, {
-                frame_buffer_color_attachment_format::rgba16f, // final
+                {"final", frame_buffer_color_attachment_format::rgba16f}
             }
         });
     }
@@ -244,10 +249,12 @@ namespace retro::renderer
     void scene_renderer::setup_environment()
     {
         const shared<texture_cubemap> sky_cubemap = texture_cubemap::create({
-            "Assets/Textures/HDR/drakensberg_solitary_mountain_4k.hdr",
+            "Assets/Textures/HDR/brown_photostudio_02_4k.hdr",
             texture_filtering::linear,
             texture_wrapping::clamp_edge
         });
-        s_scene_renderer_data.m_lighting_environment = lighting_environment::create(sky_cubemap);
+        s_scene_renderer_data.m_lighting_environment = lighting_environment::create({
+            sky_cubemap, 1024, 128, 1024, 1024
+        });
     }
 }

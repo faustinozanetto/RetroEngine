@@ -9,7 +9,7 @@ namespace retro::editor
     {
     public:
         static void draw_property(const std::string& name);
-
+        static void draw_property(const std::string& name, const std::string& content);
         static bool draw_property(const std::string& name, bool& value);
         static bool draw_property(const std::string& name, int& value, int min, int max, int step = 1);
         static bool draw_property(const std::string& name, float& value, float min, float max, float step = 0.1f);

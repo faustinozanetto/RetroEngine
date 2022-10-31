@@ -14,10 +14,6 @@ namespace retro::renderer
         logger::line();
     }
 
-    model::~model()
-    {
-    }
-
     const std::vector<shared<renderable>>& model::get_model_renderables()
     {
         return m_renderables;

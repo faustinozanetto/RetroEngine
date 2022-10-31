@@ -48,6 +48,7 @@ namespace retro::renderer
 		}
 		return {};
 	}
+	
 
 	shared<texture> texture::create(uint32_t width, uint32_t height, const unsigned char* data)
 	{

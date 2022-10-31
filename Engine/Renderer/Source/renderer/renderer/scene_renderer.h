@@ -23,7 +23,7 @@ namespace retro::renderer
 	struct point_light_data
 	{
 		glm::vec3 position;
-		glm::vec3 color;
+		glm::vec4 color;
 		float constant;
 		float linear;
 		float quadratic;
@@ -62,6 +62,7 @@ namespace retro::renderer
 
 		static shared<frame_buffer>& get_geometry_frame_buffer();
 		static shared<frame_buffer>& get_final_frame_buffer();
+		static shared<lighting_environment>& get_lighting_environment();
 		static shared<camera>& get_camera();
 		static uint32_t get_final_texture();
 

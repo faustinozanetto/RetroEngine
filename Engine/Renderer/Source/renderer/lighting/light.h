@@ -10,14 +10,14 @@ namespace retro::renderer
 		light();
 		virtual ~light();
 
-		const glm::vec3& get_color() const { return m_color; }
-		void set_color(const glm::vec3& color) { m_color = color; }
+		glm::vec4& get_color() { return m_color; }
+		void set_color(const glm::vec4& color) { m_color = color; }
 
 		const glm::vec3& get_position() const { return m_position; }
 		void set_position(const glm::vec3& position) { m_position = position; }
 
 	private:
-		glm::vec3 m_color = {0.8f, 0.8f, 0.8f};
+		glm::vec4 m_color = {0.8f, 0.8f, 0.8f, 1.0f};
 		glm::vec3 m_position = {0.0f, 0.0f, 0.0f};
 	};
 }

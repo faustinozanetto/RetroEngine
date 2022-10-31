@@ -20,6 +20,8 @@ namespace retro::renderer
 			const frame_buffer_color_texture_specification& frame_buffer_color_texture_specification) override;
 
 		uint32_t get_color_attachment_id(uint32_t slot) override;
+		std::vector<uint32_t> get_color_attachments() override;
+		std::map<uint32_t, frame_buffer_color_texture_specification> get_color_attachments_specifications() override;
 		uint32_t get_depth_attachment_id() override;
 		uint32_t get_height() const override;
 		uint32_t get_width() const override;

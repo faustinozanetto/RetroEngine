@@ -122,6 +122,13 @@ namespace retro::editor
                     */
                 }
             }
+            if (active_scene->get_actor_registry().has<light_renderer_component>(editor_main_interface::s_selected_actor))
+            {
+                auto& light_renderer_component = active_scene->get_actor_registry().get<retro::light_renderer_component>(
+                    editor_main_interface::s_selected_actor);
+                editor_interface_utils::draw_property("Color", light_renderer_component.light->get_color(),true);
+            }
+            ImGui::Separator();
         }
         else
         {

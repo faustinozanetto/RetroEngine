@@ -55,6 +55,8 @@ project "EngineCore"
         "%{wks.location}/Binaries/Debug-windows-x86_64/GLAD",
         "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
         "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Release",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Release",
     }
 
     includedirs {
@@ -80,11 +82,17 @@ project "EngineCore"
             "assimp-vc143-mtd.lib"
         }
 
-    filter "configurations:release"
+    filter "configurations:Release"
         optimize "Speed"
+        links {
+            "assimp-vc143-mt.lib",
+        }
 
     filter "configurations:Dist"
         optimize "Full"
+        links {
+            "assimp-vc143-mt.lib",
+        }
 
 project "EngineRenderer"
     location "Engine/Renderer"
@@ -108,6 +116,8 @@ project "EngineRenderer"
     libdirs {
         "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
         "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Release",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Release",
     }
     
     includedirs {
@@ -143,11 +153,17 @@ project "EngineRenderer"
             "assimp-vc143-mtd.lib"
         }
 
-    filter "configurations:release"
+    filter "configurations:Release"
         optimize "Speed"
+        links {
+            "assimp-vc143-mt.lib",
+        }
 
     filter "configurations:Dist"
         optimize "Full"
+        links {
+            "assimp-vc143-mt.lib",
+        }
 
 project "EngineEditor"
     location "Engine/Editor"
@@ -179,6 +195,8 @@ project "EngineEditor"
     libdirs {
         "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
         "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Release",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Release",
     }
 
     links {
@@ -197,13 +215,19 @@ project "EngineEditor"
             "assimp-vc143-mtd.lib"
         }
     
-    filter "configurations:release"
+    filter "configurations:Release"
         defines {  "WIN32_LEAN_AND_MEAN" }
         optimize "on"
+        links {
+            "assimp-vc143-mt.lib",
+        }
     
     filter "configurations:Dist"
         defines { "WIN32_LEAN_AND_MEAN" }
         optimize "on"
+        links {
+            "assimp-vc143-mt.lib",
+        }
 
 project "Showcase"
     location "Showcase"
@@ -235,6 +259,8 @@ project "Showcase"
     libdirs {
         "%{wks.location}/ThirdParty/ASSIMP/lib/Debug",
         "%{wks.location}/ThirdParty/ASSIMP/bin/Debug",
+        "%{wks.location}/ThirdParty/ASSIMP/lib/Release",
+        "%{wks.location}/ThirdParty/ASSIMP/bin/Release",
     }
 
     links {
@@ -253,10 +279,16 @@ project "Showcase"
             "assimp-vc143-mtd.lib"
         }
 
-    filter "configurations:release"
+    filter "configurations:Release"
         defines {  "WIN32_LEAN_AND_MEAN" }
         optimize "on"
+        links {
+            "assimp-vc143-mt.lib",
+        }
 
     filter "configurations:Dist"
         defines { "WIN32_LEAN_AND_MEAN" }
         optimize "on"
+        links {
+            "assimp-vc143-mt.lib",
+        }

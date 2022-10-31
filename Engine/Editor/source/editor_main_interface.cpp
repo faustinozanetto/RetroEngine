@@ -5,6 +5,7 @@
 #include "panels/actor_details_panel.h"
 #include "panels/camera_panel.h"
 #include "panels/hierarchy_panel.h"
+#include "panels/renderer_panel.h"
 #include "panels/statistics_panel.h"
 #include "renderer/renderer/renderer.h"
 #include "renderer/renderer/scene_renderer.h"
@@ -12,6 +13,7 @@
 namespace retro::editor
 {
     entt::entity editor_main_interface::s_selected_actor = entt::null;
+    uint32_t editor_main_interface::s_render_target = 0;
 
     editor_main_interface::editor_main_interface(const std::string& interface_layer_name) : interface_layer(
         interface_layer_name)
@@ -32,6 +34,10 @@ namespace retro::editor
         m_panels.emplace_back(actor_details_panel);
         auto camera_panel = create_shared<editor::camera_panel>();
         m_panels.emplace_back(camera_panel);
+        auto renderer_panel = create_shared<editor::renderer_panel>();
+        m_panels.emplace_back(renderer_panel);
+
+        s_render_target = renderer::scene_renderer::get_final_texture();
     }
 
     void editor_main_interface::on_layer_unregistered()
@@ -95,7 +101,7 @@ namespace retro::editor
         const ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         // Draw viewport
         ImGui::Image(
-            reinterpret_cast<ImTextureID>(renderer::scene_renderer::get_final_texture()),
+            reinterpret_cast<ImTextureID>(s_render_target),
             ImVec2{viewportPanelSize.x, viewportPanelSize.y}, ImVec2{0, 1},
             ImVec2{1, 0});
         ImGui::End();
