@@ -9,6 +9,7 @@
 #include "core/scene/components.h"
 #include "core/scene/scene.h"
 #include "core/scene/actor.h"
+#include "renderer/lighting/directional_light.h"
 
 namespace retro::editor
 {
@@ -122,11 +123,21 @@ namespace retro::editor
                     */
                 }
             }
-            if (active_scene->get_actor_registry().has<light_renderer_component>(editor_main_interface::s_selected_actor))
+            if (active_scene->get_actor_registry().has<light_renderer_component>(
+                editor_main_interface::s_selected_actor))
             {
-                auto& light_renderer_component = active_scene->get_actor_registry().get<retro::light_renderer_component>(
+                auto& light_renderer_component = active_scene->get_actor_registry().get<
+                    retro::light_renderer_component>(
                     editor_main_interface::s_selected_actor);
-                editor_interface_utils::draw_property("Color", light_renderer_component.light->get_color(),true);
+                editor_interface_utils::draw_property("Color", light_renderer_component.light->get_color(), true);
+                // If type is directional, draw direction property.
+                if (light_renderer_component.type == light_type::directional)
+                {
+                    auto* directionalLight = dynamic_cast<renderer::directional_light*>(light_renderer_component.light.
+                        get());
+                    editor_interface_utils::draw_property("Direction", directionalLight->get_direction(),
+                                                          -2 * glm::pi<float>(), 2 * glm::pi<float>(), 0.1f);
+                }
             }
             ImGui::Separator();
         }

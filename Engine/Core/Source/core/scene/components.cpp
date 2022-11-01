@@ -6,6 +6,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "renderer/lighting/directional_light.h"
 #include "renderer/lighting/point_light.h"
 
 namespace retro
@@ -64,7 +65,13 @@ namespace retro
 			light = create_shared<renderer::point_light>();
 			light->set_color(point_light->get_color());
 			light->set_position(point_light->get_position());
-		} else if (type == light_type::directional) {}
+		} else if (type == light_type::directional)
+		{
+			const auto directional_light = reinterpret_cast<renderer::directional_light*>(other.light.get());
+			light = create_shared<renderer::directional_light>();
+			light->set_color(directional_light->get_color());
+			light->set_position(directional_light->get_position());
+		}
 	}
 
 	light_renderer_component::light_renderer_component(const shared<renderer::light>& light, light_type type)

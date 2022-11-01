@@ -84,7 +84,7 @@ namespace retro::renderer
 		float m_fov = 50.0f;
 		float m_aspect_ratio = 16.0f / 9.0f;
 		float m_near_plane = 0.1f;
-		float m_far_plane = 10000.0f;
+		float m_far_plane = 500.0f;
 		float m_pitch = 0.0f;
 		float m_yaw = 0.0f;
 		float m_distance = 10.0f;

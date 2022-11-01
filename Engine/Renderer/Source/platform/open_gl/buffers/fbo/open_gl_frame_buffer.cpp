@@ -42,13 +42,20 @@ namespace retro::renderer
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture_handle, 0);
     }
 
-    open_gl_frame_buffer::open_gl_frame_buffer(const frame_buffer_specification& frame_buffer_specification)
+    open_gl_frame_buffer::open_gl_frame_buffer(const frame_buffer_specification &frame_buffer_specification)
     {
         m_frame_buffer_specification = frame_buffer_specification;
         // Loop through the specification and create the framebuffer
-        for (auto& attachment : m_frame_buffer_specification.color_attachments)
+        for (auto &attachment : m_frame_buffer_specification.attachments)
         {
-            m_frame_buffer_color_texture_specifications.emplace_back(attachment);
+            if (attachment.format == frame_buffer_attachment_format::depth32f)
+            {
+                m_depth_texture_specification = attachment;
+            }
+            else
+            {
+                m_frame_buffer_texture_specifications.emplace_back(attachment);
+            }
         }
         reconstruct();
     }
@@ -56,7 +63,7 @@ namespace retro::renderer
     open_gl_frame_buffer::~open_gl_frame_buffer()
     {
         glDeleteFramebuffers(1, &m_object_handle);
-        glDeleteTextures(m_color_attachments.size(), m_color_attachments.data());
+        glDeleteTextures(m_attachments.size(), m_attachments.data());
         glDeleteTextures(1, &m_depth_attachment);
     }
 
@@ -72,31 +79,31 @@ namespace retro::renderer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void open_gl_frame_buffer::add_color_texture_attachment(
-        const frame_buffer_color_texture_specification& frame_buffer_color_texture_specification)
+    void open_gl_frame_buffer::add_texture_attachment(
+        const frame_buffer_texture_specification &frame_buffer_texture_specification)
     {
-        m_frame_buffer_color_texture_specifications.emplace_back(frame_buffer_color_texture_specification);
+        m_frame_buffer_texture_specifications.emplace_back(frame_buffer_texture_specification);
         reconstruct();
     }
 
-    uint32_t open_gl_frame_buffer::get_color_attachment_id(uint32_t slot)
+    uint32_t open_gl_frame_buffer::get_attachment_id(uint32_t slot)
     {
-        return m_color_attachments[slot];
+        return m_attachments[slot];
     }
 
-    std::vector<uint32_t> open_gl_frame_buffer::get_color_attachments()
+    std::vector<uint32_t> open_gl_frame_buffer::get_attachments()
     {
-        return m_color_attachments;
+        return m_attachments;
     }
 
-    std::map<uint32_t, frame_buffer_color_texture_specification>
-    open_gl_frame_buffer::get_color_attachments_specifications()
+    std::map<uint32_t, frame_buffer_texture_specification>
+    open_gl_frame_buffer::get_attachments_specifications()
     {
-        std::map<uint32_t, frame_buffer_color_texture_specification> result = {};
+        std::map<uint32_t, frame_buffer_texture_specification> result = {};
         int i = 0;
-        for (auto& attachment : m_color_attachments)
+        for (auto &attachment : m_attachments)
         {
-            result.insert({attachment, m_frame_buffer_color_texture_specifications.at(i)});
+            result.insert({attachment, m_frame_buffer_texture_specifications.at(i)});
             i++;
         }
         return result;
@@ -130,9 +137,9 @@ namespace retro::renderer
         if (m_object_handle)
         {
             glDeleteFramebuffers(1, &m_object_handle);
-            glDeleteTextures(m_color_attachments.size(), m_color_attachments.data());
+            glDeleteTextures(m_attachments.size(), m_attachments.data());
             glDeleteTextures(1, &m_depth_attachment);
-            m_color_attachments.clear();
+            m_attachments.clear();
             m_depth_attachment = 0;
         }
 
@@ -140,59 +147,55 @@ namespace retro::renderer
         glBindFramebuffer(GL_FRAMEBUFFER, m_object_handle);
 
         // Generate texture attachments
-        if (!m_frame_buffer_color_texture_specifications.empty())
+        if (!m_frame_buffer_texture_specifications.empty())
         {
             // Resize the array of opengl texture ids to fit the attachments.
-            m_color_attachments.resize(m_frame_buffer_color_texture_specifications.size());
+            m_attachments.resize(m_frame_buffer_texture_specifications.size());
             // Create the textures.
-            glCreateTextures(GL_TEXTURE_2D, m_color_attachments.size(),
-                             m_color_attachments.data());
+            glCreateTextures(GL_TEXTURE_2D, m_attachments.size(),
+                             m_attachments.data());
 
             // Generate the texture attachments.
-            for (int i = 0; i < m_color_attachments.size(); i++)
+            for (int i = 0; i < m_attachments.size(); i++)
             {
-                glBindTexture(GL_TEXTURE_2D, m_color_attachments[i]);
+                glBindTexture(GL_TEXTURE_2D, m_attachments[i]);
 
-                GLenum format;
-                GLenum dataFormat;
-                switch (m_frame_buffer_color_texture_specifications[i].format)
+                switch (m_frame_buffer_texture_specifications[i].format)
                 {
-                case frame_buffer_color_attachment_format::rgba8:
-                    {
-                        format = GL_RGBA;
-                        dataFormat = GL_RGBA8;
-                        break;
-                    }
-                case frame_buffer_color_attachment_format::rgba16f:
-                    {
-                        format = GL_RGBA;
-                        dataFormat = GL_RGB16F;
-                        break;
-                    }
+                case frame_buffer_attachment_format::rgba8:
+                {
+                    generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
+                                           m_frame_buffer_specification.height, GL_RGBA, GL_RGBA8);
+                    break;
                 }
-
-                generate_color_texture(m_color_attachments[i], i, m_frame_buffer_specification.width,
-                                       m_frame_buffer_specification.height, format, dataFormat);
+                case frame_buffer_attachment_format::rgba16f:
+                {
+                    generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
+                                           m_frame_buffer_specification.height, GL_RGBA, GL_RGB16F);
+                    break;
+                }
+                }
             }
         }
 
-        // Generate depth attachment
-        {
-            // Create the textures.
-            glCreateTextures(GL_TEXTURE_2D, 1, &m_depth_attachment);
-            glBindTexture(GL_TEXTURE_2D, m_depth_attachment);
-            generate_depth_texture(m_depth_attachment, m_frame_buffer_specification.width,
-                                   m_frame_buffer_specification.height);
-        }
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_depth_attachment);
+        glBindTexture(GL_TEXTURE_2D, m_depth_attachment);
+        generate_depth_texture(m_depth_attachment, m_frame_buffer_specification.width,
+                               m_frame_buffer_specification.height);
 
         // Draw buffers.
-        if (!m_color_attachments.empty())
+        if (m_attachments.size() > 1)
         {
             const GLenum buffers[8] = {
                 GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3,
-                GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5,GL_COLOR_ATTACHMENT6,GL_COLOR_ATTACHMENT7
-            };
-            glDrawBuffers(m_color_attachments.size(), buffers);
+                GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7};
+            glDrawBuffers(m_attachments.size(), buffers);
+        }
+        else if (m_attachments.empty())
+        {
+            // Only depth-pass
+            glDrawBuffer(GL_NONE);
+            glReadBuffer(GL_NONE);
         }
 
         const auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
