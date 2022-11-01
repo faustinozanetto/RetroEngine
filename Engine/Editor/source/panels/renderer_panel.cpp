@@ -30,7 +30,7 @@ namespace retro::editor
             if (ImGui::TreeNode("GeometryBuffer"))
             {
                 for (const auto& attachment : renderer::scene_renderer::get_geometry_frame_buffer()->
-                     get_color_attachments_specifications())
+                     get_attachments_specifications())
                 {
                     if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(attachment.first)), "Buffer %s",
                                         attachment.second.name.c_str()))
@@ -67,7 +67,7 @@ namespace retro::editor
             if (ImGui::TreeNode("FinalBuffer"))
             {
                 for (const auto& attachment : renderer::scene_renderer::get_final_frame_buffer()->
-                     get_color_attachments_specifications())
+                     get_attachments_specifications())
                 {
                     if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(attachment.first)), "Buffer %s",
                                         attachment.second.name.c_str()))
@@ -100,6 +100,36 @@ namespace retro::editor
                 }
                 ImGui::TreePop();
             }
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("DepthBuffer"))
+        {
+            ImGui::Columns(2);
+
+            if (ImGui::ImageButton(
+                reinterpret_cast<ImTextureID>(renderer::scene_renderer::get_depth_frame_buffer()->
+                    get_depth_attachment_id()),
+                {64.0f, 64.0f},
+                ImVec2(0.0f, 1.0f),
+                ImVec2(1.0f, 0.0f)))
+            {
+                editor_main_interface::s_render_target = renderer::scene_renderer::get_depth_frame_buffer()->
+                    get_depth_attachment_id();
+            }
+            // Hover tooltip.
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::Image(reinterpret_cast<ImTextureID>(renderer::scene_renderer::get_depth_frame_buffer()->
+                                 get_depth_attachment_id()), ImVec2(256, 256),
+                             ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                ImGui::EndTooltip();
+            }
+            ImGui::NextColumn();
+
+            ImGui::Text("Size: %dx%d", renderer::scene_renderer::get_geometry_frame_buffer()->get_width(),
+                        renderer::scene_renderer::get_geometry_frame_buffer()->get_height());
+            ImGui::NextColumn();
             ImGui::TreePop();
         }
         if (ImGui::TreeNode("Environment"))

@@ -4,6 +4,7 @@
 #include "core/input/input_manager.h"
 #include "core/scene/actor.h"
 #include "core/scene/components.h"
+#include "renderer/lighting/directional_light.h"
 #include "renderer/materials/material.h"
 #include "renderer/renderer/renderer.h"
 #include "renderer/renderer/scene_renderer.h"
@@ -24,6 +25,7 @@ namespace retro::editor
         renderer::scene_renderer::set_scene(
             retro_application::get_application().get_scene_manager()->get_active_scene());
         renderer::scene_renderer::initialize(m_camera);
+   
         {
             auto albedo = renderer::texture::create({
                 "Assets/Models/FlightHelmet/glTF/FlightHelmet_Materials_RubberWoodMat_BaseColor.png",
@@ -283,14 +285,22 @@ namespace retro::editor
             auto& transform = metals->add_component<transform_component>();
             transform.scale = glm::vec3(0.01f);
             transform.position = {0.0f, -0.4f, 9.0f};
-        }
+        } 
         auto light = retro_application::get_application().get_scene_manager()->get_active_scene()->
                                                           create_actor();
         light->add_component<name_component>("Light");
-        light->add_component<light_renderer_component>();
+        auto directional_light = create_shared<renderer::directional_light>();
+        light->add_component<light_renderer_component>(directional_light, light_type::directional);
         light->add_component<model_renderer_component>(
             renderer::model::create("Assets/Models/Cube.obj"));
         light->add_component<transform_component>();
+
+        auto floor = retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                          create_actor();
+        floor->add_component<name_component>("Floor");
+        floor->add_component<model_renderer_component>(
+            renderer::model::create("Assets/Models/Cube.obj"));
+        floor->add_component<transform_component>();
     }
 
     void editor_layer::on_layer_unregistered()
@@ -300,18 +310,22 @@ namespace retro::editor
     void editor_layer::on_layer_updated()
     {
         renderer::scene_renderer::begin_render();
-        /*
-        float time = renderer::renderer::get_time();
-        auto registry = retro_application::get_application().get_scene_manager()->get_active_scene()->
-                                                             get_actor_registry().view<transform_component>();
 
+        float time = renderer::renderer::get_time();
+      //  auto registry = retro_application::get_application().get_scene_manager()->get_active_scene()->
+        //                                                     get_actor_registry().view<transform_component>();
+/*
         for (auto& actor : registry)
         {
-            auto& transform = registry.get<transform_component>(actor);
-            transform.rotation = {0.0f, glm::sin(time) * 2.0f, 0.0f};
+            if (!retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                      get_actor_registry().has<light_renderer_component>(actor))
+            {
+                auto& transform = registry.get<transform_component>(actor);
+                transform.rotation = {0.0f, glm::sin(time) * 2.0f, 0.0f};
+            }
         }
+        */
 
-*/
         auto cam_pos = m_camera->get_focal_point();
         if (input::input_manager::is_key_pressed(input::key::W))
             cam_pos += m_camera->get_forward_direction() * PanSpeed().first;
