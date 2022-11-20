@@ -5,16 +5,15 @@ layout(location = 0) in vec2 TexCoords;
 
 struct PointLight {
     vec3 position;
-    vec4 color;
-    float constant;
-    float linear;
-    float quadratic;
+    vec3 color;
+    float intensity;
+    float radius;
 };
 
 struct DirectionalLight {
     vec3 direction;
-    vec4 color;
-    vec3 position;
+    vec3 color;
+    float intensity;
 };
 
 // Camera UB
@@ -47,149 +46,51 @@ layout(binding = 7) uniform sampler2D gShadowMap;
 layout(location = 0) out vec4 FragColor;
 
 const float PI = 3.14159265359;
-
-vec2 RandomDirection(sampler1D distribution, float u)
-{
-    return texture(distribution, u).xy * 2 - vec2(1);
-}
-
-//////////////////////////////////////////////////////////////////////////
-float SearchWidth(float uvLightSize, float receiverDistance)
-{
-    return uvLightSize * (receiverDistance - pc.near) / receiverDistance;
-}
-
-float FindBlockerDistance_DirectionalLight(vec3 shadowCoords, sampler2D shadowMap, float uvLightSize,float bias)
-{
-    int blockers = 0;
-    float avgBlockerDistance = 0;
-    float searchWidth = SearchWidth(uvLightSize, shadowCoords.z);
-    for (int i = 0; i < pc.numBlockerSearchSamples; i++)
-    {
-        float z = texture(shadowMap, shadowCoords.xy + RandomDirection(distribution0, i / float(pc.numBlockerSearchSamples)) * searchWidth).r;
-        if (z < (shadowCoords.z - bias))
-        {
-            blockers++;
-            avgBlockerDistance += z;
-        }
-    }
-    if (blockers > 0)
-    return avgBlockerDistance / blockers;
-    else
-    return -1;
-}
-
-float PCF_DirectionalLight(vec3 shadowCoords, sampler2D shadowMap, float uvRadius, float bias)
-{
-    float sum = 0;
-    for (int i = 0; i < 8; i++)
-    {
-        float z = texture(shadowMap, shadowCoords.xy + RandomDirection(distribution1, i / float(8)) * uvRadius).r;
-        sum += (z < (shadowCoords.z - bias)) ? 1 : 0;
-    }
-    return sum / 8;
-}
-
-float PCSS_DirectionalLight(vec3 shadowCoords, sampler2D shadowMap, float uvLightSize, float bias)
-{
-    // blocker search
-    float blockerDistance = FindBlockerDistance_DirectionalLight(shadowCoords, shadowMap, uvLightSize, bias);
-    if (blockerDistance == -1)
-    return 0;
-
-    // penumbra estimation
-    float penumbraWidth = (shadowCoords.z - blockerDistance) / blockerDistance;
-
-    // percentage-close filtering
-    float uvRadius = penumbraWidth * uvLightSize * 20.0 / shadowCoords.z;
-    return PCF_DirectionalLight(shadowCoords, shadowMap, uvRadius, bias);
-}
-
-float SoftShadow(vec4 fragPosLightSpace, float bias)
-{
-
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-
-    projCoords = projCoords * 0.5 + 0.5;
-
-    float currentDepth = projCoords.z;
-	if(projCoords.z > 1.0)
-        return 0.0;
-	float shadow = PCSS_DirectionalLight(projCoords,shadowMap,pc.size,bias);
-
-    return shadow;
-}
-
-
 // ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
-    float a = roughness*roughness;
-    float a2 = a*a;
+    float a = roughness * roughness;
+    float a2 = a * a;
     float NdotH = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
+    float NdotH2 = NdotH * NdotH;
 
-    float nom   = a2;
+    float num = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = PI * denom * denom;
 
-    return nom / max(denom, 0.001);// prevent divide by zero for roughness=0.0 and NdotH=1.0
+    return num / max(denom, 1e-5);
 }
-///////////////////////////////////////////////////PBR////////////////////////////////////////
 // ----------------------------------------------------------------------------
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
     float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
+    float k = (r * r) / 8.0;
 
-    float nom   = NdotV;
+    float num   = NdotV;
     float denom = NdotV * (1.0 - k) + k;
 
-    return nom / denom;
+    return num / max(denom, 1e-5);
 }
-
 // ----------------------------------------------------------------------------
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+
     float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
 
     return ggx1 * ggx2;
 }
-
 // ----------------------------------------------------------------------------
 vec3 FresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
 }
-
 // ----------------------------------------------------------------------------
 vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
-}
-
-vec3 CalculateLo(vec3 L, vec3 N, vec3 V, vec3 Ra, vec3 F0, float R, float M, vec3 A)
-{
-    vec3 H = normalize(V + L);//Halfway Vector
-
-    //Cook-Torrance BRDF
-    float D = DistributionGGX(N, H, R);
-    float G = GeometrySmith(N, V, L, R);
-    vec3  F = FresnelSchlick(max(dot(H, V), 0.0), F0);
-
-    vec3 Nominator    = D * G * F;
-    float Denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
-    vec3 Specular      = Nominator / Denominator;
-
-    vec3 Ks = F;
-    vec3 Kd = vec3(1.0) - Ks;
-    Kd *= 1.0 - M;
-
-    float NDotL = max(dot(N, L), 0.0);
-    return (Kd * A / PI + Specular) * Ra * NDotL;
 }
 
 vec3 unchartedToneMap(vec3 colour)
@@ -228,67 +129,81 @@ vec3 ACESToneMap(vec3 color)
     return clamp(m2 * (a / b), 0.0, 1.0);
 }
 
-void main() {
-    vec3 FragPos = texture(gPosition, TexCoords).rgb;
-    vec3 Albedo = texture(gAlbedo, TexCoords).rgb;
-    vec3 Normal = texture(gNormal, TexCoords).rgb;
-    float Roughness = texture(gRoughMetalAO, TexCoords).r;
-    float Metallic  = texture(gRoughMetalAO, TexCoords).g;
-    float AO        = texture(gRoughMetalAO, TexCoords).b;
-
+vec3 CalculatePointLightPBR(PointLight light, vec3 FragPos, vec3 CamPos, vec3 Albedo, vec3 Normal, float Metallic, float Roughness) {
     //---------------------------------------> View direction (V)
-    vec3 V = normalize(camera.u_Position.rgb - FragPos);
+    vec3 V = normalize(CamPos - FragPos);
+    vec3 L = normalize(light.position.rgb - FragPos);
+    vec3 H = normalize(V + L);
+    //----------------------------------------> Fresnel
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, Albedo, Metallic);
+    //----------------------------------------> Fresnel
+    vec3 F = FresnelSchlickRoughness(max(dot(Normal, V), 0.0), F0, Roughness);
+    //----------------------------------------> Cook-Torrance BRDF
+    float NDF = DistributionGGX(Normal, H, Roughness);
+    float G   = GeometrySmith(Normal, V, L, Roughness);
+
+    float NdotL    = max(dot(Normal, L), 0.0);
+    vec3  num      = NDF * G * F;
+    float denom    = 4.0 * max(dot(Normal, V), 0.0) * NdotL;
+    vec3  specular = num / max(denom, 1e-5);
+
+    vec3 kS = F;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - Metallic;
+
+    vec3 Radiance = light.color.rgb * 1.0;
+
+    return (kD * Albedo / PI + specular) * Radiance * NdotL;
+}
+
+vec3 CalculateIndirectLighting(vec3 FragPos, vec3 CamPos, vec3 Albedo, vec3 Normal, float Metallic, float Roughness, float AO) {
+    //---------------------------------------> View direction (V)
+    vec3 V = normalize(CamPos - FragPos);
     vec3 R = reflect(-V, Normal);
     //----------------------------------------> Specular reflectance at normal incidence
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, Albedo, Metallic);
-    float NdotV = clamp(dot(Normal, V), 0., 1.);
-    //---------------------------------------> Cook-Torrance reflectance equation
-    vec3 Lo = vec3(0);
-
-    vec3 LightDir = normalize(- lights.directionalLight.direction);
-    float bias = max(0.01 * (1.0 - dot(Normal, LightDir)), 0.001);
-
-    Lo += CalculateLo(LightDir, Normal, V, lights.directionalLight.color.rgb, F0, Roughness, Metallic, Albedo);
-
-    // Per lights
-    /*
-    for (uint i = 0; i < 1; i++){
-        //reflectance += calcPointLight(1, Normal, FragPos, V, Albedo, Roughness, Metallic, F0, ViewDistance);
-        vec3 L = normalize(lights.pointLight.position.rgb - FragPos);
-        float distance = length(lights.pointLight.position.rgb - FragPos);
-        float attenuation = 1.0/(distance * distance);
-        vec3 Ra = lights.pointLight.color.rgb * attenuation;
-        Lo += CalculateLo(L, Normal, V, Ra, F0, Roughness, Metallic, Albedo);
-    }
-    */
-
+    //----------------------------------------> Fresnel
     vec3 F = FresnelSchlickRoughness(max(dot(Normal, V), 0.0), F0, Roughness);
-
-    vec3 Ks = F;
-    vec3 Kd = 1.0 - Ks;
-    Kd *= 1.0 - Metallic;
-
-    vec3 irradiance = texture(gIrradiance, Normal).rgb * 0.75;
-    vec3 diffuse    = irradiance * Albedo;
-
+    vec3 kS = F;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - Metallic;
+    //----------------------------------------> Diffuse IBL
+    vec3 irradiance = texture(gIrradiance, Normal).rgb;
+    vec3 diffuse      = irradiance * Albedo;
+    //----------------------------------------> Specular IBL
     const float MAX_REFLECTION_LOD = 4.0;
     vec3 prefilteredColor = textureLod(gPrefilter, R, Roughness * MAX_REFLECTION_LOD).rgb;
     vec2 BRDF  = texture(gBRDFLut, vec2(max(dot(Normal, V), 0.0), Roughness)).rg;
     vec3 specular = prefilteredColor * (F * BRDF.x + BRDF.y);
 
-    vec3 ambient = (Kd * diffuse + specular) * AO;
+    return (kD * diffuse * specular) * AO;
+}
 
-    vec3 result = vec3(0);
-    result = (1) * Lo + ambient;
-    vec3 hdrColor = result;
+void main() {
+    vec3 FragPos = texture(gPosition, TexCoords).rgb;
+    vec4 AlbedoSrc = texture(gAlbedo, TexCoords);
+    vec3 Albedo = AlbedoSrc.rgb;
+    float Alpha = AlbedoSrc.a;
+    vec3 N = texture(gNormal, TexCoords).rgb;
+    float Roughness = texture(gRoughMetalAO, TexCoords).r;
+    float Metallic  = texture(gRoughMetalAO, TexCoords).g;
+    float AO        = texture(gRoughMetalAO, TexCoords).b;
+    vec3 CamPos = camera.u_Position;
 
-    // reinhard tone mapping
-    vec3 mapped = vec3(1.0) - exp(-hdrColor * 0.65);
-    // gamma correction 
-    mapped = pow(mapped, vec3(1.0 / 1.9));
+    vec3 Lighting = vec3(0);
+    for (uint i = 0; i < 1; i++){
+        Lighting += CalculatePointLightPBR(lights.pointLight, FragPos, CamPos, Albedo, N, Metallic, Roughness);
+    }
+    // Indirect IBL Lighting
+    vec3 IndirectLighthing = CalculateIndirectLighting(FragPos, CamPos, Albedo, N, Metallic, Roughness, AO);
+    vec3 color = IndirectLighthing + Lighting;
 
-    //  mapped = ACESToneMap(mapped);
+    // HDR tonemapping
+    color = color / (color + vec3(1.0));
+    // gamma correct
+    color = pow(color, vec3(1.0/2.2));
 
-    FragColor = vec4(mapped, 1.0);
+    FragColor = vec4(color, Alpha);
 }

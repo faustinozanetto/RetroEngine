@@ -63,7 +63,7 @@ void main() {
         roughness = texture(uRoughnessMap, geometryInput.texCoords).g;
     } else {
         roughness = material.roughness;
-	}
+    }
 
     /* Metallic */
     float metallic;

@@ -12,6 +12,7 @@
 #include "renderer/buffers/vao/vertex_array_buffer.h"
 #include "renderer/camera/camera.h"
 #include "renderer/lighting/lighting_environment.h"
+#include "renderer/rendereables/model/model.h"
 #include "renderer/shader/shader.h"
 
 namespace retro::renderer
@@ -26,7 +27,7 @@ namespace retro::renderer
 
     struct point_light_data
     {
-        glm::vec3 position;
+        glm::vec4 position;
         glm::vec4 color;
         float constant;
         float linear;
@@ -35,9 +36,9 @@ namespace retro::renderer
 
     struct directional_light_data
     {
-        glm::vec3 direction;
+        glm::vec4 direction;
         glm::vec4 color;
-        glm::vec3 position;
+        glm::vec4 position;
     };
 
     struct shadow_data
@@ -55,7 +56,9 @@ namespace retro::renderer
     {
         glm::mat4 light_proj;
         glm::mat4  light_view;
-        float light_far = 100.0f;
+        float light_near = 0.1f;
+        float light_far = 1000.0f;
+        float orthoSize = 10.0f;
         camera_data m_camera_data;
         lights_data m_lights_data;
         shadow_data shadow_data;
@@ -90,6 +93,7 @@ namespace retro::renderer
         static shared<frame_buffer>& get_final_frame_buffer();
         static shared<lighting_environment>& get_lighting_environment();
         static shared<camera>& get_camera();
+        static scene_renderer_data& get_data();
         static uint32_t get_final_texture();
 
     private:

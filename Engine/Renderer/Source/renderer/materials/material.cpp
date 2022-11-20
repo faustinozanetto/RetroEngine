@@ -4,12 +4,12 @@
 
 namespace retro::renderer
 {
-    material::material()
+    material::material() : asset(asset_type::material)
     {
         m_material_specification = material_specification();
     }
 
-    material::material(const material_specification& material_specification)
+    material::material(const material_specification& material_specification): asset(asset_type::material)
     {
         m_material_specification = material_specification;
     }
@@ -25,7 +25,8 @@ namespace retro::renderer
         m_material_specification.mat_shader->set_vec_float4("material.albedo", m_material_specification.albedo);
         m_material_specification.mat_shader->set_float("material.metallic", m_material_specification.metallic);
         m_material_specification.mat_shader->set_float("material.roughness", m_material_specification.roughness);
-        m_material_specification.mat_shader->set_float("material.ambient_occlusion", m_material_specification.ambient_occlusion);
+        m_material_specification.mat_shader->set_float("material.ambient_occlusion",
+                                                       m_material_specification.ambient_occlusion);
         // Bind each texture in the material.
         for (const auto& [type, texture] : m_material_specification.textures)
         {
@@ -72,6 +73,34 @@ namespace retro::renderer
         case material_texture_type::ambient_occlusion: return "ambient_occlusion";
         }
         return "";
+    }
+
+    void material::serialize()
+    {
+        std::fstream material_file;
+        material_file.open("Assets/Serialized/Materials/mat.rmat",
+                           std::fstream::in | std::fstream::out | std::fstream::trunc);
+        material_file << "material {\n";
+        material_file << "  uuid: " + std::to_string(get_uuid().get()->get()) + "\n";
+        material_file << "  parameters {\n";
+        material_file << "      albedo: (" + std::to_string(m_material_specification.albedo.r) + ", " + std::to_string(
+                m_material_specification.albedo.
+                                         g) + ", " + std::to_string(m_material_specification.albedo.b) + ", " +
+            std::to_string(m_material_specification.albedo.a) + ")\n";
+        material_file << "      roughness: " + std::to_string(m_material_specification.roughness) + "\n";
+        material_file << "      metallic: " + std::to_string(m_material_specification.metallic) + "\n";
+        material_file << "      ambient_occlusion: " + std::to_string(m_material_specification.ambient_occlusion) + "\n";
+        material_file << "  }\n";
+        material_file << "  textures {\n";
+        for (auto& mat_text : m_material_specification.textures)
+        {
+            material_file << "      " + get_texture_type_to_string(mat_text.first) + " {\n";
+            material_file << "          enabled: " + std::to_string(mat_text.second.enabled) + "\n";
+            material_file << "      }\n";
+        }
+        material_file << "  }\n";
+        material_file << "}\n";
+        material_file.close();
     }
 
     shared<material> material::create()

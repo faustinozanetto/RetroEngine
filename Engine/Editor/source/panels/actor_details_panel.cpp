@@ -133,7 +133,7 @@ namespace retro::editor
                 // If type is directional, draw direction property.
                 if (light_renderer_component.type == light_type::directional)
                 {
-                    auto* directionalLight = dynamic_cast<renderer::directional_light*>(light_renderer_component.light.
+                    auto directionalLight = dynamic_cast<renderer::directional_light*>(light_renderer_component.light.
                         get());
                     editor_interface_utils::draw_property("Direction", directionalLight->get_direction(),
                                                           -2 * glm::pi<float>(), 2 * glm::pi<float>(), 0.1f);

@@ -199,12 +199,8 @@ namespace retro::renderer
         }
 
         const auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
-        {
-            logger::error(
-                "open_gl_frame_buffer::reconstruct | Frame buffer is not complete: " + std::to_string(fboStatus));
-        }
-
+        RETRO_CORE_ASSERT(fboStatus == GL_FRAMEBUFFER_COMPLETE, "open_gl_frame_buffer::reconstruct | Frame buffer is not complete: " + std::to_string(fboStatus));
+        
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }
