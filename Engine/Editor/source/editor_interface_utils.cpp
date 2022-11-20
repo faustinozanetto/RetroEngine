@@ -173,7 +173,7 @@ namespace retro::editor
         ImGui::PushItemWidth(-1);
 
         const std::string id = "##" + name;
-        if (ImGui::ColorEdit3(id.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs))
+        if (ImGui::ColorEdit3(id.c_str(), glm::value_ptr(value)))
         {
             modified = true;
         }
@@ -197,7 +197,7 @@ namespace retro::editor
         ImGui::NextColumn();
         
         const std::string id = "##" + name;
-        if (ImGui::ColorEdit4(id.c_str(), glm::value_ptr(value), ImGuiColorEditFlags_NoInputs))
+        if (ImGui::ColorEdit4(id.c_str(), glm::value_ptr(value)))
         {
             modified = true;
         }

@@ -40,6 +40,9 @@ namespace retro::renderer
 
         int get_uniform_location(const std::string& uniform) override;
 
+        /* Asset */
+        void serialize() override;
+
     private:
         static std::string get_shader_type_to_string(shader_type type);
         std::string parse_shader_contents_from_file(const std::string& shader_file_path);

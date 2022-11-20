@@ -13,6 +13,7 @@ namespace retro::renderer
 		void set_viewport_size(int width, int height);
 		void setup_projection_matrix();
 		void update_view_matrix();
+		void rotateHorizontally(const glm::vec2& delta);
 		const glm::vec3& calculate_position() const;
 
 		const glm::mat4& get_view_matrix() const { return m_view_matrix; }

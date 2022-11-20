@@ -208,6 +208,10 @@ namespace retro::renderer
         return m_height;
     }
 
+    void open_gl_texture::serialize()
+    {
+    }
+
     GLint open_gl_texture::convert_texture_filtering(texture_filtering texture_filtering)
     {
         GLint filter = 0;

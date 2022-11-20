@@ -4,7 +4,7 @@
 #include "core/input/input_manager.h"
 #include "core/scene/actor.h"
 #include "core/scene/components.h"
-#include "renderer/lighting/directional_light.h"
+#include "renderer/lighting/point_light.h"
 #include "renderer/materials/material.h"
 #include "renderer/renderer/renderer.h"
 #include "renderer/renderer/scene_renderer.h"
@@ -25,7 +25,8 @@ namespace retro::editor
         renderer::scene_renderer::set_scene(
             retro_application::get_application().get_scene_manager()->get_active_scene());
         renderer::scene_renderer::initialize(m_camera);
-   
+
+      
         {
             auto albedo = renderer::texture::create({
                 "Assets/Models/FlightHelmet/glTF/FlightHelmet_Materials_RubberWoodMat_BaseColor.png",
@@ -281,26 +282,102 @@ namespace retro::editor
             metals->add_component<name_component>("FighterHelmet Metals");
             metals->add_component<model_renderer_component>(
                 renderer::model::create("Assets/Models/FlightHelmet/glTF/MetalParts.fbx"));
-            metals->add_component<material_component>(metalsMat);
+            auto& mat = metals->add_component<material_component>(metalsMat);
             auto& transform = metals->add_component<transform_component>();
             transform.scale = glm::vec3(0.01f);
             transform.position = {0.0f, -0.4f, 9.0f};
-        } 
+            mat.material->serialize();
+        }
+
+        /*
+        
+        {
+            auto albedo = renderer::texture::create({
+                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_BaseColor.png",
+                renderer::texture_filtering::linear,
+                renderer::texture_wrapping::clamp_edge,
+            });
+            renderer::material_texture albedoTexture = {
+                albedo, true
+            };
+            auto normal = renderer::texture::create({
+                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_Normal.png",
+                renderer::texture_filtering::linear,
+                renderer::texture_wrapping::clamp_edge,
+            });
+            renderer::material_texture normalTexture = {
+                normal, true
+            };
+            auto metalRough = renderer::texture::create({
+                "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_MetallicRoughness.png",
+                renderer::texture_filtering::linear,
+                renderer::texture_wrapping::clamp_edge,
+            });
+            renderer::material_texture metalRoughTexture = {
+                metalRough, true
+            };
+            auto ao = renderer::texture::create({
+             "Assets/Models/SciFiHelmet/glTF/SciFiHelmet_AmbientOcclusion.png",
+             renderer::texture_filtering::linear,
+             renderer::texture_wrapping::clamp_edge,
+         });
+            renderer::material_texture aoTexture = {
+                ao, true
+            };
+            const std::map<renderer::material_texture_type, renderer::material_texture> textures = {
+                {renderer::material_texture_type::albedo, albedoTexture},
+                {renderer::material_texture_type::normal, normalTexture},
+                {renderer::material_texture_type::metallic, metalRoughTexture},
+                {renderer::material_texture_type::roughness, metalRoughTexture},
+                {renderer::material_texture_type::ambient_occlusion, aoTexture}
+            };
+            const renderer::material_specification materialSpecification = {
+                textures,
+                glm::vec4(1.0f, 0.23f, 0.5f, 1.0f),
+                1.0f,
+                1.0f,
+            };
+            auto metalsMat = renderer::material::create(
+                materialSpecification);
+            auto metals = retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                               create_actor();
+            metals->add_component<name_component>("SciFi Helmet");
+            metals->add_component<model_renderer_component>(
+                renderer::model::create("Assets/Models/SciFiHelmet/glTF/SciFiHelmet.gltf"));
+            metals->add_component<material_component>(metalsMat);
+            auto& transform = metals->add_component<transform_component>();
+        }
+     
+        /*
+        auto sponza = retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                             create_actor();
+        sponza->add_component<name_component>("Sponza");
+        sponza->add_component<model_renderer_component>(
+            renderer::model::create("Assets/Models/Sponza/Meshes/Sponza_Modular.FBX"));
+        sponza->add_component<transform_component>().scale = glm::vec3(0.01f);
+        */
         auto light = retro_application::get_application().get_scene_manager()->get_active_scene()->
                                                           create_actor();
         light->add_component<name_component>("Light");
-        auto directional_light = create_shared<renderer::directional_light>();
-        light->add_component<light_renderer_component>(directional_light, light_type::directional);
+        auto point_light = create_shared<renderer::point_light>();
+        light->add_component<light_renderer_component>(point_light, light_type::point);
         light->add_component<model_renderer_component>(
             renderer::model::create("Assets/Models/Cube.obj"));
-        light->add_component<transform_component>();
+        auto& light_trans = light->add_component<transform_component>();
+        light_trans.position = { 0.0f, 0.4f, 9.3f };
+        light_trans.scale = { 0.1f, 0.1f, 0.1f };
 
+        /*
         auto floor = retro_application::get_application().get_scene_manager()->get_active_scene()->
                                                           create_actor();
         floor->add_component<name_component>("Floor");
         floor->add_component<model_renderer_component>(
-            renderer::model::create("Assets/Models/Cube.obj"));
-        floor->add_component<transform_component>();
+            renderer::model::create("Assets/Models/Plane.obj"));
+        auto& floor_trans = floor->add_component<transform_component>();
+        floor_trans.position = { 0.0f, -0.4f, 4.25f };
+        floor_trans.scale = { 10.0f, 1.0f, 10.0f };
+        */
+        
     }
 
     void editor_layer::on_layer_unregistered()
@@ -325,7 +402,7 @@ namespace retro::editor
             }
         }
         */
-
+        
         auto cam_pos = m_camera->get_focal_point();
         if (input::input_manager::is_key_pressed(input::key::W))
             cam_pos += m_camera->get_forward_direction() * PanSpeed().first;
@@ -339,6 +416,11 @@ namespace retro::editor
             cam_pos += m_camera->get_up_direction() * PanSpeed().second;
         if (input::input_manager::is_key_pressed(input::key::E))
             cam_pos -= m_camera->get_up_direction() * PanSpeed().second;
+        if (input::input_manager::is_key_pressed(input::key::Z))
+            m_camera->rotateHorizontally({0.01f, 0.0f});
+        if (input::input_manager::is_key_pressed(input::key::X))
+            m_camera->rotateHorizontally({-0.01f, 0.0f});
+            
         m_camera->set_focal_point(cam_pos);
         renderer::scene_renderer::end_render();
     }

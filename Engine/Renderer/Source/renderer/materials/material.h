@@ -3,6 +3,7 @@
 #include <map>
 
 #include "core/base.h"
+#include "core/assets/asset.h"
 #include "renderer/shader/shader.h"
 #include "renderer/texture/texture.h"
 
@@ -57,7 +58,7 @@ namespace retro::renderer
         }
     };
 
-    class material : public graphics_object
+    class material : public graphics_object, asset
     {
     public:
         /* Constructor & Destructor */
@@ -80,6 +81,9 @@ namespace retro::renderer
 
         static std::string get_texture_type_to_string(material_texture_type material_texture_type);
 
+        /* Asset */
+        void serialize() override;
+        
         /* Instantiate */
         static shared<material> create();
         static shared<material> create(const material_specification& material_specification);

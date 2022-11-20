@@ -115,6 +115,10 @@ namespace retro::renderer
         return location;
     }
 
+    void open_gl_shader::serialize()
+    {
+    }
+
     std::string open_gl_shader::get_shader_type_to_string(shader_type type)
     {
         switch (type)

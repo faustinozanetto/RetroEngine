@@ -28,6 +28,9 @@ namespace retro::renderer
 
 		std::vector<renderable_texture>
 		parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
+
+		/* Asset */
+		void serialize() override;
 	private:
 		bool load_model_from_path(const std::string& path);
 		bool parse_model_node(const aiNode* node);

@@ -16,15 +16,6 @@ namespace retro
 
 	void assets_manager::shutdown()
 	{
-		for (auto& entry : m_assets | std::views::values)
-		{
-			for (auto& asset : entry | std::views::values)
-			{
-				delete asset.get();
-			}
-			entry.clear();
-		}
-		m_assets.clear();
 	}
 
 	void assets_manager::register_asset(const shared<asset>& asset)

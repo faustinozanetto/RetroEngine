@@ -1,0 +1,26 @@
+material {
+  uuid: 14831295036629267997
+  parameters {
+      albedo: (1.000000, 0.230000, 0.500000, 1.000000)
+      roughness: 1.000000
+      metallic: 1.000000
+      ambient_occlusion: 0.000000
+  }
+  textures {
+      albedo {
+          enabled: 1
+      }
+      normal {
+          enabled: 1
+      }
+      roughness {
+          enabled: 1
+      }
+      metallic {
+          enabled: 1
+      }
+      ambient_occlusion {
+          enabled: 1
+      }
+  }
+}
