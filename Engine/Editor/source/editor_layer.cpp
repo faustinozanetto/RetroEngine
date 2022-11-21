@@ -4,6 +4,7 @@
 #include "core/input/input_manager.h"
 #include "core/scene/actor.h"
 #include "core/scene/components.h"
+#include "renderer/lighting/directional_light.h"
 #include "renderer/lighting/point_light.h"
 #include "renderer/materials/material.h"
 #include "renderer/renderer/renderer.h"
@@ -26,7 +27,7 @@ namespace retro::editor
             retro_application::get_application().get_scene_manager()->get_active_scene());
         renderer::scene_renderer::initialize(m_camera);
 
-      
+
         {
             auto albedo = renderer::texture::create({
                 "Assets/Models/FlightHelmet/glTF/FlightHelmet_Materials_RubberWoodMat_BaseColor.png",
@@ -356,16 +357,31 @@ namespace retro::editor
             renderer::model::create("Assets/Models/Sponza/Meshes/Sponza_Modular.FBX"));
         sponza->add_component<transform_component>().scale = glm::vec3(0.01f);
         */
-        auto light = retro_application::get_application().get_scene_manager()->get_active_scene()->
-                                                          create_actor();
-        light->add_component<name_component>("Light");
-        auto point_light = create_shared<renderer::point_light>();
-        light->add_component<light_renderer_component>(point_light, light_type::point);
-        light->add_component<model_renderer_component>(
-            renderer::model::create("Assets/Models/Cube.obj"));
-        auto& light_trans = light->add_component<transform_component>();
-        light_trans.position = { 0.0f, 0.4f, 9.3f };
-        light_trans.scale = { 0.1f, 0.1f, 0.1f };
+        {
+            auto light = retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                              create_actor();
+            light->add_component<name_component>("Point Light");
+            auto point_light = create_shared<renderer::point_light>();
+            light->add_component<light_renderer_component>(point_light, light_type::point);
+            light->add_component<model_renderer_component>(
+                renderer::model::create("Assets/Models/Cube.obj"));
+            auto& light_trans = light->add_component<transform_component>();
+            light_trans.position = {0.0f, 0.4f, 9.3f};
+            light_trans.scale = {0.1f, 0.1f, 0.1f};
+        }
+        {
+            auto light = retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                              create_actor();
+            light->add_component<name_component>("Directional Light");
+            auto dir_light = create_shared<renderer::directional_light>();
+            light->add_component<light_renderer_component>(dir_light, light_type::directional);
+            light->add_component<model_renderer_component>(
+                renderer::model::create("Assets/Models/Cube.obj"));
+            auto& light_trans = light->add_component<transform_component>();
+            light_trans.position = {0.0f, 0.4f, 9.3f};
+            light_trans.scale = {0.1f, 0.1f, 0.1f};
+        }
+        m_camera->set_position({0.0f, 0.0f, 10.0f});
 
         /*
         auto floor = retro_application::get_application().get_scene_manager()->get_active_scene()->
@@ -377,7 +393,6 @@ namespace retro::editor
         floor_trans.position = { 0.0f, -0.4f, 4.25f };
         floor_trans.scale = { 10.0f, 1.0f, 10.0f };
         */
-        
     }
 
     void editor_layer::on_layer_unregistered()
@@ -389,39 +404,40 @@ namespace retro::editor
         renderer::scene_renderer::begin_render();
 
         float time = renderer::renderer::get_time();
-      //  auto registry = retro_application::get_application().get_scene_manager()->get_active_scene()->
+        //  auto registry = retro_application::get_application().get_scene_manager()->get_active_scene()->
         //                                                     get_actor_registry().view<transform_component>();
-/*
-        for (auto& actor : registry)
-        {
-            if (!retro_application::get_application().get_scene_manager()->get_active_scene()->
-                                                      get_actor_registry().has<light_renderer_component>(actor))
-            {
-                auto& transform = registry.get<transform_component>(actor);
-                transform.rotation = {0.0f, glm::sin(time) * 2.0f, 0.0f};
-            }
-        }
-        */
-        
-        auto cam_pos = m_camera->get_focal_point();
+        /*
+                for (auto& actor : registry)
+                {
+                    if (!retro_application::get_application().get_scene_manager()->get_active_scene()->
+                                                              get_actor_registry().has<light_renderer_component>(actor))
+                    {
+                        auto& transform = registry.get<transform_component>(actor);
+                        transform.rotation = {0.0f, glm::sin(time) * 2.0f, 0.0f};
+                    }
+                }
+                */
+
+
+        float cam_mov_amount = 0.01f;
         if (input::input_manager::is_key_pressed(input::key::W))
-            cam_pos += m_camera->get_forward_direction() * PanSpeed().first;
+            m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, 0, -1),
+                           cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::S))
-            cam_pos -= m_camera->get_forward_direction() * PanSpeed().first;
+            m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, 0, 1),
+                          cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::A))
-            cam_pos -= m_camera->get_right_direction() * PanSpeed().second;
+            m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(-1, 0, 0),
+                              cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::D))
-            cam_pos += m_camera->get_right_direction() * PanSpeed().second;
+            m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(1, 0, 0),
+                           cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::Q))
-            cam_pos += m_camera->get_up_direction() * PanSpeed().second;
+            m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, 1, 0),
+                                    cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::E))
-            cam_pos -= m_camera->get_up_direction() * PanSpeed().second;
-        if (input::input_manager::is_key_pressed(input::key::Z))
-            m_camera->rotateHorizontally({0.01f, 0.0f});
-        if (input::input_manager::is_key_pressed(input::key::X))
-            m_camera->rotateHorizontally({-0.01f, 0.0f});
-            
-        m_camera->set_focal_point(cam_pos);
+            m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, -1, 0),
+                                     cam_mov_amount);
         renderer::scene_renderer::end_render();
     }
 

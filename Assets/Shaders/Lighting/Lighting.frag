@@ -129,10 +129,19 @@ vec3 ACESToneMap(vec3 color)
     return clamp(m2 * (a / b), 0.0, 1.0);
 }
 
+float GetSquareFalloffAttenuation(vec3 pos_to_light, float light_inv_radius)
+{
+    float distance_square = dot(pos_to_light, pos_to_light);
+    float factor          = distance_square * light_inv_radius * light_inv_radius;
+    float smooth_factor   = max(1.0 - factor * factor, 0.0);
+
+    return (smooth_factor * smooth_factor) / max(distance_square, 1e-5);
+}
+
 vec3 CalculatePointLightPBR(PointLight light, vec3 FragPos, vec3 CamPos, vec3 Albedo, vec3 Normal, float Metallic, float Roughness) {
     //---------------------------------------> View direction (V)
     vec3 V = normalize(CamPos - FragPos);
-    vec3 L = normalize(light.position.rgb - FragPos);
+    vec3 L = normalize(light.position - FragPos);
     vec3 H = normalize(V + L);
     //----------------------------------------> Fresnel
     vec3 F0 = vec3(0.04);
@@ -152,7 +161,35 @@ vec3 CalculatePointLightPBR(PointLight light, vec3 FragPos, vec3 CamPos, vec3 Al
     vec3 kD = 1.0 - kS;
     kD *= 1.0 - Metallic;
 
-    vec3 Radiance = light.color.rgb * 1.0;
+    vec3 Radiance = light.color * light.intensity;
+
+    return (kD * Albedo / PI + specular) * Radiance * NdotL;
+}
+
+vec3 CalculateDirectionalLightPBR(DirectionalLight light, vec3 FragPos, vec3 CamPos, vec3 Albedo, vec3 Normal, float Metallic, float Roughness) {
+    //---------------------------------------> View direction (V)
+    vec3 V = normalize(CamPos - FragPos);
+    vec3 L = -light.direction;
+    vec3 H = normalize(V + L);
+    //----------------------------------------> Fresnel
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, Albedo, Metallic);
+    //----------------------------------------> Fresnel
+    vec3 F = FresnelSchlickRoughness(max(dot(Normal, V), 0.0), F0, Roughness);
+    //----------------------------------------> Cook-Torrance BRDF
+    float NDF = DistributionGGX(Normal, H, Roughness);
+    float G   = GeometrySmith(Normal, V, L, Roughness);
+
+    float NdotL    = max(dot(Normal, L), 0.0);
+    vec3  num      = NDF * G * F;
+    float denom    = 4.0 * max(dot(Normal, V), 0.0) * NdotL;
+    vec3  specular = num / max(denom, 1e-5);
+
+    vec3 kS = F;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - Metallic;
+
+    vec3 Radiance = light.color * light.intensity;
 
     return (kD * Albedo / PI + specular) * Radiance * NdotL;
 }
@@ -194,8 +231,9 @@ void main() {
 
     vec3 Lighting = vec3(0);
     for (uint i = 0; i < 1; i++){
-        Lighting += CalculatePointLightPBR(lights.pointLight, FragPos, CamPos, Albedo, N, Metallic, Roughness);
+       // Lighting += CalculatePointLightPBR(lights.pointLight, FragPos, CamPos, Albedo, N, Metallic, Roughness);
     }
+    Lighting += CalculateDirectionalLightPBR(lights.directionalLight, FragPos, CamPos, Albedo, N, Metallic, Roughness);
     // Indirect IBL Lighting
     vec3 IndirectLighthing = CalculateIndirectLighting(FragPos, CamPos, Albedo, N, Metallic, Roughness, AO);
     vec3 color = IndirectLighthing + Lighting;
