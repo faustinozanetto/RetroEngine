@@ -326,7 +326,7 @@ namespace retro::renderer
 
     void scene_renderer::setup_environment()
     {
-        const shared<texture_cubemap> sky_cubemap = texture_cubemap::create({"Assets/Textures/HDR/garden_nook_8k.hdr",
+        const shared<texture_cubemap> sky_cubemap = texture_cubemap::create({"Assets/Textures/HDR/drakensberg_solitary_mountain_4k.hdr",
                                                                              texture_filtering::linear,
                                                                              texture_wrapping::clamp_edge});
         s_scene_renderer_data.m_lighting_environment = lighting_environment::create({sky_cubemap, 1024, 512, 512, 512});
