@@ -27,18 +27,17 @@ namespace retro::renderer
 
     struct point_light_data
     {
-        glm::vec4 position;
-        glm::vec4 color;
-        float constant;
-        float linear;
-        float quadratic;
+        glm::vec3 position;
+        glm::vec3 color;
+        float intensity;
+        float radius;
     };
 
     struct directional_light_data
     {
-        glm::vec4 direction;
-        glm::vec4 color;
-        glm::vec4 position;
+        glm::vec3 direction;
+        glm::vec3 color;
+        float intensity;
     };
 
     struct shadow_data

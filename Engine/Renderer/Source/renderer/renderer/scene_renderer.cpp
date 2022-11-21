@@ -34,10 +34,11 @@ namespace retro::renderer
     void scene_renderer::begin_render()
     {
         // Update camera UBO.
-        s_scene_renderer_data.m_camera_data.u_ViewProjectionMatrix = s_scene_renderer_data.m_camera->get_view_projection();
+        s_scene_renderer_data.m_camera->update();
         s_scene_renderer_data.m_camera_data.u_ViewMatrix = s_scene_renderer_data.m_camera->get_view_matrix();
         s_scene_renderer_data.m_camera_data.u_ProjectionMatrix = s_scene_renderer_data.m_camera->get_projection_matrix();
-        s_scene_renderer_data.m_camera_data.u_Position = s_scene_renderer_data.m_camera->calculate_position();
+        s_scene_renderer_data.m_camera_data.u_Position = s_scene_renderer_data.m_camera->get_position();
+        s_scene_renderer_data.m_camera_data.u_ViewProjectionMatrix = s_scene_renderer_data.m_camera->get_view_projection();
         s_scene_renderer_data.m_camera_ubo->set_data(&s_scene_renderer_data.m_camera_data, sizeof(camera_data));
 
         // Update lights UBO
@@ -48,19 +49,17 @@ namespace retro::renderer
             if (light.type == light_type::point)
             {
                 const auto point_light = dynamic_cast<retro::renderer::point_light *>(light.light.get());
-                s_scene_renderer_data.m_lights_data.pointLight.color = glm::vec4(point_light->get_color(), 1);
-                s_scene_renderer_data.m_lights_data.pointLight.linear = point_light->get_linear();
-                s_scene_renderer_data.m_lights_data.pointLight.constant = point_light->get_constant();
-                s_scene_renderer_data.m_lights_data.pointLight.quadratic = point_light->get_quadratic();
-                s_scene_renderer_data.m_lights_data.pointLight.position = glm::vec4(transform.position, 1);
-                ;
+                s_scene_renderer_data.m_lights_data.pointLight.position = transform.position;
+                s_scene_renderer_data.m_lights_data.pointLight.color = point_light->get_color();
+                s_scene_renderer_data.m_lights_data.pointLight.intensity = point_light->get_intensity();
+                s_scene_renderer_data.m_lights_data.pointLight.radius = point_light->get_radius();
             }
             else if (light.type == light_type::directional)
             {
                 const auto directional_light = dynamic_cast<retro::renderer::directional_light *>(light.light.get());
-                s_scene_renderer_data.m_lights_data.directional_light.color = glm::vec4(directional_light->get_color(), 0);
-                s_scene_renderer_data.m_lights_data.directional_light.direction = glm::vec4(directional_light->get_direction(), 0);
-                s_scene_renderer_data.m_lights_data.directional_light.position = glm::vec4(transform.position, 0);
+                s_scene_renderer_data.m_lights_data.directional_light.direction = directional_light->get_direction();
+                s_scene_renderer_data.m_lights_data.directional_light.color = directional_light->get_color();
+                s_scene_renderer_data.m_lights_data.directional_light.intensity = directional_light->get_intensity();
 
                 s_scene_renderer_data.light_view = glm::lookAt(
                     -(glm::normalize(directional_light->get_direction()) * s_scene_renderer_data.light_far /

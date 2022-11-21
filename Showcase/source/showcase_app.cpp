@@ -164,7 +164,7 @@ public:
 		auto point_light = retro::create_shared<retro::renderer::point_light>();
 		light->add_component<retro::light_renderer_component>(point_light, retro::light_type::point);
 		m_camera = retro::create_shared<retro::renderer::camera>(50.0f, 0.01f, 2000.0f);
-		m_camera->set_focal_point({ -8.235f, 0.020f, 1.0f });
+	
 		retro::renderer::scene_renderer::set_scene(m_Scene);
 		retro::renderer::scene_renderer::initialize(m_camera);
 	}
@@ -179,7 +179,7 @@ public:
 
 	void on_layer_updated() override
 	{
-		m_camera->set_focal_point(m_camera_pos);
+
 		m_camera->set_fov(m_fov);
 		retro::renderer::scene_renderer::begin_render();
 

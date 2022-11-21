@@ -17,7 +17,7 @@ namespace retro::editor
 
     void camera_panel::on_render_panel()
     {
-        const auto& camera = renderer::scene_renderer::get_camera();
+        auto& camera = renderer::scene_renderer::get_camera();
         ImGui::Begin("Camera");
         if (editor_interface_utils::draw_property("Field of View", m_camera_fov, 1.0f, 120.0f, 0.1f))
         {
@@ -31,6 +31,7 @@ namespace retro::editor
         {
             camera->set_far_plane(m_far_plane);
         }
+        editor_interface_utils::draw_property("Position", camera->get_position(), -100.0f, 100.0f, 0.1f);
         ImGui::End();
     }
 

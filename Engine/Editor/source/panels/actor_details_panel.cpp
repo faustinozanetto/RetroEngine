@@ -10,6 +10,7 @@
 #include "core/scene/scene.h"
 #include "core/scene/actor.h"
 #include "renderer/lighting/directional_light.h"
+#include "renderer/lighting/point_light.h"
 
 namespace retro::editor
 {
@@ -130,13 +131,23 @@ namespace retro::editor
                     retro::light_renderer_component>(
                     editor_main_interface::s_selected_actor);
                 editor_interface_utils::draw_property("Color", light_renderer_component.light->get_color(), true);
+                editor_interface_utils::draw_property("Intensity", light_renderer_component.light->get_intensity(), 0.0f, 10.0f, 0.01f);
+
                 // If type is directional, draw direction property.
                 if (light_renderer_component.type == light_type::directional)
                 {
-                    auto directionalLight = dynamic_cast<renderer::directional_light*>(light_renderer_component.light.
+                    auto* directionalLight = dynamic_cast<renderer::directional_light*>(light_renderer_component.light.
                         get());
-                    editor_interface_utils::draw_property("Direction", directionalLight->get_direction(),
-                                                          -2 * glm::pi<float>(), 2 * glm::pi<float>(), 0.1f);
+                    if (editor_interface_utils::draw_property("Direction", m_dir_light,
+                                                          -180.0, 180.0, 0.1f))
+                    {
+                        directionalLight->set_direction(m_dir_light.x, m_dir_light.y);
+                    }
+                } else if (light_renderer_component.type == light_type::point)
+                {
+                    auto* point_light = dynamic_cast<renderer::point_light*>(light_renderer_component.light.
+                       get());
+                    editor_interface_utils::draw_property("Radius", point_light->get_radius(), 0.0f, 10.0f, 0.01f);
                 }
             }
             ImGui::Separator();

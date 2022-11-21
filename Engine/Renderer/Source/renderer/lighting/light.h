@@ -13,11 +13,10 @@ namespace retro::renderer
 		glm::vec3& get_color() { return m_color; }
 		void set_color(const glm::vec3& color) { m_color = color; }
 
-		const glm::vec3& get_position() const { return m_position; }
-		void set_position(const glm::vec3& position) { m_position = position; }
-
+		float& get_intensity() { return m_intensity; }
+		void set_intensity(float intensity) { m_intensity = intensity; }
 	private:
 		glm::vec3 m_color = {0.8f, 0.8f, 0.8f};
-		glm::vec3 m_position = {0.0f, 0.0f, 0.0f};
+		float m_intensity = 1.0f;
 	};
 }
