@@ -130,7 +130,11 @@ namespace retro::editor
                 auto& light_renderer_component = active_scene->get_actor_registry().get<
                     retro::light_renderer_component>(
                     editor_main_interface::s_selected_actor);
-                editor_interface_utils::draw_property("Color", light_renderer_component.light->get_color(), true);
+                auto light_color = light_renderer_component.light->get_color();
+                if (editor_interface_utils::draw_property("Color", light_color, true))
+                {
+                    light_renderer_component.light->set_color(light_color);
+                }
                 editor_interface_utils::draw_property("Intensity", light_renderer_component.light->get_intensity(), 0.0f, 10.0f, 0.01f);
 
                 // If type is directional, draw direction property.
