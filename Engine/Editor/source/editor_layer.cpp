@@ -425,19 +425,59 @@ namespace retro::editor
                            cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::S))
             m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, 0, 1),
-                          cam_mov_amount);
+                           cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::A))
             m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(-1, 0, 0),
-                              cam_mov_amount);
+                           cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::D))
             m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(1, 0, 0),
                            cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::Q))
             m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, 1, 0),
-                                    cam_mov_amount);
+                           cam_mov_amount);
         if (input::input_manager::is_key_pressed(input::key::E))
             m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, -1, 0),
-                                     cam_mov_amount);
+                           cam_mov_amount);
+
+        if (input::input_manager::is_mouse_button_pressed(input::key::ButtonRight))
+        {
+            if (!m_is_mouse_move)
+            {
+                m_mouse_pressed_position = input::input_manager::get_mouse_location();
+            }
+            m_is_mouse_move = true;
+        }
+        else
+        {
+            m_is_mouse_move = false;
+        }
+        if (m_is_mouse_move)
+        {
+            auto mouse_pos = input::input_manager::get_mouse_location();
+            auto delta_pos = mouse_pos - m_mouse_pressed_position;
+
+            auto rot_y = delta_pos.x != 0.0f;
+            auto rot_x = delta_pos.y != 0.0f;
+
+            /* pitch */
+            if (rot_x)
+            {
+                m_camera->set_orientation(
+                    glm::angleAxis(glm::radians(delta_pos.y * 0.2f), glm::vec3(1, 0, 0)) * m_camera->get_orientation());
+            }
+
+            /* yaw */
+            if (rot_y)
+            {
+                m_camera->set_orientation(
+                    m_camera->get_orientation() * glm::angleAxis(glm::radians(delta_pos.x * 0.2f), glm::vec3(0, 1, 0)));
+            }
+
+            if (rot_x || rot_y)
+            {
+                m_mouse_pressed_position = input::input_manager::get_mouse_location();
+            }
+        }
         renderer::scene_renderer::end_render();
     }
 

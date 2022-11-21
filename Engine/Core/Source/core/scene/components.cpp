@@ -64,13 +64,12 @@ namespace retro
 			const auto point_light = reinterpret_cast<renderer::point_light*>(other.light.get());
 			light = create_shared<renderer::point_light>();
 			light->set_color(point_light->get_color());
-			light->set_position(point_light->get_position());
+			point_light->set_position(point_light->get_position());
 		} else if (type == light_type::directional)
 		{
 			const auto directional_light = reinterpret_cast<renderer::directional_light*>(other.light.get());
 			light = create_shared<renderer::directional_light>();
 			light->set_color(directional_light->get_color());
-			light->set_position(directional_light->get_position());
 		}
 	}
 
