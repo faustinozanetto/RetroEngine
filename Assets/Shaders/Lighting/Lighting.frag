@@ -169,7 +169,7 @@ vec3 CalculatePointLightPBR(PointLight light, vec3 FragPos, vec3 CamPos, vec3 Al
 vec3 CalculateDirectionalLightPBR(DirectionalLight light, vec3 FragPos, vec3 CamPos, vec3 Albedo, vec3 Normal, float Metallic, float Roughness) {
     //---------------------------------------> View direction (V)
     vec3 V = normalize(CamPos - FragPos);
-    vec3 L = -light.direction;
+    vec3 L = normalize(-light.direction);
     vec3 H = normalize(V + L);
     //----------------------------------------> Fresnel
     vec3 F0 = vec3(0.04);
