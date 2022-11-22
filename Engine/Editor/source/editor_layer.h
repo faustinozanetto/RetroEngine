@@ -21,5 +21,7 @@ namespace retro::editor
         void initialize_editor_scene();
         
         shared<renderer::camera> m_camera;
+        bool m_is_mouse_move = false;
+        glm::vec2 m_mouse_pressed_position;
     };
 }

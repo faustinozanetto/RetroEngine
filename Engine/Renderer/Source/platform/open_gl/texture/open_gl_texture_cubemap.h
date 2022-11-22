@@ -18,6 +18,9 @@ namespace retro::renderer
 		void bind(int slot) override;
 		void un_bind() override;
 
+		/* Asset */
+		void serialize() override;
+
 	protected:
 		texture_specification m_texture_specification;
 		int m_MipMapLevels;

@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "../editor_interface_utils.h"
+#include "../editor_main_interface.h"
 #include "renderer/renderer/scene_renderer.h"
 
 namespace retro::editor
@@ -16,7 +17,7 @@ namespace retro::editor
 
     void camera_panel::on_render_panel()
     {
-        const auto& camera = renderer::scene_renderer::get_camera();
+        auto& camera = renderer::scene_renderer::get_camera();
         ImGui::Begin("Camera");
         if (editor_interface_utils::draw_property("Field of View", m_camera_fov, 1.0f, 120.0f, 0.1f))
         {

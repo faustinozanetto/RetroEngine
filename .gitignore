@@ -2,6 +2,7 @@
 **/Binaries
 **/Build
 **/Assets/Models
+**/Assets/Textures/HDR
 *.log
 *.vcxproj
 *.vcxproj.user
@@ -13,3 +14,4 @@
 *.sln
 *.csproj
 *.user
+*.hdr

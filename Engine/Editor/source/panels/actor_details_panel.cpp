@@ -9,6 +9,8 @@
 #include "core/scene/components.h"
 #include "core/scene/scene.h"
 #include "core/scene/actor.h"
+#include "renderer/lighting/directional_light.h"
+#include "renderer/lighting/point_light.h"
 
 namespace retro::editor
 {
@@ -77,39 +79,24 @@ namespace retro::editor
                     0.0f, 1.0f, 0.01f);
                 for (auto& texture_type : material_component.material->get_material_specification().textures)
                 {
-                    auto label = renderer::material::get_texture_type_to_string(texture_type.first);
-                    ImGui::PushID(label.c_str());
-                    ImGui::Columns(2);
-                    ImGui::SetColumnWidth(0, 100.0f);
-                    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 5});
-                    ImGui::AlignTextToFramePadding();
-                    ImGui::Text(label.c_str());
-                    ImGui::PopStyleVar();
-                    ImGui::NextColumn();
-
-                    const std::string id = "Enabled";
-                    ImGui::Checkbox(id.c_str(), &texture_type.second.enabled);
-
-                    ImGui::Columns(1);
-                    ImGui::PopID();
-
-                    if (ImGui::ImageButton(
-                        reinterpret_cast<ImTextureID>(texture_type.second.mat_texture->get_object_handle()),
-                        {64.0f, 64.0f},
-                        ImVec2(0.0f, 1.0f),
-                        ImVec2(1.0f, 0.0f)))
+                    if (texture_type.second.mat_texture)
                     {
-                    }
+                        auto label = renderer::material::get_texture_type_to_string(texture_type.first);
+                        ImGui::PushID(label.c_str());
+                        ImGui::Columns(2);
+                        ImGui::SetColumnWidth(0, 100.0f);
+                        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 5});
+                        ImGui::AlignTextToFramePadding();
+                        ImGui::Text(label.c_str());
+                        ImGui::PopStyleVar();
+                        ImGui::NextColumn();
 
-                    /*
-                    if (ImGui::TreeNode(reinterpret_cast<void*>(texture_type.first),
-                                        "Texture %s",
-                                        renderer::material::get_texture_type_to_string(texture_type.first).c_str()))
-                    {
-                        editor_interface_utils::draw_property(
-                            "Enable",
-                            texture_type.second.enabled);
-                        // Image button.
+                        const std::string id = "Enabled";
+                        ImGui::Checkbox(id.c_str(), &texture_type.second.enabled);
+
+                        ImGui::Columns(1);
+                        ImGui::PopID();
+
                         if (ImGui::ImageButton(
                             reinterpret_cast<ImTextureID>(texture_type.second.mat_texture->get_object_handle()),
                             {64.0f, 64.0f},
@@ -117,11 +104,61 @@ namespace retro::editor
                             ImVec2(1.0f, 0.0f)))
                         {
                         }
-                        ImGui::TreePop();
+
+                        /*
+                        if (ImGui::TreeNode(reinterpret_cast<void*>(texture_type.first),
+                                            "Texture %s",
+                                            renderer::material::get_texture_type_to_string(texture_type.first).c_str()))
+                        {
+                            editor_interface_utils::draw_property(
+                                "Enable",
+                                texture_type.second.enabled);
+                            // Image button.
+                            if (ImGui::ImageButton(
+                                reinterpret_cast<ImTextureID>(texture_type.second.mat_texture->get_object_handle()),
+                                {64.0f, 64.0f},
+                                ImVec2(0.0f, 1.0f),
+                                ImVec2(1.0f, 0.0f)))
+                            {
+                            }
+                            ImGui::TreePop();
+                        }
+                        */
                     }
-                    */
                 }
             }
+            if (active_scene->get_actor_registry().has<light_renderer_component>(
+                editor_main_interface::s_selected_actor))
+            {
+                auto& light_renderer_component = active_scene->get_actor_registry().get<
+                    retro::light_renderer_component>(
+                    editor_main_interface::s_selected_actor);
+                auto& light_color = light_renderer_component.light->get_color();
+                if (editor_interface_utils::draw_property("Color", light_color, true))
+                {
+                    light_renderer_component.light->set_color(light_color);
+                }
+                editor_interface_utils::draw_property("Intensity", light_renderer_component.light->get_intensity(), 0.0f, 10.0f, 0.01f);
+
+                // If type is directional, draw direction property.
+                if (light_renderer_component.type == light_type::directional)
+                {
+                    auto* directionalLight = dynamic_cast<renderer::directional_light*>(light_renderer_component.light.
+                        get());
+                    if (editor_interface_utils::draw_property("Direction", m_dir_light,
+                                                          -180.0, 180.0, 0.1f))
+                    {
+                        directionalLight->set_direction(m_dir_light.x, m_dir_light.y);
+                        logger::info("dir: " + std::to_string(directionalLight->get_direction().x) + " " + std::to_string(directionalLight->get_direction().y));
+                    }
+                } else if (light_renderer_component.type == light_type::point)
+                {
+                    auto* point_light = dynamic_cast<renderer::point_light*>(light_renderer_component.light.
+                       get());
+                    editor_interface_utils::draw_property("Radius", point_light->get_radius(), 0.0f, 10.0f, 0.01f);
+                }
+            }
+            ImGui::Separator();
         }
         else
         {

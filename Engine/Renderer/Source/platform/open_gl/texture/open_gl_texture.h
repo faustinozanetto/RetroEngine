@@ -28,6 +28,9 @@ namespace retro::renderer
 		int get_width() override;
 		int get_height() override;
 
+		/* Asset */
+		void serialize() override;
+
 		/* Converts the enum value to the matching OpenGL enum. */
 		static GLint convert_texture_filtering(texture_filtering texture_filtering);
 		/* Converts the enum value to the matching OpenGL enum. */

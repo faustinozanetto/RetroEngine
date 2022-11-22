@@ -49,9 +49,6 @@ void main() {
     }
     gAlbedo = albedo;
 
-    if (gAlbedo.a < 0.05)
-    discard;
-
     /* Normal */
     vec3 normal = vec3(1.0);
     if (material.hasNormalMap == 1) {
@@ -66,7 +63,7 @@ void main() {
         roughness = texture(uRoughnessMap, geometryInput.texCoords).g;
     } else {
         roughness = material.roughness;
-	}
+    }
 
     /* Metallic */
     float metallic;

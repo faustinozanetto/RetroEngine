@@ -15,7 +15,9 @@ namespace retro::renderer
 	public:
 		/* Constructor & Destructor */
 		model(const std::string& model_path);
-		~model() override;
+		~model() override = default;
+		model(const model&) = delete;
+		model& operator=(const model&) = delete;
 
 		/* Instantiate */
 		static shared<model> create(const std::string& model_path);
@@ -26,6 +28,9 @@ namespace retro::renderer
 
 		std::vector<renderable_texture>
 		parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
+
+		/* Asset */
+		void serialize() override;
 	private:
 		bool load_model_from_path(const std::string& path);
 		bool parse_model_node(const aiNode* node);

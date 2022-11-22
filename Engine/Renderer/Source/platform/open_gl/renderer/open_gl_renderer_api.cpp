@@ -71,13 +71,13 @@ namespace retro::renderer
 	}
 
 	void OpenGLMessageCallback(
-		unsigned source,
-		unsigned type,
-		unsigned id,
-		unsigned severity,
-		int length,
-		const char* message,
-		const void* userParam)
+			unsigned source,
+			unsigned type,
+			unsigned id,
+			unsigned severity,
+			int length,
+			const char *message,
+			const void *userParam)
 	{
 		logger::error("Message: " + std::string(message));
 		logger::error("Type: " + GetStringForType(type));
@@ -101,8 +101,14 @@ namespace retro::renderer
 		glDebugMessageCallback(OpenGLMessageCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
+		// OpenGL.
+		glEnable(GL_BLEND);
+	//	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,GL_ONE,GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS); 
+		// glDepthFunc(GL_LESS);
+		// glEnable(GL_CULL_FACE);
+		// glEnable(GL_LINE_SMOOTH);
 		return true;
 	}
 
@@ -160,7 +166,8 @@ namespace retro::renderer
 	{
 		switch (renderer_state)
 		{
-		case renderer_state::depth_test: return GL_DEPTH_TEST;
+		case renderer_state::depth_test:
+			return GL_DEPTH_TEST;
 		}
 		RETRO_CORE_ASSERT(false, "open_gl_renderer_api::get_renderer_state_to_open_gl | Unknown render state");
 		return 0;

@@ -4,16 +4,16 @@
 
 namespace retro::renderer
 {
-	class directional_light : public light
-	{
-	public:
-		directional_light();
-		~directional_light() = default;
+    class directional_light : public light
+    {
+    public:
+        directional_light();
+        ~directional_light() = default;
 
-		const glm::vec3& get_direction() const { return m_direction; }
-		void set_direction(const glm::vec3& direction) { m_direction = direction; }
+        glm::vec3& get_direction() { return m_direction; }
+        void set_direction(float azimuth, float elevation);
 
-	private:
-		glm::vec3 m_direction;
-	};
+    private:
+        glm::vec3 m_direction = {0.0f, 0.0f, 0.0};
+    };
 }

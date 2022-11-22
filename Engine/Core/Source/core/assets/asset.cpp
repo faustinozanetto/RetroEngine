@@ -39,9 +39,4 @@ namespace retro
 		}
 		return "";
 	}
-
-	shared<asset> asset::create(asset_type asset_type)
-	{
-		return create_shared<asset>(asset_type);
-	}
 }

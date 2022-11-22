@@ -14,7 +14,7 @@ namespace retro
 
 		/* Methods */
 		void shutdown() override;
-		void register_asset(shared<asset> asset);
+		void register_asset(const shared<asset>& asset);
 
 		const std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>> &get_assets() const
 		{

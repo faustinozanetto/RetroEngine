@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <glm/glm.hpp>
+
 #include "editor_panel.h"
 
 namespace retro::editor
@@ -11,5 +13,7 @@ namespace retro::editor
 
         void on_update_panel(float time) override;
         void on_render_panel() override;
+    private:
+        glm::vec2 m_dir_light = {0.0f, 0.0f};
     };
 }
