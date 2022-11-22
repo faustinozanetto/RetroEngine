@@ -29,5 +29,6 @@ namespace retro::renderer
 
 		/* Instantiate */
 		static shared<shader> create(const std::string& vertex_path, const std::string& fragment_path);
+		static shared<shader> create(const std::string& vertex_path, const std::string& fragment_path, const std::string& geometry_path);
 	};
 }

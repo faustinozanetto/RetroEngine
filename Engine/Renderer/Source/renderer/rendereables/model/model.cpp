@@ -14,10 +14,6 @@ namespace retro::renderer
         logger::line();
     }
 
-    model::~model()
-    {
-    }
-
     const std::vector<shared<renderable>>& model::get_model_renderables()
     {
         return m_renderables;
@@ -46,7 +42,7 @@ namespace retro::renderer
             return false;
         }
         // Retrieve the directory path of the filepath.
-        m_directory_path = m_model_path.substr(0, m_model_path.find_last_of('\\'));
+        m_directory_path = m_model_path.substr(0, m_model_path.find_last_of('/'));
         // Process the root node recursively.
         return parse_model_node(m_assimp_scene->mRootNode);
     }
@@ -134,17 +130,22 @@ namespace retro::renderer
             std::vector<renderable_texture> diffuseMaps = parse_material_texture(
                 material, aiTextureType_DIFFUSE, "texture_diffuse");
             textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-            // 2. specular maps
-            std::vector<renderable_texture> specularMaps = parse_material_texture(
-                material, aiTextureType_SPECULAR, "texture_specular");
-            textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-            // 3. normal maps
+            // 2. normal maps
             std::vector<renderable_texture> normalMaps = parse_material_texture(
-                material, aiTextureType_HEIGHT, "texture_normal");
-            textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());// 4. height maps
-            std::vector<renderable_texture> heightMaps = parse_material_texture(
-                material, aiTextureType_AMBIENT, "texture_height");
-            textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+                material, aiTextureType_NORMALS, "texture_normal");
+            textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+            // 3. metal maps
+            std::vector<renderable_texture> metalMaps = parse_material_texture(
+                material, aiTextureType_METALNESS, "texture_metallic");
+            textures.insert(textures.end(), metalMaps.begin(), metalMaps.end());
+            // 4. rough maps
+            std::vector<renderable_texture> roughMaps = parse_material_texture(
+                material, aiTextureType_SHININESS, "texture_roughness");
+            textures.insert(textures.end(), roughMaps.begin(), roughMaps.end());
+            // 5. AO maps
+            std::vector<renderable_texture> aoMaps = parse_material_texture(
+                material, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
+            textures.insert(textures.end(), aoMaps.begin(), aoMaps.end());
         }
 
         if (textures.empty())
@@ -177,18 +178,23 @@ namespace retro::renderer
             }
             if (!skip)
             {
+                std::string texture_path =  str.C_Str();
                 auto texture = renderer::texture::create(
-                    {str.C_Str(), texture_filtering::linear, texture_wrapping::clamp_edge});
+                    {texture_path, texture_filtering::linear, texture_wrapping::clamp_edge});
                 renderable_texture rendereable_texture;
                 m_textures.push_back(texture);
                 rendereable_texture.id = texture->get_object_handle();
                 rendereable_texture.type = type_name;
-                rendereable_texture.path = str.C_Str();
+                rendereable_texture.path = texture_path;
                 textures.push_back(rendereable_texture);
                 m_textures_loaded.push_back(rendereable_texture); // add to loaded textures
             }
         }
         return textures;
+    }
+
+    void model::serialize()
+    {
     }
 
     shared<model> model::create(const std::string& model_path)

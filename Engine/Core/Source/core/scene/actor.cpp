@@ -15,6 +15,12 @@ namespace retro
 		m_actor_handle = handle;
 	}
 
+	actor::actor(entt::entity handle, scene* scene)
+	{
+		m_actor_handle = handle;
+		s_scene = scene;
+	}
+
 	actor::~actor()
 	{
 	}

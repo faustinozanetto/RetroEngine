@@ -47,6 +47,8 @@ namespace retro::renderer
 		renderable(const std::vector<renderable_vertex>& vertices, const std::vector<uint32_t>& indices,
 		           const std::vector<renderable_texture>& textures);
 		~renderable() override = default;
+		renderable(const renderable&) = delete;
+		renderable& operator=(const renderable&) = delete;
 
 		/* Methods */
 		void bind() override;

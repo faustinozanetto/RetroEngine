@@ -21,6 +21,7 @@ namespace retro::editor
 
 
         static entt::entity s_selected_actor;
+        static uint32_t s_render_target;
 
     private:
         void start_dockspace();

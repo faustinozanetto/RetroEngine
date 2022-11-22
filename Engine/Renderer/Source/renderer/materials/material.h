@@ -3,6 +3,7 @@
 #include <map>
 
 #include "core/base.h"
+#include "core/assets/asset.h"
 #include "renderer/shader/shader.h"
 #include "renderer/texture/texture.h"
 
@@ -48,6 +49,14 @@ namespace retro::renderer
         {
         }
 
+        material_specification(
+            std::map<material_texture_type, material_texture> textures,
+            const glm::vec4& albedo, float metallic, float roughness, float ao) :
+            textures(std::move(textures)), albedo(albedo),
+            metallic(metallic), roughness(roughness), ambient_occlusion(ao)
+        {
+        }
+
         material_specification(const shared<shader>& shader,
                                std::map<material_texture_type, material_texture> textures,
                                const glm::vec4& albedo, float metallic, float roughness) : mat_shader(shader),
@@ -57,7 +66,7 @@ namespace retro::renderer
         }
     };
 
-    class material : public graphics_object
+    class material : public graphics_object, asset
     {
     public:
         /* Constructor & Destructor */
@@ -79,6 +88,9 @@ namespace retro::renderer
         void set_metallic(float metallic) { m_material_specification.metallic = metallic; }
 
         static std::string get_texture_type_to_string(material_texture_type material_texture_type);
+
+        /* Asset */
+        void serialize() override;
 
         /* Instantiate */
         static shared<material> create();

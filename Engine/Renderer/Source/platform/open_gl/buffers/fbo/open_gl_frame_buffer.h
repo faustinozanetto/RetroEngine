@@ -16,10 +16,12 @@ namespace retro::renderer
 		void bind() override;
 		void un_bind() override;
 
-		void add_color_texture_attachment(
-			const frame_buffer_color_texture_specification& frame_buffer_color_texture_specification) override;
+		void add_texture_attachment(
+			const frame_buffer_texture_specification& frame_buffer_texture_specification) override;
 
-		uint32_t get_color_attachment_id(uint32_t slot) override;
+		uint32_t get_attachment_id(uint32_t slot) override;
+		std::vector<uint32_t> get_attachments() override;
+		std::map<uint32_t, frame_buffer_texture_specification> get_attachments_specifications() override;
 		uint32_t get_depth_attachment_id() override;
 		uint32_t get_height() const override;
 		uint32_t get_width() const override;
@@ -36,8 +38,9 @@ namespace retro::renderer
 
 	private:
 		frame_buffer_specification m_frame_buffer_specification;
-		std::vector<frame_buffer_color_texture_specification> m_frame_buffer_color_texture_specifications;
-		std::vector<uint32_t> m_color_attachments;
+		std::vector<frame_buffer_texture_specification> m_frame_buffer_texture_specifications;
+		std::vector<uint32_t> m_attachments;
+		frame_buffer_texture_specification m_depth_texture_specification;
 		uint32_t m_depth_attachment;
 	};
 }
