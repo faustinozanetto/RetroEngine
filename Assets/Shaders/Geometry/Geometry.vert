@@ -21,6 +21,7 @@ struct GeometryOutput {
     vec2 texCoords;
     vec3 position;
     vec3 normal;
+    vec3 viewPos;
     mat3 tbn;
 };
 
@@ -29,6 +30,7 @@ layout (location = 0) out GeometryOutput geometryOutput;
 void main() {
     gl_Position = camera.u_ViewProjectionMatrix * m_model * vec4(aPos, 1.0);
 
+    geometryOutput.viewPos = vec3(camera.u_ViewMatrix * m_model * vec4(aPos, 1.0));
     geometryOutput.position = vec3(m_model * vec4(aPos, 1.0));
     geometryOutput.texCoords = aTexCoord;
     geometryOutput.normal = mat3(m_model) * aNormal;

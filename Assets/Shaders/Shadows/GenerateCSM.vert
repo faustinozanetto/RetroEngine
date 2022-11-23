@@ -6,5 +6,5 @@ layout(location = 0) uniform mat4 m_model;
 
 void main()
 {
-    gl_Position = m_model * vec4(aPos, 1.0);
+    gl_Position =  m_model * vec4(aPos, 1.0);
 }
