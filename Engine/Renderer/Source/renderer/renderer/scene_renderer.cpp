@@ -54,7 +54,7 @@ namespace retro::renderer
         s_scene_renderer_data.m_csm_shadows.m_random_angles_tex3d_id = generate_random_angles_texture_3d(
             random_angles_size);
 
-        glEnable(GL_CULL_FACE);
+//        glEnable(GL_CULL_FACE);
     }
 
     void scene_renderer::begin_render()
@@ -112,6 +112,7 @@ namespace retro::renderer
         s_scene_renderer_data.m_lighting_environment->set_view_projection(
             s_scene_renderer_data.m_camera_data.u_ViewMatrix, s_scene_renderer_data.m_camera_data.u_ProjectionMatrix);
 
+        /* ==================== SHADOW PASS ==================== */
         generate_shadow_map(s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.x,
                             s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.y);
 
@@ -194,36 +195,64 @@ namespace retro::renderer
         renderer::set_renderer_state(renderer_state::depth_test, false);
 
         /*==================== LIGHTING PASS ==================== */
-        s_scene_renderer_data.m_lighting_frame_buffer->bind();
+        s_scene_renderer_data.m_final_frame_buffer->bind();
         s_scene_renderer_data.m_lighting_shader->bind();
+        s_scene_renderer_data.m_lighting_shader->set_float("u_light_radius_uv",
+                                                         s_scene_renderer_data.m_csm_shadows.m_light_radius_uv /
+                                                         s_scene_renderer_data.m_csm_shadows.m_avg_frustum_size);
+        s_scene_renderer_data.m_lighting_shader->set_int("u_blocker_search_samples", 128);
+        s_scene_renderer_data.m_lighting_shader->set_int("u_pcf_samples", 128);
+        s_scene_renderer_data.m_lighting_shader->set_vec_float3("directionalLight.direction",
+                                                              s_scene_renderer_data.m_directional_light.direction);
+        for (int i = 0; i < NUM_CASCADES; i++)
+        {
+            s_scene_renderer_data.m_lighting_shader->set_vec_float2("u_light_frustum_planes[" + std::to_string(i) + "]",
+                                                                  s_scene_renderer_data.m_csm_shadows.
+                                                                  m_dir_shadow_frustum_planes[i]);
+        }
         for (int i = 0; i < NUM_CASCADES; i++)
         {
             s_scene_renderer_data.m_lighting_shader->set_float("u_cascade_splits[" + std::to_string(i) + "]",
-                                                               s_scene_renderer_data.m_csm_shadows.
-                                                               m_cascade_splits[i]);
+                                                             s_scene_renderer_data.m_csm_shadows.
+                                                             m_cascade_splits[i]);
         }
-        renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(0), 0);
-        // position
+        for (int i = 0; i < s_scene_renderer_data.m_csm_shadows.m_dir_light_view_matrices.size(); i++)
+        {
+            s_scene_renderer_data.m_lighting_shader->set_mat4("u_light_views[" + std::to_string(i) + "]",
+                                                                 s_scene_renderer_data.m_csm_shadows.
+                                                                 m_dir_light_view_matrices[i]);
+        }
+        for (int i = 0; i < s_scene_renderer_data.m_csm_shadows.m_dir_light_view_projection_matrices.size(); i++)
+        {
+            s_scene_renderer_data.m_lighting_shader->set_mat4("u_light_view_projections[" + std::to_string(i) + "]",
+                                                                 s_scene_renderer_data.m_csm_shadows.
+                                                                 m_dir_light_view_projection_matrices[i]);
+        }
+        renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(0), 0); // position
         renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(1), 1); // albedo
         renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(2), 2); // normal
-        renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(3), 3);
-        // rough - metal - ao
-        renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_irradiance_texture(), 4);
-        renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_prefilter_texture(), 5);
-        renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_brdf_lut_texture(), 6);
+        renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(3), 3); // rough - metal - ao
+        renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(4), 4); // view position
+        renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_irradiance_texture(), 5);
+        renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_prefilter_texture(), 6);
+        renderer::bind_texture(s_scene_renderer_data.m_lighting_environment->get_brdf_lut_texture(), 7);
+        renderer::bind_texture(s_scene_renderer_data.m_csm_shadows.m_dir_shadow_maps, 8);
+        renderer::bind_texture(s_scene_renderer_data.m_csm_shadows.m_dir_shadow_maps, 9);
+        glBindSampler(9, s_scene_renderer_data.m_csm_shadows.m_pcf_sampler);
+        renderer::bind_texture(s_scene_renderer_data.m_csm_shadows.m_random_angles_tex3d_id, 10);
         s_scene_renderer_data.m_lighting_shader->set_mat4("uTransform", glm::mat4(1.0f));
         renderer::submit_command({
             s_scene_renderer_data.m_lighting_shader, s_scene_renderer_data.m_screen_vao, nullptr
         });
         s_scene_renderer_data.m_lighting_shader->un_bind();
-        s_scene_renderer_data.m_lighting_frame_buffer->un_bind();
 
         /* ==================== SHADOW PASS ==================== */
+        /*
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_EQUAL);
-        
+
         s_scene_renderer_data.m_shadow_frame_buffer->bind();
         s_scene_renderer_data.m_shadow_shader->bind();
         renderer::clear_screen();
@@ -287,34 +316,20 @@ namespace retro::renderer
         s_scene_renderer_data.m_shadow_shader->un_bind();
         s_scene_renderer_data.m_shadow_frame_buffer->un_bind();
 
-        /*==================== COMPOSITION PASS ====================*/
-        s_scene_renderer_data.m_lighting_frame_buffer->bind();
-        s_scene_renderer_data.m_composition_shader->bind();
-        renderer::bind_texture(s_scene_renderer_data.m_lighting_frame_buffer->get_attachment_id(0), 0);
-        renderer::bind_texture(s_scene_renderer_data.m_shadow_frame_buffer->get_attachment_id(0), 1);
-        renderer::submit_command({
-            s_scene_renderer_data.m_composition_shader,
-            s_scene_renderer_data.m_screen_vao,
-            nullptr,
-        });
-        s_scene_renderer_data.m_composition_shader->un_bind();
-        s_scene_renderer_data.m_lighting_frame_buffer->un_bind();
 
         /*==================== FINAL PASS ====================*/
         s_scene_renderer_data.m_final_frame_buffer->bind();
         glBindFramebuffer(GL_READ_FRAMEBUFFER, s_scene_renderer_data.m_geometry_frame_buffer->get_object_handle());
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_scene_renderer_data.m_lighting_frame_buffer->get_object_handle());
-        glBlitFramebuffer(0, 0, static_cast<int>(s_scene_renderer_data.m_lighting_frame_buffer->get_width()),
-                          static_cast<int>(s_scene_renderer_data.m_lighting_frame_buffer->get_height()), 0, 0,
-                          static_cast<int>(s_scene_renderer_data.m_lighting_frame_buffer->get_width()),
-                          static_cast<int>(s_scene_renderer_data.m_lighting_frame_buffer->get_height()),
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_scene_renderer_data.m_final_frame_buffer->get_object_handle());
+        glBlitFramebuffer(0, 0, static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_width()),
+                          static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_height()), 0, 0,
+                          static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_width()),
+                          static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_height()),
                           GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        glCullFace(GL_FRONT);
         s_scene_renderer_data.m_lighting_environment->render_environment();
         glDepthFunc(GL_LESS);
-        glCullFace(GL_BACK);
         s_scene_renderer_data.m_final_frame_buffer->un_bind();
     }
 
@@ -527,15 +542,18 @@ namespace retro::renderer
 
         s_scene_renderer_data.m_csm_shadows_shader->bind();
 
-        s_scene_renderer_data.m_csm_shadows_shader->set_mat4("u_light_view_projections[0]",
-                                                             s_scene_renderer_data.m_csm_shadows.
-                                                             m_dir_light_view_projection_matrices[0]);
-        s_scene_renderer_data.m_csm_shadows_shader->set_mat4("u_light_view_projections[1]",
-                                                             s_scene_renderer_data.m_csm_shadows.
-                                                             m_dir_light_view_projection_matrices[1]);
-        s_scene_renderer_data.m_csm_shadows_shader->set_mat4("u_light_view_projections[2]",
-                                                             s_scene_renderer_data.m_csm_shadows.
-                                                             m_dir_light_view_projection_matrices[2]);
+        for (int i = 0; i < s_scene_renderer_data.m_csm_shadows.m_dir_light_view_matrices.size(); i++)
+        {
+            s_scene_renderer_data.m_csm_shadows_shader->set_mat4("u_light_views[" + std::to_string(i) + "]",
+                                                                 s_scene_renderer_data.m_csm_shadows.
+                                                                 m_dir_light_view_matrices[i]);
+        }
+        for (int i = 0; i < s_scene_renderer_data.m_csm_shadows.m_dir_light_view_projection_matrices.size(); i++)
+        {
+            s_scene_renderer_data.m_csm_shadows_shader->set_mat4("u_light_view_projections[" + std::to_string(i) + "]",
+                                                                 s_scene_renderer_data.m_csm_shadows.
+                                                                 m_dir_light_view_projection_matrices[i]);
+        }
 
         const auto view = s_scene_renderer_data.m_scene->get_actor_registry().group<model_renderer_component>(
             entt::get<name_component, transform_component>);
@@ -606,9 +624,6 @@ namespace retro::renderer
         s_scene_renderer_data.m_csm_shadows_shader = shader::create(
             "Assets/Shaders/Shadows/GenerateCSM.vert", "Assets/Shaders/Shadows/GenerateCSM.frag",
             "Assets/Shaders/Shadows/GenerateCSM.geom");
-
-        s_scene_renderer_data.m_composition_shader = shader::create(
-            "Assets/Shaders/Composition/Composition.vert", "Assets/Shaders/Composition/Composition.frag");
     }
 
     void scene_renderer::generate_frame_buffers()
@@ -619,7 +634,8 @@ namespace retro::renderer
                 {"position", frame_buffer_attachment_format::rgba16f},
                 {"albedo", frame_buffer_attachment_format::rgba16f},
                 {"normal", frame_buffer_attachment_format::rgba16f},
-                {"rough-meta-ao", frame_buffer_attachment_format::rgba16f}
+                {"rough-meta-ao", frame_buffer_attachment_format::rgba16f},
+                {"viewPosition", frame_buffer_attachment_format::rgba16f}
             }
         });
 
@@ -633,9 +649,6 @@ namespace retro::renderer
 
         s_scene_renderer_data.m_final_frame_buffer =
             frame_buffer::create({1920, 1080, {{"final", frame_buffer_attachment_format::rgba16f}}});
-
-        s_scene_renderer_data.m_lighting_frame_buffer =
-            frame_buffer::create({1920, 1080, {{"lighting", frame_buffer_attachment_format::rgba16f}}});
     }
 
     void scene_renderer::create_screen_vao()
