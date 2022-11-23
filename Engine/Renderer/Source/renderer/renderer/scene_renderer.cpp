@@ -53,16 +53,22 @@ namespace retro::renderer
         uint32_t random_angles_size = 128;
         s_scene_renderer_data.m_csm_shadows.m_random_angles_tex3d_id = generate_random_angles_texture_3d(
             random_angles_size);
-        
-       // glEnable(GL_CULL_FACE);
     }
 
     void scene_renderer::begin_render()
     {
-        ImGui::Begin("Test");
+        ImGui::Begin("PCSS");
         ImGui::SliderFloat("Light radius", &s_scene_renderer_data.m_csm_shadows.m_light_radius_uv, 0.0, 1.0, "%.2f");
+        ImGui::Text("Average Frustum Size %f", s_scene_renderer_data.m_csm_shadows.m_avg_frustum_size);
+        for (int i = 0; i < NUM_CASCADES; i++)
+        {
+            std::string label = "Cascade Split [" + std::to_string(i) + "]: %f";
+            ImGui::Text(label.c_str(),
+                        s_scene_renderer_data.m_csm_shadows.m_cascade_splits[i]);
+        }
+        ImGui::Text("Light Radius UV %f", s_scene_renderer_data.m_csm_shadows.m_light_radius_uv);
         ImGui::End();
-        
+
         // Update camera UBO.
         s_scene_renderer_data.m_camera->update();
         s_scene_renderer_data.m_camera_data.u_ViewMatrix = s_scene_renderer_data.m_camera->get_view_matrix();
@@ -100,7 +106,7 @@ namespace retro::renderer
         s_scene_renderer_data.m_lights_ubo->set_data(&s_scene_renderer_data.m_pointLight, sizeof(point_light_data));
         s_scene_renderer_data.m_lights_ubo->set_data(&s_scene_renderer_data.m_directional_light,
                                                      sizeof(directional_light_data), sizeof(point_light_data));
-        
+
         s_scene_renderer_data.m_lighting_environment->set_view_projection(
             s_scene_renderer_data.m_camera_data.u_ViewMatrix, s_scene_renderer_data.m_camera_data.u_ProjectionMatrix);
 
@@ -109,8 +115,9 @@ namespace retro::renderer
 
 
         /* ==================== SHADOW PASS ==================== */
-        generate_shadow_map(s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.x, s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.y);
-
+        generate_shadow_map(s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.x,
+                            s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.y);
+        
         s_scene_renderer_data.m_shadow_frame_buffer->bind();
         renderer::set_renderer_state(renderer_state::depth_test, true);
         renderer::set_clear_color({0.0f, 0.0f, 0.0f, 1.0f});
@@ -120,20 +127,25 @@ namespace retro::renderer
         const auto shadowview = s_scene_renderer_data.m_scene->get_actor_registry().group<model_renderer_component>(
             entt::get<name_component, transform_component>);
 
+        s_scene_renderer_data.m_shadow_shader->set_float("u_light_radius_uv",
+                                                         s_scene_renderer_data.m_csm_shadows.m_light_radius_uv /
+                                                         s_scene_renderer_data.m_csm_shadows.m_avg_frustum_size);
         s_scene_renderer_data.m_shadow_shader->set_int("u_blocker_search_samples", 128);
         s_scene_renderer_data.m_shadow_shader->set_int("u_pcf_samples", 128);
-        s_scene_renderer_data.m_shadow_shader->set_vec_float2("u_light_frustum_planes[0]",
-                                                              s_scene_renderer_data.m_csm_shadows.
-                                                              m_dir_shadow_frustum_planes[0]);
-        s_scene_renderer_data.m_shadow_shader->set_vec_float2("u_light_frustum_planes[1]",
-                                                              s_scene_renderer_data.m_csm_shadows.
-                                                              m_dir_shadow_frustum_planes[1]);
-        s_scene_renderer_data.m_shadow_shader->set_vec_float2("u_light_frustum_planes[2]",
-                                                              s_scene_renderer_data.m_csm_shadows.
-                                                              m_dir_shadow_frustum_planes[2]);
         s_scene_renderer_data.m_shadow_shader->set_vec_float3("directionalLight.direction",
                                                               s_scene_renderer_data.m_directional_light.direction);
-
+        for (int i = 0; i < NUM_CASCADES; i++)
+        {
+            s_scene_renderer_data.m_shadow_shader->set_vec_float2("u_light_frustum_planes[" + std::to_string(i) + "]",
+                                                                  s_scene_renderer_data.m_csm_shadows.
+                                                                  m_dir_shadow_frustum_planes[i]);
+        }
+        for (int i = 0; i < NUM_CASCADES; i++)
+        {
+            s_scene_renderer_data.m_shadow_shader->set_float("u_cascade_splits[" + std::to_string(i) + "]",
+                                                             s_scene_renderer_data.m_csm_shadows.
+                                                             m_cascade_splits[i]);
+        }
         renderer::bind_texture(s_scene_renderer_data.m_csm_shadows.m_dir_shadow_maps, 8);
         renderer::bind_texture(s_scene_renderer_data.m_csm_shadows.m_dir_shadow_maps, 9);
         glBindSampler(9, s_scene_renderer_data.m_csm_shadows.m_pcf_sampler);
@@ -165,7 +177,7 @@ namespace retro::renderer
                 });
             }
         }
-   
+
         s_scene_renderer_data.m_shadow_shader->un_bind();
         s_scene_renderer_data.m_shadow_frame_buffer->un_bind();
 
@@ -248,6 +260,12 @@ namespace retro::renderer
         /*==================== LIGHTING PASS ==================== */
         s_scene_renderer_data.m_final_frame_buffer->bind();
         s_scene_renderer_data.m_lighting_shader->bind();
+        for (int i = 0; i < NUM_CASCADES; i++)
+        {
+            s_scene_renderer_data.m_lighting_shader->set_float("u_cascade_splits[" + std::to_string(i) + "]",
+                                                               s_scene_renderer_data.m_csm_shadows.
+                                                               m_cascade_splits[i]);
+        }
         renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(0), 0);
         // position
         renderer::bind_texture(s_scene_renderer_data.m_geometry_frame_buffer->get_attachment_id(1), 1); // albedo
@@ -263,7 +281,7 @@ namespace retro::renderer
             s_scene_renderer_data.m_lighting_shader, s_scene_renderer_data.m_screen_vao, nullptr
         });
         s_scene_renderer_data.m_lighting_shader->un_bind();
-
+        
         /*==================== FINAL PASS ====================*/
         s_scene_renderer_data.m_final_frame_buffer->bind();
         glBindFramebuffer(GL_READ_FRAMEBUFFER, s_scene_renderer_data.m_geometry_frame_buffer->get_object_handle());
@@ -330,14 +348,14 @@ namespace retro::renderer
         float far_clip = s_scene_renderer_data.m_camera->get_far_plane();
         float clip_range = far_clip - near_clip;
         float ratio = far_clip / near_clip;
-        float m_cascade_split_lambda            = 0.6f;
+        float m_cascade_split_lambda = 0.6f;
 
         for (uint32_t i = 0; i < NUM_CASCADES; ++i)
         {
-            float p   = (i + 1) / float(NUM_CASCADES);
+            float p = (i + 1) / float(NUM_CASCADES);
             float log = near_clip * std::pow(ratio, p);
             float uni = near_clip + clip_range * p;
-            float d   = m_cascade_split_lambda * (log - uni) + uni;
+            float d = m_cascade_split_lambda * (log - uni) + uni;
 
             s_scene_renderer_data.m_csm_shadows.m_cascade_splits[i] = (d - near_clip) / clip_range; // to [0, 1] range
         }
@@ -351,7 +369,6 @@ namespace retro::renderer
 
         // Calculate orthographic projection matrix for each cascade
         float last_split_dist = 0.0;
-        float avg_frustum_size = 0.0;
 
         for (uint32_t i = 0; i < NUM_CASCADES; ++i)
         {
@@ -403,17 +420,17 @@ namespace retro::renderer
             glm::vec3 max_extents = glm::vec3(radius);
             glm::vec3 min_extents = -max_extents;
 
-            glm::mat4 light_view_matrix = glm::lookAt(frustum_center - s_scene_renderer_data.m_directional_light.direction * -min_extents.z, frustum_center,
-                                                      glm::vec3(0.0f, 1.0f, 0.0f));
+            glm::mat4 light_view_matrix = glm::lookAt(
+                frustum_center - s_scene_renderer_data.m_directional_light.direction * -min_extents.z, frustum_center,
+                glm::vec3(0.0f, 1.0f, 0.0f));
             glm::mat4 light_ortho_matrix = glm::ortho(min_extents.x, max_extents.x, min_extents.y, max_extents.y, 0.0f,
                                                       max_extents.z - min_extents.z);
 
             float split_depth = (s_scene_renderer_data.m_camera->get_near_plane() + split_dist * clip_range) * -1.0f;
-            s_scene_renderer_data.m_shadow_shader->bind();
-            s_scene_renderer_data.m_shadow_shader->
-                                  set_float("u_cascade_splits[" + std::to_string(i) + "]", split_depth);
+            s_scene_renderer_data.m_csm_shadows.m_cascade_splits[i] = split_depth;
 
-            avg_frustum_size = glm::max(avg_frustum_size, max_extents.x - min_extents.x);
+            s_scene_renderer_data.m_csm_shadows.m_avg_frustum_size = glm::max(
+                s_scene_renderer_data.m_csm_shadows.m_avg_frustum_size, max_extents.x - min_extents.x);
 
             s_scene_renderer_data.m_csm_shadows.m_dir_light_view_matrices[i] = light_view_matrix;
             s_scene_renderer_data.m_csm_shadows.m_dir_light_view_projection_matrices[i] = light_ortho_matrix *
@@ -443,11 +460,6 @@ namespace retro::renderer
 
             last_split_dist = split_dist;
         }
-        
-        s_scene_renderer_data.m_shadow_shader->set_float("u_light_radius_uv",
-                                                         s_scene_renderer_data.m_csm_shadows.m_light_radius_uv /
-                                                         avg_frustum_size);
-        s_scene_renderer_data.m_shadow_shader->un_bind();
     }
 
     void scene_renderer::create_shadow_fbo(uint32_t width, uint32_t height)
@@ -490,9 +502,7 @@ namespace retro::renderer
 
         glCullFace(GL_FRONT);
 
-        s_scene_renderer_data.m_csm_shadows_shader->bind();
         update_csm_splits();
-        s_scene_renderer_data.m_csm_shadows_shader->un_bind();
         update_csm_frusta();
 
         s_scene_renderer_data.m_csm_shadows_shader->bind();
@@ -581,7 +591,7 @@ namespace retro::renderer
     void scene_renderer::generate_frame_buffers()
     {
         s_scene_renderer_data.m_geometry_frame_buffer = frame_buffer::create({
-            2560, 1440,
+            1920, 1080,
             {
                 {"position", frame_buffer_attachment_format::rgba16f},
                 {"albedo", frame_buffer_attachment_format::rgba16f},
@@ -591,7 +601,7 @@ namespace retro::renderer
         });
 
         s_scene_renderer_data.m_shadow_frame_buffer = frame_buffer::create({
-            2560, 1440, {
+            1920, 1080, {
                 {
                     "shadow", frame_buffer_attachment_format::rgba16f
                 }
@@ -599,7 +609,7 @@ namespace retro::renderer
         });
 
         s_scene_renderer_data.m_final_frame_buffer =
-            frame_buffer::create({2560, 1440, {{"final", frame_buffer_attachment_format::rgba16f}}});
+            frame_buffer::create({1920, 1080, {{"final", frame_buffer_attachment_format::rgba16f}}});
     }
 
     void scene_renderer::create_screen_vao()
@@ -650,6 +660,7 @@ namespace retro::renderer
             texture_filtering::linear,
             texture_wrapping::clamp_edge
         });
-        s_scene_renderer_data.m_lighting_environment = lighting_environment::create({sky_cubemap, 4096, 1024, 4096, 2048});
+        s_scene_renderer_data.m_lighting_environment = lighting_environment::create(
+            {sky_cubemap, 2048, 512, 2048, 2048});
     }
 }

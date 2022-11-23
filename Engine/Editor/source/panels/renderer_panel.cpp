@@ -24,9 +24,6 @@ namespace retro::editor
         {
             retro_application::get_application().get_window()->set_vsync_enabled(m_use_vsync);
         }
-        editor_interface_utils::draw_property("Ortho Size", renderer::scene_renderer::get_data().orthoSize, 0.0f, 50.0f, 0.1f);
-        editor_interface_utils::draw_property("Light Near", renderer::scene_renderer::get_data().light_near, 0.0f, 50.0f, 0.1f);
-        editor_interface_utils::draw_property("Light Far", renderer::scene_renderer::get_data().light_far, 0.0f, 1000.0f, 0.1f);
         ImGui::Separator();
         if (ImGui::TreeNode("Frame Buffers"))
         {

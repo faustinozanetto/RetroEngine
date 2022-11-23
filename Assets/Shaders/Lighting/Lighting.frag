@@ -1,6 +1,6 @@
 #version 460
 
-const int NUM_CASCADES = 3;
+const int NUM_CASCADES = 4;
 
 // Tex coords from vertex shader.
 layout(location = 0) in vec2 TexCoords;
@@ -46,6 +46,13 @@ layout(binding = 6) uniform sampler2D gBRDFLut;
 layout(binding = 7) uniform sampler2D gShadowMap;
 
 layout(location = 0) out vec4 FragColor;
+
+uniform float u_cascade_splits[NUM_CASCADES];
+
+vec3 cascade_debug_colors[NUM_CASCADES] = vec3[](vec3(1.0, 0.25, 0.25),
+vec3(0.25, 1.0, 0.25),
+vec3(0.25, 0.25, 1.0),
+vec3(0.41, 0.01, 0.98));
 
 const float PI = 3.14159265359;
 
@@ -217,6 +224,27 @@ vec3 CalculateIndirectLighting(vec3 FragPos, vec3 CamPos, vec3 Albedo, vec3 Norm
     return (kD * diffuse * specular) * AO;
 }
 
+vec3 CalculateLo(vec3 L, vec3 N, vec3 V, vec3 Ra, vec3 F0, float R, float M, vec3 A)
+{
+    vec3 H = normalize(V + L); //Halfway Vector
+
+    //Cook-Torrance BRDF
+    float D = DistributionGGX(N, H, R);
+    float G = GeometrySmith(N, V, L, R);
+    vec3  F = FresnelSchlick(max(dot(H, V), 0.0), F0);
+
+    vec3 Nominator    = D * G * F;
+    float Denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
+    vec3 Specular	  = Nominator / Denominator;
+
+    vec3 Ks = F;
+    vec3 Kd = vec3(1.0) - Ks;
+    Kd *= 1.0 - M;
+
+    float NDotL = max(dot(N, L), 0.0);
+    return (Kd * A / PI + Specular) * Ra * NDotL;
+}
+
 void main() {
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec4 AlbedoSrc = texture(gAlbedo, TexCoords);
@@ -239,10 +267,15 @@ void main() {
     vec3 Lighting = vec3(0);
     Lighting += CalculateDirectionalLightPBR(lights.directionalLight, FragPos, CamPos, Albedo, N, Metallic, Roughness, F0);
     for (uint i = 0; i < 1; i++){
-          Lighting += CalculatePointLightPBR(lights.pointLight, FragPos, CamPos, Albedo, N, Metallic, Roughness, F0);
+          //Lighting += CalculatePointLightPBR(lights.pointLight, FragPos, CamPos, Albedo, N, Metallic, Roughness, F0);
+        vec3 L = normalize(lights.pointLight.position - FragPos);
+        float distance = length(lights.pointLight.position - FragPos);
+        float attenuation = 1.0/(distance * distance);
+        vec3 Ra = lights.pointLight.color * attenuation;
+        Lighting += CalculateLo(L, N, V, Ra, F0, Roughness, Metallic, Albedo);
     }
     // Indirect IBL Lighting
-    //vec3 IndirectLighthing = CalculateIndirectLighting(FragPos, CamPos, Albedo, N, Metallic, Roughness, AO);
+    vec3 IndirectLighthing = CalculateIndirectLighting(FragPos, CamPos, Albedo, N, Metallic, Roughness, AO);
 
     vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
 
@@ -261,12 +294,26 @@ void main() {
     vec3 ambient = (Kd * diffuse + specular) * AO;
 
     vec3 result = vec3(0);
-    result = Shadow * (Lighting + ambient);
+    result =  Shadow * (Lighting + ambient);
 
     // HDR tonemapping
     result = result / (result + vec3(1.0));
     // gamma correct
     result = pow(result, vec3(1.0/2.2));
+
+    // PCSS Debug
+    vec3 cascade_debug_indicator = vec3(0.0, 0.0, 0.0);
+    uint cascade_index = 0;
+
+    vec3 viewPos = vec3(camera.u_ViewMatrix * vec4(FragPos, 1.0));
+    for (uint i = 0; i < NUM_CASCADES - 1; ++i)
+    {
+        if (viewPos.z < u_cascade_splits[i])
+        {
+            cascade_index = i + 1;
+        }
+    }
+    cascade_debug_indicator = cascade_debug_colors[cascade_index];
 
     FragColor = vec4(result, Alpha);
 }
