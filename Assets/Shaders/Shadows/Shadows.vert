@@ -1,6 +1,6 @@
 ﻿#version 460
 
-const int NUM_CASCADES = 3;
+const int NUM_CASCADES = 4;
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
@@ -15,7 +15,7 @@ layout (location = 1) out vec3 out_world_pos;
 layout (location = 2) out vec3 out_normal;
 layout (location = 3) out vec3 out_view_pos;
 layout (location = 4) out vec4 out_pos_light_view_space[NUM_CASCADES];
-layout (location = 7) out vec4 out_pos_light_clip_space[NUM_CASCADES];
+layout (location = 11) out vec4 out_pos_light_clip_space[NUM_CASCADES];
 
 // Camera UB
 layout(std140, binding = 0) uniform Camera

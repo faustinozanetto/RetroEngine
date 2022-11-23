@@ -1,13 +1,13 @@
 ﻿#version 460
 
-const int NUM_CASCADES = 3;
+const int NUM_CASCADES = 4;
 
 layout (location = 0) in vec2 in_texcoord;
 layout (location = 1) in vec3 in_world_pos;
 layout (location = 2) in vec3 in_normal;
 layout (location = 3) in vec3 in_view_pos;
 layout (location = 4) in vec4 in_pos_light_view_space[NUM_CASCADES];
-layout (location = 7) in vec4 in_pos_light_clip_space[NUM_CASCADES];
+layout (location = 11) in vec4 in_pos_light_clip_space[NUM_CASCADES];
 
 layout(binding = 8) uniform sampler2DArray       gShadowMap;
 layout(binding = 9) uniform sampler2DArrayShadow gShadowMapPCF;
@@ -35,10 +35,6 @@ struct DirectionalLight {
 };
 
 uniform DirectionalLight directionalLight;
-
-vec3 cascade_debug_colors[NUM_CASCADES] = vec3[](vec3(1.0, 0.25, 0.25),
-vec3(0.25, 1.0, 0.25),
-vec3(0.25, 0.25, 1.0));
 
 const vec2 Poisson25[25] = vec2[](
 vec2(-0.978698, -0.0884121),
@@ -551,7 +547,6 @@ float CalculateSoftShadows(uint cascade_index)
 void main()
 {
     uint cascade_index = 0;
-
     for (uint i = 0; i < NUM_CASCADES - 1; ++i)
     {
         if (in_view_pos.z < u_cascade_splits[i])
@@ -559,11 +554,6 @@ void main()
             cascade_index = i + 1;
         }
     }
-
     float shadow_factor = CalculateSoftShadows(cascade_index);
-
-    vec3 cascade_debug_indicator = vec3(0.0, 0.0, 0.0);
-    cascade_debug_indicator  = cascade_debug_colors[cascade_index];
-
     FragColor = vec4(shadow_factor,shadow_factor,shadow_factor, 1);
 }

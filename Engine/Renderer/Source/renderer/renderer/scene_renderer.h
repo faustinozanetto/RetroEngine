@@ -15,7 +15,7 @@
 #include "renderer/rendereables/model/model.h"
 #include "renderer/shader/shader.h"
 
-#define NUM_CASCADES 3
+#define NUM_CASCADES 4
 #define NUM_FRUSTUM_CORNERS 8
 
 namespace retro::renderer
@@ -45,9 +45,10 @@ namespace retro::renderer
     
     struct csm_shadows
     {
+        float m_avg_frustum_size;
         float m_cascade_splits[NUM_CASCADES];
         float m_light_radius_uv;
-
+        
         std::vector<glm::mat4> m_dir_light_view_projection_matrices;
         std::vector<glm::mat4> m_dir_light_view_matrices;
 
@@ -62,9 +63,6 @@ namespace retro::renderer
 
     struct scene_renderer_data
     {
-        float light_near = 0.1f;
-        float light_far = 1000.0f;
-        float orthoSize = 10.0f;
         camera_data m_camera_data;
         point_light_data m_pointLight;
         directional_light_data m_directional_light;

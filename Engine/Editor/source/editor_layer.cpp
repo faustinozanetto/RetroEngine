@@ -348,8 +348,10 @@ namespace retro::editor
                     metals->add_component<material_component>(metalsMat);
                     auto& transform = metals->add_component<transform_component>();
                 }
+                */
              
-                /*
+
+        /*
                 auto sponza = retro_application::get_application().get_scene_manager()->get_active_scene()->
                                                                      create_actor();
                 sponza->add_component<name_component>("Sponza");
@@ -389,6 +391,7 @@ namespace retro::editor
             floor_trans.position = {0.0f, 0.4f, 0.0f};
             floor_trans.scale = {20.0f, 1.0f, 20.0f};
         }
+   
         {
             float hk_unit_scale_factor = 1.25f;
             float hk_radius = hk_unit_scale_factor;
@@ -399,7 +402,7 @@ namespace retro::editor
             glm::vec3 start_pos = glm::vec3(-offset.x * float(grid_size.x / 2), 0.0,
                                             -offset.y * float(grid_size.y / 2));
 
-            const shared<renderer::model>& sphere_model = renderer::model::create("Assets/Models/Sphere.obj");
+            const shared<renderer::model>& sphere_model = renderer::model::create("Assets/Models/Monkey.fbx");
 
             renderer::material_texture albedoTexture = {
                 nullptr, false
@@ -447,10 +450,11 @@ namespace retro::editor
                     sphere->add_component<material_component>(material);
                     auto& transform = sphere->add_component<transform_component>();
                     transform.position = position;
-                    transform.scale = glm::vec3(0.55f);
+                    transform.scale = glm::vec3(0.005f);
                 }
             }
         }
+        
     }
 
     void editor_layer::on_layer_unregistered()

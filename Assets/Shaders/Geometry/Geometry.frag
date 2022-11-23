@@ -47,7 +47,8 @@ void main() {
     } else {
         albedo = material.albedo;
     }
-    gAlbedo = albedo;
+
+    gAlbedo =  albedo;
 
     /* Normal */
     vec3 normal = vec3(1.0);
