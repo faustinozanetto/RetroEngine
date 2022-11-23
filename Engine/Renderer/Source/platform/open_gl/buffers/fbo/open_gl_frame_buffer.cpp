@@ -42,11 +42,11 @@ namespace retro::renderer
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture_handle, 0);
     }
 
-    open_gl_frame_buffer::open_gl_frame_buffer(const frame_buffer_specification &frame_buffer_specification)
+    open_gl_frame_buffer::open_gl_frame_buffer(const frame_buffer_specification& frame_buffer_specification)
     {
         m_frame_buffer_specification = frame_buffer_specification;
         // Loop through the specification and create the framebuffer
-        for (auto &attachment : m_frame_buffer_specification.attachments)
+        for (auto& attachment : m_frame_buffer_specification.attachments)
         {
             if (attachment.format == frame_buffer_attachment_format::depth32f)
             {
@@ -80,7 +80,7 @@ namespace retro::renderer
     }
 
     void open_gl_frame_buffer::add_texture_attachment(
-        const frame_buffer_texture_specification &frame_buffer_texture_specification)
+        const frame_buffer_texture_specification& frame_buffer_texture_specification)
     {
         m_frame_buffer_texture_specifications.emplace_back(frame_buffer_texture_specification);
         reconstruct();
@@ -101,7 +101,7 @@ namespace retro::renderer
     {
         std::map<uint32_t, frame_buffer_texture_specification> result = {};
         int i = 0;
-        for (auto &attachment : m_attachments)
+        for (auto& attachment : m_attachments)
         {
             result.insert({attachment, m_frame_buffer_texture_specifications.at(i)});
             i++;
@@ -163,17 +163,23 @@ namespace retro::renderer
                 switch (m_frame_buffer_texture_specifications[i].format)
                 {
                 case frame_buffer_attachment_format::rgba8:
-                {
-                    generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
-                                           m_frame_buffer_specification.height, GL_RGBA, GL_RGBA8);
-                    break;
-                }
+                    {
+                        generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
+                                               m_frame_buffer_specification.height, GL_RGBA, GL_RGBA8);
+                        break;
+                    }
                 case frame_buffer_attachment_format::rgba16f:
-                {
-                    generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
-                                           m_frame_buffer_specification.height, GL_RGBA, GL_RGB16F);
-                    break;
-                }
+                    {
+                        generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
+                                               m_frame_buffer_specification.height, GL_RGBA, GL_RGB16F);
+                        break;
+                    }
+                case frame_buffer_attachment_format::redint:
+                    {
+                        generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
+                                               m_frame_buffer_specification.height, GL_RED_INTEGER, GL_R32I);
+                        break;
+                    }
                 }
             }
         }
@@ -188,7 +194,8 @@ namespace retro::renderer
         {
             const GLenum buffers[8] = {
                 GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3,
-                GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7};
+                GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7
+            };
             glDrawBuffers(m_attachments.size(), buffers);
         }
         else if (m_attachments.empty())
@@ -199,8 +206,10 @@ namespace retro::renderer
         }
 
         const auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        RETRO_CORE_ASSERT(fboStatus == GL_FRAMEBUFFER_COMPLETE, "open_gl_frame_buffer::reconstruct | Frame buffer is not complete: " + std::to_string(fboStatus));
-        
+        RETRO_CORE_ASSERT(fboStatus == GL_FRAMEBUFFER_COMPLETE,
+                          "open_gl_frame_buffer::reconstruct | Frame buffer is not complete: " + std::to_string(
+                              fboStatus))
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }

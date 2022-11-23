@@ -1,7 +1,5 @@
 #version 460
 
-const int NUM_CASCADES = 4;
-
 // Tex coords from vertex shader.
 layout(location = 0) in vec2 TexCoords;
 
@@ -43,16 +41,8 @@ layout(binding = 3) uniform sampler2D gRoughMetalAO;
 layout(binding = 4) uniform samplerCube gIrradiance;
 layout(binding = 5) uniform samplerCube gPrefilter;
 layout(binding = 6) uniform sampler2D gBRDFLut;
-layout(binding = 7) uniform sampler2D gShadowMap;
 
 layout(location = 0) out vec4 FragColor;
-
-uniform float u_cascade_splits[NUM_CASCADES];
-
-vec3 cascade_debug_colors[NUM_CASCADES] = vec3[](vec3(1.0, 0.25, 0.25),
-vec3(0.25, 1.0, 0.25),
-vec3(0.25, 0.25, 1.0),
-vec3(0.41, 0.01, 0.98));
 
 const float PI = 3.14159265359;
 
@@ -255,8 +245,6 @@ void main() {
     float Metallic  = texture(gRoughMetalAO, TexCoords).g;
     float AO        = texture(gRoughMetalAO, TexCoords).b;
     vec3 CamPos = camera.u_Position;
-    float Shadow = 0.0;
-    Shadow = texture(gShadowMap, TexCoords).g;
 
     vec3 V = normalize(CamPos - FragPos);
     vec3 R = reflect(-V, N);
@@ -294,26 +282,12 @@ void main() {
     vec3 ambient = (Kd * diffuse + specular) * AO;
 
     vec3 result = vec3(0);
-    result =  Shadow * (Lighting + ambient);
+    result =  Lighting + ambient;
 
     // HDR tonemapping
     result = result / (result + vec3(1.0));
     // gamma correct
     result = pow(result, vec3(1.0/2.2));
-
-    // PCSS Debug
-    vec3 cascade_debug_indicator = vec3(0.0, 0.0, 0.0);
-    uint cascade_index = 0;
-
-    vec3 viewPos = vec3(camera.u_ViewMatrix * vec4(FragPos, 1.0));
-    for (uint i = 0; i < NUM_CASCADES - 1; ++i)
-    {
-        if (viewPos.z < u_cascade_splits[i])
-        {
-            cascade_index = i + 1;
-        }
-    }
-    cascade_debug_indicator = cascade_debug_colors[cascade_index];
 
     FragColor = vec4(result, Alpha);
 }
