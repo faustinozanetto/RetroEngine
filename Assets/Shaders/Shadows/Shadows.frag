@@ -13,7 +13,7 @@ layout(binding = 8) uniform sampler2DArray       gShadowMap;
 layout(binding = 9) uniform sampler2DArrayShadow gShadowMapPCF;
 layout(binding = 10) uniform sampler3D            gRandomAngles;
 
-layout(location = 0) out vec4 FragColor;
+layout(location = 0) out float FragColor;
 
 uniform int   u_blocker_search_samples;
 uniform float u_light_radius_uv;
@@ -555,5 +555,5 @@ void main()
         }
     }
     float shadow_factor = CalculateSoftShadows(cascade_index);
-    FragColor = vec4(shadow_factor,shadow_factor,shadow_factor, 1);
+    FragColor = shadow_factor;
 }

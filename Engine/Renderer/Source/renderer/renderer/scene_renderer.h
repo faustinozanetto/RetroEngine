@@ -76,8 +76,10 @@ namespace retro::renderer
         shared<shader> m_shadow_shader;
         shared<shader> m_screen_shader;
         shared<shader> m_csm_shadows_shader;
+        shared<shader> m_composition_shader;
         shared<frame_buffer> m_geometry_frame_buffer;
         shared<frame_buffer> m_shadow_frame_buffer;
+        shared<frame_buffer> m_lighting_frame_buffer;
         shared<frame_buffer> m_final_frame_buffer;
         shared<vertex_array_buffer> m_screen_vao;
         shared<lighting_environment> m_lighting_environment;

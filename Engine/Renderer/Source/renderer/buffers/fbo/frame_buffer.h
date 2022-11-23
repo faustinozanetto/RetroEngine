@@ -11,7 +11,8 @@ namespace retro::renderer
     {
         rgba8 = 0,
         rgba16f = 1,
-        depth32f = 2
+        redint = 2,
+        depth32f = 3
     };
 
     struct frame_buffer_texture_specification
