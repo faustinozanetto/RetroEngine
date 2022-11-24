@@ -102,9 +102,9 @@ namespace retro::renderer
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 
 		// OpenGL.
-		glEnable(GL_BLEND);
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
 		return true;
 	}
 
