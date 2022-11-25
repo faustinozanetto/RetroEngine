@@ -7,7 +7,6 @@
 
 #include "core/application/retro_application.h"
 #include "glad/glad.h"
-#include "GLFW/glfw3.h"
 
 namespace retro::renderer
 {

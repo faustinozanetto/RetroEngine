@@ -12,6 +12,7 @@ namespace retro::renderer
 	{
 		logger::line();
 		m_texture_specification = texture_specification;
+
 		logger::info("open_gl_texture_cubemap::open_gl_texture_cubemap | Loading cubemap: ");
 		logger::info("  - Path: " + m_texture_specification.path);
 		logger::info("  - Filtering: " + texture::get_texture_filtering_to_string(m_texture_specification.filtering));
@@ -26,20 +27,19 @@ namespace retro::renderer
 		RETRO_CORE_ASSERT(data, "Failed to load data from image");
 
 		// Updating size.
-		m_Width = width;
-		m_Height = height;
+		m_texture_specification.size = {width, height};
 		m_Channels = channels;
 
 		logger::info(
-			"  - Width: " + std::to_string(m_Width) + " Height: " + std::to_string(
-				m_Height));
+			"  - Width: " + std::to_string(m_texture_specification.size.x) + " Height: " + std::to_string(
+				m_texture_specification.size.y));
 		logger::info("  - Channels: " + std::to_string(m_Channels));
 
-		m_InternalFormat = GL_RGB16F;
-		m_DataFormat = GL_RGB;
+		m_texture_specification.format = GL_RGB16F;
+		m_texture_specification.dataFormat = GL_RGB;
 
-		logger::info("Internal format: " + convert_texture_enum_to_string(m_InternalFormat));
-		logger::info("Data format: " + convert_texture_enum_to_string(m_DataFormat));
+		logger::info("Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
+		logger::info("Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_object_handle);
 		glBindTexture(GL_TEXTURE_2D, m_object_handle);

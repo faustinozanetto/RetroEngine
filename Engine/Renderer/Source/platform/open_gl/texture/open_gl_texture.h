@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "stb_image.h"
-#include "core/assets/asset.h"
 
 #include "glad/glad.h"
 
@@ -37,6 +36,8 @@ namespace retro::renderer
 		static GLint convert_texture_wrapping(texture_wrapping texture_wrapping);
 
 	private:
+		void setup_image_from_path();
+		void setup_image_no_path();
 		bool setup_image_formats();
 		void setup_image_buffers(const stbi_uc* data);
 
@@ -44,9 +45,5 @@ namespace retro::renderer
 		texture_specification m_texture_specification;
 		int m_mip_map_levels{};
 		int m_channels;
-		int m_width;
-		int m_height;
-		GLenum m_internal_format{};
-		GLenum m_data_format{};
 	};
 }

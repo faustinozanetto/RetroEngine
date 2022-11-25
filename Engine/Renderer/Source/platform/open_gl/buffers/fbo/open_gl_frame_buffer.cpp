@@ -5,39 +5,67 @@
 #include "core/assert.h"
 #include "renderer/texture/texture.h"
 #include "glad/glad.h"
+#include "platform/open_gl/texture/open_gl_texture.h"
 
 namespace retro::renderer
 {
-    void open_gl_frame_buffer::generate_color_texture(uint32_t texture_handle, int index, uint32_t width,
-                                                      uint32_t height,
-                                                      GLenum format, GLenum dataFormat)
+    void open_gl_frame_buffer::generate_color_texture(uint32_t texture_handle, int index,
+                                                      frame_buffer_texture_specification texture_specification)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, dataFormat, width,
-                     height, 0, format,
-                     dataFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, texture_specification.specification.dataFormat,
+                     m_frame_buffer_specification.width,
+                     m_frame_buffer_specification.height, 0, texture_specification.specification.format,
+                     texture_specification.specification.dataFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE,
+                     nullptr);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // Filtering
+        if (texture_specification.specification.filtering != texture_filtering::none)
+        {
+            const GLint filtering = open_gl_texture::convert_texture_filtering(
+                texture_specification.specification.filtering);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
+        }
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // Wrapping
+        if (texture_specification.specification.wrapping != texture_wrapping::none)
+        {
+            const GLint wrapping = open_gl_texture::convert_texture_wrapping(
+                texture_specification.specification.wrapping);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, wrapping);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapping);
+        }
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_2D,
                                texture_handle,
                                0);
     }
 
-    void open_gl_frame_buffer::generate_depth_texture(uint32_t texture_handle, uint32_t width, uint32_t height)
+    void open_gl_frame_buffer::generate_depth_texture(uint32_t texture_handle,
+                                                      frame_buffer_texture_specification texture_specification)
     {
-        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, width,
-                       height);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, m_frame_buffer_specification.width,
+                       m_frame_buffer_specification.height);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // Filtering
+        if (texture_specification.specification.filtering != texture_filtering::none)
+        {
+            const GLint filtering = open_gl_texture::convert_texture_filtering(
+                texture_specification.specification.filtering);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_MIN_FILTER, filtering);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_MAG_FILTER, filtering);
+        }
+
+        // Wrapping
+        if (texture_specification.specification.wrapping != texture_wrapping::none)
+        {
+            const GLint wrapping = open_gl_texture::convert_texture_wrapping(
+                texture_specification.specification.wrapping);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_R, wrapping);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_S, wrapping);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_T, wrapping);
+        }
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture_handle, 0);
     }
@@ -48,7 +76,7 @@ namespace retro::renderer
         // Loop through the specification and create the framebuffer
         for (auto& attachment : m_frame_buffer_specification.attachments)
         {
-            if (attachment.format == frame_buffer_attachment_format::depth32f)
+            if (attachment.specification.format == GL_DEPTH_COMPONENT32F)
             {
                 m_depth_texture_specification = attachment;
             }
@@ -159,35 +187,13 @@ namespace retro::renderer
             for (int i = 0; i < m_attachments.size(); i++)
             {
                 glBindTexture(GL_TEXTURE_2D, m_attachments[i]);
-
-                switch (m_frame_buffer_texture_specifications[i].format)
-                {
-                case frame_buffer_attachment_format::rgba8:
-                    {
-                        generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
-                                               m_frame_buffer_specification.height, GL_RGBA, GL_RGBA8);
-                        break;
-                    }
-                case frame_buffer_attachment_format::rgba16f:
-                    {
-                        generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
-                                               m_frame_buffer_specification.height, GL_RGBA, GL_RGB16F);
-                        break;
-                    }
-                case frame_buffer_attachment_format::redint:
-                    {
-                        generate_color_texture(m_attachments[i], i, m_frame_buffer_specification.width,
-                                               m_frame_buffer_specification.height, GL_RED_INTEGER, GL_R32I);
-                        break;
-                    }
-                }
+                generate_color_texture(m_attachments[i], i, m_frame_buffer_texture_specifications[i]);
             }
         }
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_depth_attachment);
         glBindTexture(GL_TEXTURE_2D, m_depth_attachment);
-        generate_depth_texture(m_depth_attachment, m_frame_buffer_specification.width,
-                               m_frame_buffer_specification.height);
+        generate_depth_texture(m_depth_attachment, m_depth_texture_specification);
 
         // Draw buffers.
         if (m_attachments.size() > 1)

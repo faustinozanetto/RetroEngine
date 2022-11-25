@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "core/application/retro_application.h"
 #include "panels/actor_details_panel.h"
+#include "panels/assets_panel.h"
 #include "panels/camera_panel.h"
 #include "panels/hierarchy_panel.h"
 #include "panels/renderer_panel.h"
@@ -36,6 +37,8 @@ namespace retro::editor
         m_panels.emplace_back(camera_panel);
         auto renderer_panel = create_shared<editor::renderer_panel>();
         m_panels.emplace_back(renderer_panel);
+        shared<assets_panel> assets_panel = create_shared<editor::assets_panel>();
+        m_panels.emplace_back(assets_panel);
 
         s_render_target = renderer::scene_renderer::get_final_texture();
     }

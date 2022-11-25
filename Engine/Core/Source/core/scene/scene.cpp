@@ -23,7 +23,7 @@ namespace retro
 
   shared<actor> scene::create_actor()
   {
-    entt::entity handle = m_actors_registry.create();
+    const entt::entity handle = m_actors_registry.create();
     shared<actor> actor = actor::create(handle);
     m_actors.push_back(actor);
     return actor;

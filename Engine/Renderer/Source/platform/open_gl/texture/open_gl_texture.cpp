@@ -49,47 +49,14 @@ namespace retro::renderer
     {
         logger::line();
         m_texture_specification = texture_specification;
-        logger::info("OpenGLTexture::OpenGLTexture | Loading texture: ");
-        logger::info("  - Path: " + m_texture_specification.path);
-        logger::info("  - Filtering: " + get_texture_filtering_to_string(m_texture_specification.filtering));
-        logger::info("  - Wrapping: " + get_texture_wrapping_to_string(m_texture_specification.wrapping));
-
-        // Variables for stb.
-        int width, height, channels;
-        stbi_uc* data = nullptr;
-
-        // Load file using STB.
-        stbi_set_flip_vertically_on_load(1);
+        if (!m_texture_specification.path.empty())
         {
-            data = stbi_load(m_texture_specification.path.c_str(), &width, &height, &channels, 0);
+            setup_image_from_path();
         }
-
-        RETRO_CORE_ASSERT(data, "Failed to load data from image");
-
-        // Updating size.
-        m_width = width;
-        m_height = height;
-        m_channels = channels;
-
-        logger::info(
-            "  - Width: " + std::to_string(m_width) + " Height: " + std::to_string(
-                m_height));
-        logger::info("  - Channels: " + std::to_string(m_channels));
-
-        // Setup texture format.
-        if (!setup_image_formats())
+        else
         {
-            logger::error("Could not setup texture format.");
+            setup_image_no_path();
         }
-
-        logger::info("Internal format: " + convert_texture_enum_to_string(m_internal_format));
-        logger::info("Data format: " + convert_texture_enum_to_string(m_data_format));
-
-        // Construct the opengl image.
-        setup_image_buffers(data);
-
-        // Free memory.
-        stbi_image_free(data);
 
         logger::line();
     }
@@ -109,13 +76,13 @@ namespace retro::renderer
             mdata = stbi_load_from_memory(data, width * height, &lWidth, &lHeight, &channels, 0);
         }
 
-        m_width = width;
-        m_height = height;
+        // Updating size.
+        m_texture_specification.size = {width, height};
         m_channels = channels;
 
         logger::info(
-            "  - Width: " + std::to_string(m_width) + " Height: " + std::to_string(
-                m_height));
+            "  - Width: " + std::to_string(m_texture_specification.size.x) + " Height: " + std::to_string(
+                m_texture_specification.size.y));
         logger::info("  - Channels: " + std::to_string(m_channels));
 
         // Setup texture format.
@@ -124,17 +91,19 @@ namespace retro::renderer
             logger::error("Could not setup texture format.");
         }
 
-        logger::info("Internal format: " + convert_texture_enum_to_string(m_internal_format));
-        logger::info("Data format: " + convert_texture_enum_to_string(m_data_format));
+        logger::info("Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
+        logger::info("Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
 
         // Generating the texture.
         glCreateTextures(GL_TEXTURE_2D, 1, &m_object_handle);
         glBindTexture(GL_TEXTURE_2D, m_object_handle);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTextureStorage2D(m_object_handle, m_mip_map_levels, m_internal_format, m_width, m_height);
+        glTextureStorage2D(m_object_handle, m_mip_map_levels, m_texture_specification.format,
+                           m_texture_specification.size.x, m_texture_specification.size.y);
 
         // Setup mipmaps.
-        m_mip_map_levels = static_cast<GLsizei>(floor(log2((std::min)(m_width, m_height))));
+        m_mip_map_levels = static_cast<GLsizei>(floor(
+            log2((std::min)(m_texture_specification.size.x, m_texture_specification.size.y))));
 
         // Filtering
         if (m_texture_specification.filtering != texture_filtering::none)
@@ -153,7 +122,8 @@ namespace retro::renderer
         }
 
         // Allocating memory.
-        glTextureSubImage2D(m_object_handle, 0, 0, 0, m_width, m_height, m_data_format, GL_UNSIGNED_BYTE, mdata);
+        glTextureSubImage2D(m_object_handle, 0, 0, 0, m_texture_specification.size.x, m_texture_specification.size.y,
+                            m_texture_specification.dataFormat, GL_UNSIGNED_BYTE, mdata);
         glGenerateTextureMipmap(m_object_handle);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
@@ -200,12 +170,12 @@ namespace retro::renderer
 
     int open_gl_texture::get_width()
     {
-        return m_width;
+        return m_texture_specification.size.x;
     }
 
     int open_gl_texture::get_height()
     {
-        return m_height;
+        return m_texture_specification.size.y;
     }
 
     void open_gl_texture::serialize()
@@ -252,30 +222,121 @@ namespace retro::renderer
         return wrap;
     }
 
+    void open_gl_texture::setup_image_from_path()
+    {
+        logger::info("OpenGLTexture::OpenGLTexture | Loading texture from path: ");
+        logger::info("  - Path: " + m_texture_specification.path);
+        logger::info("  - Filtering: " + get_texture_filtering_to_string(m_texture_specification.filtering));
+        logger::info("  - Wrapping: " + get_texture_wrapping_to_string(m_texture_specification.wrapping));
+
+        // Variables for stb.
+        int width, height, channels;
+        stbi_uc* data = nullptr;
+
+        // Load file using STB.
+        stbi_set_flip_vertically_on_load(1);
+        {
+            data = stbi_load(m_texture_specification.path.c_str(), &width, &height, &channels, 0);
+        }
+
+        RETRO_CORE_ASSERT(data, "Failed to load data from image");
+
+        // Updating size.
+        m_texture_specification.size = {width, height};
+        m_channels = channels;
+
+        logger::info(
+            "  - Width: " + std::to_string(m_texture_specification.size.x) + " Height: " + std::to_string(
+                m_texture_specification.size.y));
+        logger::info("  - Channels: " + std::to_string(m_channels));
+
+        // Setup texture format.
+        if (!setup_image_formats())
+        {
+            logger::error("Could not setup texture format.");
+        }
+
+        logger::info("Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
+        logger::info("Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
+
+        // Construct the opengl image.
+        setup_image_buffers(data);
+
+        // Free memory.
+        stbi_image_free(data);
+    }
+
+    void open_gl_texture::setup_image_no_path()
+    {
+        logger::info("OpenGLTexture::OpenGLTexture | Loading texture: ");
+        logger::info("  - Path: None");
+        logger::info("  - Filtering: " + get_texture_filtering_to_string(m_texture_specification.filtering));
+        logger::info("  - Wrapping: " + get_texture_wrapping_to_string(m_texture_specification.wrapping));
+
+        m_channels = 4;
+
+        logger::info(
+            "  - Width: " + std::to_string(m_texture_specification.size.x) + " Height: " + std::to_string(
+                m_texture_specification.size.y));
+        logger::info("  - Channels: " + std::to_string(m_channels));
+
+        logger::info("Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
+        logger::info("Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
+
+        // Setup mipmaps.
+        m_mip_map_levels = static_cast<GLsizei>(floor(
+            log2((std::min)(m_texture_specification.size.x, m_texture_specification.size.y))));
+
+        // Generating the texture.
+        glGenTextures(1, &m_object_handle);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_object_handle);
+
+        // Filtering
+        if (m_texture_specification.filtering != texture_filtering::none)
+        {
+            const GLint filtering = convert_texture_filtering(m_texture_specification.filtering);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_MIN_FILTER, filtering);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_MAG_FILTER, filtering);
+        }
+
+        // Wrapping
+        if (m_texture_specification.wrapping != texture_wrapping::none)
+        {
+            const GLint wrapping = convert_texture_wrapping(m_texture_specification.wrapping);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_S, wrapping);
+            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_T, wrapping);
+        }
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_texture_specification.size.x, m_texture_specification.size.y, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+        glBindImageTexture(0, m_object_handle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
+    }
+
     bool open_gl_texture::setup_image_formats()
     {
         if (m_channels == 4)
         {
-            m_internal_format = GL_RGBA8;
-            m_data_format = GL_RGBA;
+            m_texture_specification.format = GL_RGBA8;
+            m_texture_specification.dataFormat = GL_RGBA;
             return true;
         }
         if (m_channels == 3)
         {
-            m_internal_format = GL_RGB8;
-            m_data_format = GL_RGB;
+            m_texture_specification.format = GL_RGB8;
+            m_texture_specification.dataFormat = GL_RGB;
             return true;
         }
         if (m_channels == 2)
         {
-            m_internal_format = GL_RG8;
-            m_data_format = GL_RG;
+            m_texture_specification.format = GL_RG8;
+            m_texture_specification.dataFormat = GL_RG;
             return true;
         }
         if (m_channels == 1)
         {
-            m_internal_format = GL_R8;
-            m_data_format = GL_RED;
+            m_texture_specification.format = GL_R8;
+            m_texture_specification.dataFormat = GL_RED;
             return true;
         }
         return false;
@@ -284,14 +345,16 @@ namespace retro::renderer
     void open_gl_texture::setup_image_buffers(const stbi_uc* data)
     {
         // Setup mipmaps.
-        m_mip_map_levels = static_cast<GLsizei>(floor(log2((std::min)(m_width, m_height))));
+        m_mip_map_levels = static_cast<GLsizei>(floor(
+            log2((std::min)(m_texture_specification.size.x, m_texture_specification.size.y))));
 
         // Generating the texture.
         glCreateTextures(GL_TEXTURE_2D, 1, &m_object_handle);
         glBindTexture(GL_TEXTURE_2D, m_object_handle);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTextureStorage2D(m_object_handle, m_mip_map_levels, m_internal_format, m_width,
-                           m_height);
+        glTextureStorage2D(m_object_handle, m_mip_map_levels, m_texture_specification.format,
+                           m_texture_specification.size.x,
+                           m_texture_specification.size.y);
 
         // Filtering
         if (m_texture_specification.filtering != texture_filtering::none)
@@ -310,8 +373,8 @@ namespace retro::renderer
         }
 
         // Allocating memory.
-        glTextureSubImage2D(m_object_handle, 0, 0, 0, m_width, m_height,
-                            m_data_format, GL_UNSIGNED_BYTE, data);
+        glTextureSubImage2D(m_object_handle, 0, 0, 0, m_texture_specification.size.x, m_texture_specification.size.y,
+                            m_texture_specification.dataFormat, GL_UNSIGNED_BYTE, data);
         glGenerateTextureMipmap(m_object_handle);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
     }

@@ -10,38 +10,47 @@
 
 namespace retro::renderer
 {
-	class model : public asset
-	{
-	public:
-		/* Constructor & Destructor */
-		model(const std::string& model_path);
-		~model() override = default;
-		model(const model&) = delete;
-		model& operator=(const model&) = delete;
+    struct model_specification
+    {
+        std::string file_path;
 
-		/* Instantiate */
-		static shared<model> create(const std::string& model_path);
+        model_specification() = default;
 
-		/* Methods */
-		const std::vector<shared<renderable>>& get_model_renderables();
-		const std::vector<renderable_texture>& get_embedded_textures() const { return m_textures_loaded; }
+        model_specification(const std::string& file_path): file_path(file_path)
+        {
+        }
+    };
 
-		std::vector<renderable_texture>
-		parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
+    class model : public asset
+    {
+    public:
+        /* Constructor & Destructor */
+        model(const model_specification& model_specification);
+        ~model() override = default;
 
-		/* Asset */
-		void serialize() override;
-	private:
-		bool load_model_from_path(const std::string& path);
-		bool parse_model_node(const aiNode* node);
-		shared<renderable> parse_renderable(const aiMesh* mesh);
+        /* Methods */
+        const std::vector<shared<renderable>>& get_model_renderables();
+        const std::vector<renderable_texture>& get_embedded_textures() const { return m_textures_loaded; }
 
-	private:
-		const aiScene* m_assimp_scene{};
-		std::vector<shared<texture>> m_textures;
-		std::vector<renderable_texture> m_textures_loaded;
-		std::vector<shared<renderable>> m_renderables;
-		std::string m_model_path;
-		std::string m_directory_path;
-	};
+        /* Asset */
+        void serialize() override;
+        
+        /* Instantiate */
+        static shared<model> create(const model_specification& model_specification);
+    
+    private:
+        bool load_model_from_path(const std::string& path);
+        bool parse_model_node(const aiNode* node);
+        shared<renderable> parse_renderable(const aiMesh* mesh);
+        std::vector<renderable_texture>
+parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
+
+    private:
+        const aiScene* m_assimp_scene{};
+        model_specification m_model_specification;
+        std::vector<shared<texture>> m_textures;
+        std::vector<renderable_texture> m_textures_loaded;
+        std::vector<shared<renderable>> m_renderables;
+        std::string m_directory_path;
+    };
 }

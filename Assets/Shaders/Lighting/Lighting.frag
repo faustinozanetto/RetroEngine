@@ -58,6 +58,7 @@ uniform PointLight pointLight;
 uniform DirectionalLight directionalLight;
 
 float correction_factor = 1.0;
+float u_gamma = 3.6f;
 
 layout(location = 0) out vec4 FragColor;
 
@@ -740,6 +741,32 @@ vec3 CalculateLo(vec3 L, vec3 N, vec3 V, vec3 Ra, vec3 F0, float R, float M, vec
     return (Kd * A / PI + Specular) * Ra * NDotL;
 }
 
+vec3 gammaCorrect(vec3 color) 
+{
+    return pow(color, vec3(1.0/u_gamma));
+}
+
+mat3 ACESInputMat =
+{
+    {0.59719, 0.07600, 0.02840},
+    {0.35458, 0.90834, 0.13383},
+    {0.04823, 0.01566, 0.83777}
+};
+
+mat3 ACESOutputMat =
+{
+    { 1.60475, -0.10208, -0.00327},
+    {-0.53108,  1.10813, -0.07276},
+    {-0.07367, -0.00605,  1.07602 }
+};
+
+vec3 RRTAndODTFit(vec3 v)
+{
+    vec3 a = v * (v + 0.0245786f) - 0.000090537f;
+    vec3 b = v * (0.983729f * v + 0.4329510f) + 0.238081f;
+    return a / b;
+}
+
 void main() {
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 ViewPos = texture(gViewPosition, TexCoords).rgb;
@@ -765,13 +792,13 @@ void main() {
     F0 = mix(F0, Albedo, Metallic);
 
     vec3 Lighting = vec3(0);
-    Lighting += CalculateLo(lightDir, N, V, directionalLight.color.rgb, F0, Roughness, Metallic, Albedo);
+    Lighting += CalculateLo(lightDir, N, V, directionalLight.color.rgb, F0, Roughness, Metallic, Albedo) * directionalLight.intensity;
     for (uint i = 0; i < 1; i++){
         vec3 L = normalize(pointLight.position.xyz - FragPos);
         float distance = length(pointLight.position.xyz - FragPos);
         float attenuation = 1.0/(distance * distance);
         vec3 Ra = pointLight.color.rgb * attenuation;
-        Lighting += CalculateLo(L, N, V, Ra, F0, Roughness, Metallic, Albedo);
+        Lighting += CalculateLo(L, N, V, Ra, F0, Roughness, Metallic, Albedo) * pointLight.intensity;
     }
     
     float shadow = shadowOcclusion(N, FragPos, LightClipSpace, LightViewSpace);
@@ -794,12 +821,17 @@ void main() {
 
 	vec3 result = vec3(0);
 	result = (shadow) * Lighting + ambient;
-    vec3 hdrColor = result;
     
     // HDR tonemapping
-    result = result / (result + vec3(1.0));
+  //  result = result / (result + vec3(1.0));
     // gamma correct
-    result = pow(result, vec3(1.0/2.2));
+  //  result = pow(result, vec3(1.0/2.2));
+    vec3 color = ACESInputMat * result.rgb;
+    color = RRTAndODTFit(color);
+    color = ACESOutputMat * color;
 
-    FragColor = vec4(result, Alpha);
+    color = gammaCorrect(color);
+    color = clamp(color, 0.0, 1.0);
+
+    FragColor = vec4(color, Alpha);
 }

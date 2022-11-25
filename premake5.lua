@@ -62,11 +62,13 @@ project "EngineCore"
     includedirs {
         "%{wks.location}/Engine/Core/source",
         "%{wks.location}/Engine/Renderer/source",
-        "%{IncludeDir.GLM}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.GLAD}",
+        "%{IncludeDir.GLM}",    
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
-        "%{IncludeDir.ASSIMP}",
+        "%{IncludeDir.ASSIMP}",  
         "%{IncludeDir.ENTT}"
     }
 

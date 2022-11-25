@@ -66,7 +66,7 @@ namespace retro::renderer
         }
     };
 
-    class material : public graphics_object, asset
+    class material : public graphics_object, public asset
     {
     public:
         /* Constructor & Destructor */

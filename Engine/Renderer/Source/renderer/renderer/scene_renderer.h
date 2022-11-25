@@ -58,7 +58,6 @@ namespace retro::renderer
 
 		GLuint m_dir_shadow_map;
 		GLuint m_random_angles_tex3d_id;
-		GLuint m_shadow_fbo;
 		GLuint m_pcf_sampler;
 	};
 
@@ -103,7 +102,7 @@ namespace retro::renderer
 		static void set_scene(const shared<scene>& scene);
 
 		static shared<frame_buffer>& get_geometry_frame_buffer();
-		static GLuint get_depth_frame_buffer();
+		static shared<frame_buffer>& get_depth_frame_buffer();
 		static shared<frame_buffer>& get_final_frame_buffer();
 		static shared<lighting_environment>& get_lighting_environment();
 		static shared<camera>& get_camera();
@@ -111,8 +110,6 @@ namespace retro::renderer
 		static uint32_t get_final_texture();
 
 		static void create_directional_shadow_map(uint32_t width, uint32_t height);
-		static void create_shadow_fbo(GLuint shadow_texture);
-		static void generate_shadow_map(uint32_t width, uint32_t height);
 		static void update_light_matrices();
 		static GLuint generate_random_angles_texture_3d(uint32_t size);
 
