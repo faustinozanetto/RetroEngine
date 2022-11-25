@@ -48,7 +48,7 @@ namespace retro::renderer
 		}
 		return {};
 	}
-	
+
 
 	shared<texture> texture::create(uint32_t width, uint32_t height, const unsigned char* data)
 	{
@@ -61,7 +61,7 @@ namespace retro::renderer
 		}
 		case renderer_api_type::open_gl:
 		{
-			return create_shared<open_gl_texture>(width, height,data);
+			return create_shared<open_gl_texture>(width, height, data);
 		}
 		}
 		return {};

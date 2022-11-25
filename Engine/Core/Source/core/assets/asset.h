@@ -21,8 +21,8 @@ namespace retro
 		asset(asset_type asset_type);
 		virtual ~asset() = default;
 
-		const shared<uuid> &get_uuid() const;
-		const asset_type get_asset_type() { return m_asset_type; }
+		shared<uuid> &get_uuid();
+		asset_type get_asset_type() const { return m_asset_type; }
 
 		virtual void serialize() = 0;
 		

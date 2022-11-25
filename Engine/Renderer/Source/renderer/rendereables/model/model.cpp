@@ -5,12 +5,13 @@
 
 namespace retro::renderer
 {
-    model::model(const std::string& model_path) : asset(asset_type::model)
+    model::model(const model_specification& model_specification) : asset(asset_type::model)
     {
         logger::line();
+        m_model_specification = model_specification;
         logger::info("model::model | Loading model:");
-        logger::info("  - File: " + model_path);
-        load_model_from_path(model_path);
+        logger::info("  - File: " + m_model_specification.file_path);
+        load_model_from_path(m_model_specification.file_path);
         logger::line();
     }
 
@@ -21,12 +22,10 @@ namespace retro::renderer
 
     bool model::load_model_from_path(const std::string& path)
     {
-        // Assign path.
-        m_model_path = path;
         // Create assimp importer.
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
-            m_model_path,
+            path,
             aiProcess_PreTransformVertices |
             aiProcess_GenNormals | aiProcess_CalcTangentSpace |
             aiProcess_Triangulate |
@@ -42,7 +41,7 @@ namespace retro::renderer
             return false;
         }
         // Retrieve the directory path of the filepath.
-        m_directory_path = m_model_path.substr(0, m_model_path.find_last_of('/'));
+        m_directory_path = path.substr(0, path.find_last_of('/'));
         // Process the root node recursively.
         return parse_model_node(m_assimp_scene->mRootNode);
     }
@@ -178,7 +177,7 @@ namespace retro::renderer
             }
             if (!skip)
             {
-                std::string texture_path =  str.C_Str();
+                std::string texture_path = str.C_Str();
                 auto texture = renderer::texture::create(
                     {texture_path, texture_filtering::linear, texture_wrapping::clamp_edge});
                 renderable_texture rendereable_texture;
@@ -197,8 +196,8 @@ namespace retro::renderer
     {
     }
 
-    shared<model> model::create(const std::string& model_path)
+    shared<model> model::create(const model_specification& model_specification)
     {
-        return create_shared<model>(model_path);
+        return create_shared<model>(model_specification);
     }
 }

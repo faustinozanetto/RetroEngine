@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "asset.h"
-#include "core/application/retro_application.h"
 
 namespace retro
 {
@@ -9,17 +8,15 @@ namespace retro
 	{
 		m_uuid = create_shared<uuid>();
 		m_asset_type = asset_type::none;
-		retro_application::get_application().get_assets_manager()->register_asset(shared<asset>(this));
 	}
 
 	asset::asset(asset_type asset_type)
 	{
 		m_uuid = create_shared<uuid>();
 		m_asset_type = asset_type;
-		retro_application::get_application().get_assets_manager()->register_asset(shared<asset>(this));
 	}
 
-	const shared<uuid> &asset::get_uuid() const
+	shared<uuid> &asset::get_uuid()
 	{
 		return m_uuid;
 	}

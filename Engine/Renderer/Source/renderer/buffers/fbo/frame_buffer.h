@@ -3,6 +3,7 @@
 #include <map>
 
 #include "core/base.h"
+#include "renderer/texture/texture.h"
 #include "renderer/renderer/graphics_object.h"
 
 namespace retro::renderer
@@ -18,13 +19,13 @@ namespace retro::renderer
     struct frame_buffer_texture_specification
     {
         std::string name;
-        frame_buffer_attachment_format format;
+        texture_specification specification;
 
         frame_buffer_texture_specification() = default;
 
-        frame_buffer_texture_specification(const std::string& name,
-                                           frame_buffer_attachment_format format) : name(name),
-            format(format)
+        frame_buffer_texture_specification(std::string name,
+                                           texture_specification specification) : name(std::move(name)),
+            specification(std::move(specification))
         {
         }
     };

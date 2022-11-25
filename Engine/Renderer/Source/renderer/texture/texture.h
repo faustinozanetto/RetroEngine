@@ -2,6 +2,9 @@
 
 #include "core/base.h"
 #include "renderer/renderer/graphics_object.h"
+#include <glm/glm.hpp>
+
+#include "core/assets/asset.h"
 
 namespace retro::renderer
 {
@@ -32,18 +35,27 @@ namespace retro::renderer
 	struct texture_specification
 	{
 		std::string path;
+		glm::uvec2 size;
 		texture_filtering filtering = texture_filtering::linear;
 		texture_wrapping wrapping = texture_wrapping::clamp_edge;
+		uint32_t format;
+		uint32_t dataFormat;
 
 		texture_specification() = default;
 
-		texture_specification(std::string path, texture_filtering filtering,
-			texture_wrapping wrapping) : path(std::move(path)), filtering(filtering), wrapping(wrapping)
+		texture_specification(const std::string& path, texture_filtering filtering,
+			texture_wrapping wrapping) : path(path), filtering(filtering), wrapping(wrapping)
+		{
+		}
+
+		texture_specification(glm::uvec2 size, texture_filtering filtering,
+			texture_wrapping wrapping, uint32_t format, uint32_t dataFormat) : size(size), filtering(filtering),
+			wrapping(wrapping), format(format), dataFormat(dataFormat)
 		{
 		}
 	};
 
-	class texture : public graphics_object
+	class texture : public graphics_object, public asset
 	{
 	public:
 		/* Destructor */
