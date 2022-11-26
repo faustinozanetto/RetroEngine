@@ -49,15 +49,7 @@ namespace retro::renderer
     {
         logger::line();
         m_texture_specification = texture_specification;
-        if (!m_texture_specification.path.empty())
-        {
-            setup_image_from_path();
-        }
-        else
-        {
-            setup_image_no_path();
-        }
-
+        setup_image_from_path();
         logger::line();
     }
 
@@ -153,6 +145,18 @@ namespace retro::renderer
         glBindTexture(m_object_handle, 0);
     }
 
+    void open_gl_texture::set_filtering(texture_filtering_type filtering_type, texture_filtering filtering)
+    {
+        glTextureParameteri(m_object_handle, convert_texture_filtering_type(filtering_type),
+                            convert_texture_filtering(filtering));
+    }
+
+    void open_gl_texture::set_wrapping(texture_wrapping_coords wrapping_coords, texture_wrapping wrapping)
+    {
+        glTextureParameteri(m_object_handle, convert_texture_wrapping_coords(wrapping_coords),
+                            convert_texture_wrapping(wrapping));
+    }
+
     const texture_specification& open_gl_texture::get_texture_specification() const
     {
         return m_texture_specification;
@@ -222,6 +226,31 @@ namespace retro::renderer
         return wrap;
     }
 
+    GLint open_gl_texture::convert_texture_wrapping_coords(texture_wrapping_coords wrapping_coords)
+    {
+        switch (wrapping_coords)
+        {
+        case texture_wrapping_coords::r:
+            return GL_TEXTURE_WRAP_R;
+        case texture_wrapping_coords::s:
+            return GL_TEXTURE_WRAP_S;
+        case texture_wrapping_coords::t:
+            return GL_TEXTURE_WRAP_T;
+        }
+    }
+
+    GLint open_gl_texture::convert_texture_filtering_type(texture_filtering_type filtering_type)
+    {
+        switch (filtering_type)
+        {
+        case texture_filtering_type::mag:
+            return GL_TEXTURE_MAG_FILTER;
+        case texture_filtering_type::min:
+            return GL_TEXTURE_MIN_FILTER;
+        }
+    }
+
+
     void open_gl_texture::setup_image_from_path()
     {
         logger::info("OpenGLTexture::OpenGLTexture | Loading texture from path: ");
@@ -231,7 +260,7 @@ namespace retro::renderer
 
         // Variables for stb.
         int width, height, channels;
-        stbi_uc* data = nullptr;
+        stbi_uc* data;
 
         // Load file using STB.
         stbi_set_flip_vertically_on_load(1);
@@ -256,8 +285,8 @@ namespace retro::renderer
             logger::error("Could not setup texture format.");
         }
 
-        logger::info("Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
-        logger::info("Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
+        logger::info("  - Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
+        logger::info("  - Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
 
         // Construct the opengl image.
         setup_image_buffers(data);
@@ -280,8 +309,8 @@ namespace retro::renderer
                 m_texture_specification.size.y));
         logger::info("  - Channels: " + std::to_string(m_channels));
 
-        logger::info("Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
-        logger::info("Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
+        logger::info("  - Internal format: " + convert_texture_enum_to_string(m_texture_specification.format));
+        logger::info("  - Data format: " + convert_texture_enum_to_string(m_texture_specification.dataFormat));
 
         // Setup mipmaps.
         m_mip_map_levels = static_cast<GLsizei>(floor(
@@ -359,17 +388,15 @@ namespace retro::renderer
         // Filtering
         if (m_texture_specification.filtering != texture_filtering::none)
         {
-            const GLint filtering = convert_texture_filtering(m_texture_specification.filtering);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_MIN_FILTER, filtering);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_MAG_FILTER, filtering);
+            set_filtering(texture_filtering_type::min, m_texture_specification.filtering);
+            set_filtering(texture_filtering_type::mag, m_texture_specification.filtering);
         }
 
         // Wrapping
         if (m_texture_specification.wrapping != texture_wrapping::none)
         {
-            const GLint wrapping = convert_texture_wrapping(m_texture_specification.wrapping);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_S, wrapping);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_T, wrapping);
+            set_wrapping(texture_wrapping_coords::r, m_texture_specification.wrapping);
+            set_wrapping(texture_wrapping_coords::s, m_texture_specification.wrapping);
         }
 
         // Allocating memory.
