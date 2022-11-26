@@ -59,6 +59,7 @@ namespace retro::editor
     void editor_main_interface::on_interface_renderer()
     {
         start_dockspace();
+        ImGui::ShowDemoWindow();
         render_viewport();
         for (const auto& panel : m_panels)
         {

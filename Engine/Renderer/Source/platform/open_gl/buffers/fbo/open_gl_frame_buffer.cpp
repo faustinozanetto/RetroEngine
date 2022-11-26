@@ -23,8 +23,8 @@ namespace retro::renderer
         {
             const GLint filtering = open_gl_texture::convert_texture_filtering(
                 texture_specification.specification.filtering);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
+            glTextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, filtering);
+            glTextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, filtering);
         }
 
         // Wrapping
@@ -32,9 +32,9 @@ namespace retro::renderer
         {
             const GLint wrapping = open_gl_texture::convert_texture_wrapping(
                 texture_specification.specification.wrapping);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, wrapping);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapping);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapping);
+            glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_R, wrapping);
+            glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, wrapping);
+            glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, wrapping);
         }
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_2D,
@@ -53,8 +53,8 @@ namespace retro::renderer
         {
             const GLint filtering = open_gl_texture::convert_texture_filtering(
                 texture_specification.specification.filtering);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_MIN_FILTER, filtering);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_MAG_FILTER, filtering);
+            glTextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, filtering);
+            glTextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, filtering);
         }
 
         // Wrapping
@@ -62,9 +62,9 @@ namespace retro::renderer
         {
             const GLint wrapping = open_gl_texture::convert_texture_wrapping(
                 texture_specification.specification.wrapping);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_R, wrapping);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_S, wrapping);
-            glTextureParameteri(m_object_handle, GL_TEXTURE_WRAP_T, wrapping);
+            glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_R, wrapping);
+            glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, wrapping);
+            glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, wrapping);
         }
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture_handle, 0);

@@ -8,7 +8,7 @@
 
 namespace retro::renderer
 {
-	class open_gl_texture : public texture, public asset
+	class open_gl_texture final : public texture, public asset
 	{
 	public:
 		/* Constructor & Destructor */
@@ -20,6 +20,9 @@ namespace retro::renderer
 		void bind() override;
 		void bind(int slot) override;
 		void un_bind() override;
+
+		void set_filtering(texture_filtering_type filtering_type, texture_filtering filtering) override;
+		void set_wrapping(texture_wrapping_coords wrapping_coords, texture_wrapping wrapping) override;
 
 		const texture_specification& get_texture_specification() const override;
 		int get_mip_maps_levels() override;
@@ -34,13 +37,16 @@ namespace retro::renderer
 		static GLint convert_texture_filtering(texture_filtering texture_filtering);
 		/* Converts the enum value to the matching OpenGL enum. */
 		static GLint convert_texture_wrapping(texture_wrapping texture_wrapping);
+		/* Converts the enum value to the matching OpenGL enum. */
+		static GLint convert_texture_wrapping_coords(texture_wrapping_coords wrapping_coords);
+		/* Converts the enum value to the matching OpenGL enum. */
+		static GLint convert_texture_filtering_type(texture_filtering_type filtering_type);
 
 	private:
-		void setup_image_from_path();
-		void setup_image_no_path();
 		bool setup_image_formats();
 		void setup_image_buffers(const stbi_uc* data);
-
+		void setup_image_from_path();
+		void setup_image_no_path();
 	protected:
 		texture_specification m_texture_specification;
 		int m_mip_map_levels{};
