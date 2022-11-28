@@ -5,6 +5,16 @@ const int NUM_CASCADES = 3;
 // Tex coords from vertex shader.
 layout(location = 0) in vec2 TexCoords;
 
+struct Surface {
+    vec3 worldPosition;
+    vec3 viewPosition;
+    vec3 normal;
+    vec3 albedo;
+    float roughness;
+    float metallic;
+    float ao;
+};
+
 struct PointLight {
     vec4 position;
     vec4 color;
@@ -568,7 +578,7 @@ float shadowPCSS(vec3 FragPos, vec2 uv, float z, float bias, float z_vs)
 
 // ------------------------------------------------------------------
 
-float shadowOcclusion(vec3 Normal, vec3 FragPos, vec4 LightClipSpace, vec4 LightViewSpace)
+float shadowOcclusion(Surface surface, vec4 LightClipSpace, vec4 LightViewSpace)
 {
     vec3 proj_coords = LightClipSpace.xyz / LightClipSpace.w;
 
@@ -581,12 +591,12 @@ float shadowOcclusion(vec3 Normal, vec3 FragPos, vec4 LightClipSpace, vec4 Light
     float current_depth = proj_coords.z;
 
     // check whether current frag pos is in shadow
-    float bias = max(0.01 * (1.0 - dot(Normal, directionalLight.direction.xyz)), 0.001);
+    float bias = max(0.01 * (1.0 - dot(surface.normal, directionalLight.direction.xyz)), 0.001);
 
     vec4 pos_vs = LightViewSpace;
     pos_vs.xyz /= pos_vs.w;
 
-    return shadowPCSS(FragPos, proj_coords.xy, current_depth, bias, -(pos_vs.z));
+    return shadowPCSS(surface.worldPosition, proj_coords.xy, current_depth, bias, -(pos_vs.z));
 }
 
 // ----------------------------------------------------------------------------
@@ -773,48 +783,57 @@ void main() {
     vec4 AlbedoSrc = texture(gAlbedo, TexCoords);
     vec3 Albedo = AlbedoSrc.rgb;
     float Alpha = AlbedoSrc.a;
-    vec3 N = texture(gNormal, TexCoords).rgb;
+    vec3 Normal = texture(gNormal, TexCoords).rgb;
     float Roughness = texture(gRoughMetalAO, TexCoords).r;
     float Metallic  = texture(gRoughMetalAO, TexCoords).g;
     float AO        = texture(gRoughMetalAO, TexCoords).b;
     vec3 CamPos = camera.u_Position;
+
+    Surface surface;
+    surface.worldPosition = FragPos;
+    surface.viewPosition = ViewPos;
+    surface.normal = Normal;
+    surface.albedo = Albedo;
+    surface.metallic = Metallic;
+    surface.roughness = Roughness;
+    surface.ao = AO;
     
-    vec4 LightClipSpace = shadow.light_view_projection * vec4(FragPos, 1.0);
-    vec4 LightViewSpace = shadow.light_view  * vec4(FragPos, 1.0);
+    vec4 LightClipSpace = shadow.light_view_projection * vec4(surface.worldPosition, 1.0);
+    vec4 LightViewSpace = shadow.light_view  * vec4(surface.worldPosition, 1.0);
 
     vec3 lightDir = normalize(-directionalLight.direction.xyz);
-    float bias = max(0.01 * (1.0 - dot(N, lightDir)), 0.001);
+    float bias = max(0.01 * (1.0 - dot(surface.normal, lightDir)), 0.001);
 
-    vec3 V = normalize(CamPos - FragPos);
-    vec3 R = reflect(-V, N);
+    vec3 V = normalize(CamPos - surface.worldPosition);
+    vec3 R = reflect(-V, surface.normal);
     
     vec3 F0 = vec3(0.04);
-    F0 = mix(F0, Albedo, Metallic);
+    F0 = mix(F0, surface.albedo, surface.metallic);
 
     vec3 Lighting = vec3(0);
-    Lighting += CalculateLo(lightDir, N, V, directionalLight.color.rgb, F0, Roughness, Metallic, Albedo) * directionalLight.intensity;
+    Lighting += CalculateLo(lightDir, surface.normal, V, directionalLight.color.rgb, F0, surface.roughness, surface.metallic, surface.albedo) * directionalLight.intensity;
     for (uint i = 0; i < 1; i++){
-        vec3 L = normalize(pointLight.position.xyz - FragPos);
-        float distance = length(pointLight.position.xyz - FragPos);
+        vec3 L = normalize(pointLight.position.xyz - surface.worldPosition);
+        float distance = length(pointLight.position.xyz - surface.worldPosition);
         float attenuation = 1.0/(distance * distance);
         vec3 Ra = pointLight.color.rgb * attenuation;
-        Lighting += CalculateLo(L, N, V, Ra, F0, Roughness, Metallic, Albedo) * pointLight.intensity;
+        Lighting += CalculateLo(L, surface.normal, V, Ra, F0, surface.roughness, surface.metallic, surface.albedo) * pointLight.intensity;
     }
     
-    float shadow = shadowOcclusion(N, FragPos, LightClipSpace, LightViewSpace);
+    float shadow = shadowOcclusion(surface, LightClipSpace, LightViewSpace);
 
-    vec3 F = FresnelSchlickRoughness(max(dot(N, V), 0.0), F0, Roughness);
+    vec3 F = FresnelSchlickRoughness(max(dot(surface.normal, V), 0.0), F0, surface.roughness);
 
 	vec3 Ks = F;
 	vec3 Kd = 1.0 - Ks;
-	Kd *= 1.0 - Metallic;
+	Kd *= 1.0 - surface.metallic;
 	
-	vec3 irradiance = texture(gIrradiance, N).rgb * 1.1;
-	vec3 diffuse    = irradiance * Albedo;
+	vec3 irradiance = texture(gIrradiance, surface.normal).rgb * 1.1;
+	vec3 diffuse    = irradiance * surface.albedo;
 
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(gPrefilter, R,  Roughness * MAX_REFLECTION_LOD).rgb; 
-    vec2 BRDF  = texture(gBRDFLut, vec2(max(dot(N, V), 0.0), Roughness)).rg;
+    vec3 prefilteredColor = textureLod(gPrefilter, R,  surface.roughness * MAX_REFLECTION_LOD).rgb; 
+    vec2 BRDF  = texture(gBRDFLut, vec2(max(dot(surface.normal, V), 0.0), surface.roughness)).rg;
     vec3 specular = prefilteredColor * (F * BRDF.x + BRDF.y);
 
 	vec3 ambient = (Kd * diffuse + specular) * AO; 

@@ -81,52 +81,42 @@ namespace retro::editor
 				{
 					if (texture_type.second.mat_texture)
 					{
-						auto label = renderer::material::get_texture_type_to_string(texture_type.first);
+						const std::string& label = renderer::material::get_texture_type_to_string(texture_type.first);
 						ImGui::PushID(label.c_str());
-						ImGui::Columns(2);
-						ImGui::SetColumnWidth(0, 100.0f);
-						ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });
 						ImGui::AlignTextToFramePadding();
-						ImGui::Text(label.c_str());
-						ImGui::PopStyleVar();
-						ImGui::NextColumn();
-
-						const std::string id = "Enabled";
-						ImGui::Checkbox(id.c_str(), &texture_type.second.enabled);
-
-						ImGui::Columns(1);
-						ImGui::PopID();
-
-						if (ImGui::ImageButton(
-							reinterpret_cast<ImTextureID>(texture_type.second.mat_texture->get_object_handle()),
-							{ 64.0f, 64.0f },
-							ImVec2(0.0f, 1.0f),
-							ImVec2(1.0f, 0.0f)))
-						{
-						}
-
-						/*
-						if (ImGui::TreeNode(reinterpret_cast<void*>(texture_type.first),
-											"Texture %s",
-											renderer::material::get_texture_type_to_string(texture_type.first).c_str()))
-						{
-							editor_interface_utils::draw_property(
-								"Enable",
-								texture_type.second.enabled);
-							// Image button.
-							if (ImGui::ImageButton(
-								reinterpret_cast<ImTextureID>(texture_type.second.mat_texture->get_object_handle()),
-								{64.0f, 64.0f},
-								ImVec2(0.0f, 1.0f),
-								ImVec2(1.0f, 0.0f)))
-							{
-							}
+						if (ImGui::TreeNodeEx(label.c_str())) {
+							editor_interface_utils::draw_property(texture_type.second.mat_texture);
 							ImGui::TreePop();
 						}
-						*/
+						ImGui::PopID();
 					}
 				}
 			}
+			ImGui::Separator();
+			if (active_scene->get_actor_registry().has<model_renderer_component>(
+				editor_main_interface::s_selected_actor))
+			{
+				const auto& model_renderer_component = active_scene->get_actor_registry().get<retro::model_renderer_component>(
+					editor_main_interface::s_selected_actor);
+				ImGui::Text("Renderables Count: %d", model_renderer_component.model->get_model_renderables().size());
+				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+				flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+				int renderable_idx = 0;
+				if (ImGui::TreeNodeEx(model_renderer_component.model->get_uuid().get(), flags, "Rendereables"))
+				{
+					for (shared<renderer::renderable>& renderable : model_renderer_component.model->get_model_renderables()) {
+						if (ImGui::TreeNodeEx(reinterpret_cast<void*>(renderable_idx), flags, "#%d", renderable_idx))
+						{
+							ImGui::Text("Vertices: %d", renderable->get_vertices().size());
+							ImGui::Text("Indices: %d", renderable->get_indices().size());
+							ImGui::TreePop();
+						}
+						renderable_idx++;
+					}
+					ImGui::TreePop();
+				}
+			}
+			ImGui::Separator();
 			if (active_scene->get_actor_registry().has<light_renderer_component>(
 				editor_main_interface::s_selected_actor))
 			{
@@ -135,7 +125,8 @@ namespace retro::editor
 						editor_main_interface::s_selected_actor);
 
 				editor_interface_utils::draw_property("Color", light_renderer_component.light->get_color(), true);
-				editor_interface_utils::draw_property("Intensity", light_renderer_component.light->get_intensity(), 0.0f, 10.0f, 0.01f);
+				editor_interface_utils::draw_property("Intensity", light_renderer_component.light->get_intensity(),
+					0.0f, 10.0f, 0.01f);
 
 				// If type is directional, draw direction property.
 				if (light_renderer_component.type == light_type::directional)
@@ -146,7 +137,9 @@ namespace retro::editor
 						-180.0, 180.0, 0.1f))
 					{
 						directionalLight->set_direction(m_dir_light.x, m_dir_light.y);
-						logger::info("dir: " + std::to_string(directionalLight->get_direction().x) + " " + std::to_string(directionalLight->get_direction().y));
+						logger::info(
+							"dir: " + std::to_string(directionalLight->get_direction().x) + " " + std::to_string(
+								directionalLight->get_direction().y));
 					}
 				}
 				else if (light_renderer_component.type == light_type::point)

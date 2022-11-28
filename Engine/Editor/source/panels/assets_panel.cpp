@@ -38,6 +38,7 @@ namespace retro::editor
                         reinterpret_cast<void*>(asset.first->get()),
                         flags, label.c_str()))
                     {
+                        ImGui::Text("Size: %llu", sizeof(asset.second));
                         ImGui::TreePop();
                     }
                 }

@@ -18,10 +18,10 @@ layout(std140, binding = 0) uniform Camera
 } camera;
 
 struct GeometryOutput {
-    vec2 texCoords;
-    vec3 position;
-    vec3 normal;
     vec3 viewPos;
+    vec3 position;
+    vec2 texCoords;
+    vec3 normal;
     mat3 tbn;
 };
 

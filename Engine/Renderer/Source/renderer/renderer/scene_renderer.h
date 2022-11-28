@@ -45,9 +45,9 @@ namespace retro::renderer
 
 	struct csm_shadows
 	{
-		int m_blocker_search_samples = 128;
-		int m_pcf_filter_samples = 128;
-		float m_light_radius_uv;
+		int m_blocker_search_samples = 25;
+		int m_pcf_filter_samples = 25;
+		float m_light_radius_uv = 0.5f;
 
 		glm::vec2 scene_size;
 		glm::uvec2 m_dir_light_shadow_map_res;
@@ -114,7 +114,9 @@ namespace retro::renderer
 		static GLuint generate_random_angles_texture_3d(uint32_t size);
 
 	private:
+		/* Loads essential shaders needeed for the renderer. */
 		static void load_shaders();
+		/* Generates the frame buffers required for the renderer. */
 		static void generate_frame_buffers();
 		static void create_screen_vao();
 		static void create_camera(const shared<camera>& camera);
