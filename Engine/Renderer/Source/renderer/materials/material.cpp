@@ -66,11 +66,11 @@ namespace retro::renderer
     {
         switch (material_texture_type)
         {
-        case material_texture_type::albedo: return "albedo";
-        case material_texture_type::normal: return "normal";
-        case material_texture_type::roughness: return "roughness";
-        case material_texture_type::metallic: return "metallic";
-        case material_texture_type::ambient_occlusion: return "ambient_occlusion";
+        case material_texture_type::albedo: return "Albedo";
+        case material_texture_type::normal: return "Normal";
+        case material_texture_type::roughness: return "Roughness";
+        case material_texture_type::metallic: return "Metallic";
+        case material_texture_type::ambient_occlusion: return "Ambient Occlusion";
         }
         return "";
     }

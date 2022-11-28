@@ -151,7 +151,7 @@ public:
 				materialSpecification);
 			auto sphere = m_Scene->create_actor();
 			sphere->add_component<retro::name_component>("SciFiHelmet");
-			auto sphereModel = retro::renderer::model::create("Assets/Models/SciFiHelmet/glTF/SciFiHelmet.obj");
+			auto sphereModel = retro::renderer::model::create({ "Assets/Models/SciFiHelmet/glTF/SciFiHelmet.obj" });
 			sphere->add_component<retro::model_renderer_component>(sphereModel);
 			sphere->add_component<retro::material_component>(material);
 			sphere->add_component<retro::transform_component>();
@@ -179,7 +179,6 @@ public:
 
 	void on_layer_updated() override
 	{
-
 		m_camera->set_fov(m_fov);
 		retro::renderer::scene_renderer::begin_render();
 
@@ -212,7 +211,6 @@ public:
 			}
 			style.WindowMinSize.x = minWinSizeX;
 		}
-
 
 		const auto view = m_Scene->get_actor_registry().group<retro::model_renderer_component>
 			(entt::get<retro::name_component, retro::transform_component>);
@@ -280,7 +278,6 @@ public:
 		}
 		ImGui::End();
 
-
 		ImGui::Begin("Camera");
 		ImGui::SliderFloat3("Camera Pos", value_ptr(m_camera_pos), -10.0f, 10.0f);
 		ImGui::SliderFloat("Camera FOV", &m_fov, 1.0f, 90.0f);
@@ -306,7 +303,6 @@ public:
 			ImGui::TreePop();
 		}
 		ImGui::End();
-
 
 		ImGui::Begin("Actors");
 

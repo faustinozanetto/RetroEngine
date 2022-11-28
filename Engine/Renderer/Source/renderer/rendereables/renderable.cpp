@@ -5,7 +5,7 @@
 namespace retro::renderer
 {
 	renderable::renderable(const std::vector<renderable_vertex>& vertices, const std::vector<uint32_t>& indices,
-	                       const std::vector<renderable_texture>& textures)
+		const std::vector<renderable_texture>& textures)
 	{
 		m_vertices = vertices;
 		m_indices = indices;
@@ -28,7 +28,7 @@ namespace retro::renderer
 		// Create VBO, VAO and IBO
 		m_vao = vertex_array_buffer::create();
 		m_vbo = vertex_object_buffer::create(reinterpret_cast<float*>(&m_vertices[0]),
-		                                   sizeof(renderable_vertex) * m_vertices.size());
+			sizeof(renderable_vertex) * m_vertices.size());
 		m_ibo = index_buffer::create((m_indices).data(), m_indices.size());
 		// Setup VBO Layout
 		m_vao->bind();
@@ -38,7 +38,7 @@ namespace retro::renderer
 			{FloatVec3, "aNormal"},
 			{FloatVec3, "aTangent"},
 			{FloatVec3, "aBiTangent"},
-		});
+			});
 		m_vao->add_vertex_buffer(m_vbo);
 		m_vao->set_index_buffer(m_ibo);
 	}
@@ -69,8 +69,8 @@ namespace retro::renderer
 	}
 
 	shared<renderable> renderable::create(const std::vector<renderable_vertex>& vertices,
-	                                   const std::vector<uint32_t>& indices,
-	                                   const std::vector<renderable_texture>& textures)
+		const std::vector<uint32_t>& indices,
+		const std::vector<renderable_texture>& textures)
 	{
 		return create_shared<renderable>(vertices, indices, textures);
 	}

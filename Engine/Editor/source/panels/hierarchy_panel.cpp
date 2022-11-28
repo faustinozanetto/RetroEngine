@@ -57,7 +57,4 @@ namespace retro::editor
             ImGui::TreePop();
         }
     }
-
-
-    
 }

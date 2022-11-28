@@ -25,7 +25,7 @@ namespace retro::renderer
 		glm::vec3 tangent;
 		glm::vec3 bitangent;
 
-		renderable_vertex(): position(), texcoords(), normal(), tangent(), bitangent()
+		renderable_vertex() : position(), texcoords(), normal(), tangent(), bitangent()
 		{
 		}
 
@@ -34,18 +34,18 @@ namespace retro::renderer
 		}
 
 		renderable_vertex(const glm::vec3& position, const glm::vec2& texcoords, const glm::vec3& normal,
-		                 const glm::vec3& tangent, const glm::vec3& bitangent) : position(position), texcoords(texcoords),
+			const glm::vec3& tangent, const glm::vec3& bitangent) : position(position), texcoords(texcoords),
 			normal(normal), tangent(tangent), bitangent(bitangent)
 		{
 		}
 	};
 
-	class renderable : public graphics_object
+	class renderable final : public graphics_object
 	{
 	public:
 		/* Constructor & Destructor */
 		renderable(const std::vector<renderable_vertex>& vertices, const std::vector<uint32_t>& indices,
-		           const std::vector<renderable_texture>& textures);
+			const std::vector<renderable_texture>& textures);
 		~renderable() override = default;
 		renderable(const renderable&) = delete;
 		renderable& operator=(const renderable&) = delete;
@@ -61,12 +61,12 @@ namespace retro::renderer
 		const shared<index_buffer>& get_index_buffer() const;
 		const std::vector<renderable_vertex>& get_vertices() const;
 		const std::vector<uint32_t>& get_indices() const;
-		const std::vector<renderable_texture> get_textures() const { return m_renderable_textures; }
+		std::vector<renderable_texture> get_textures() const { return m_renderable_textures; }
 
 		/* Instantiate */
 		static shared<renderable> create(const std::vector<renderable_vertex>& vertices,
-		                              const std::vector<uint32_t>& indices,
-		                              const std::vector<renderable_texture>& textures);
+			const std::vector<uint32_t>& indices,
+			const std::vector<renderable_texture>& textures);
 
 	private:
 		shared<vertex_array_buffer> m_vao;
