@@ -45,11 +45,6 @@ namespace retro
 		model = renderer::model::create(model_path);
 	}
 
-	material_component::material_component(const shared<renderer::material>& material)
-	{
-		this->material = material;
-	}
-
 	light_renderer_component::light_renderer_component()
 	{
 		type = light_type::point;
@@ -65,7 +60,8 @@ namespace retro
 			light = create_shared<renderer::point_light>();
 			light->set_color(point_light->get_color());
 			point_light->set_position(point_light->get_position());
-		} else if (type == light_type::directional)
+		}
+		else if (type == light_type::directional)
 		{
 			const auto directional_light = reinterpret_cast<renderer::directional_light*>(other.light.get());
 			light = create_shared<renderer::directional_light>();

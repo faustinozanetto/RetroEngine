@@ -37,6 +37,7 @@ namespace retro::renderer
 			logger::error("model::load_model_from_path | Assimp error: " + error);
 			return false;
 		}
+		logger::info("	- Materials: " + m_assimp_scene->mNumMaterials);
 		// Retrieve the directory path of the filepath.
 		m_directory_path = path.substr(0, path.find_last_of('/'));
 		// Process the root node recursively.
@@ -45,23 +46,64 @@ namespace retro::renderer
 
 	bool model::parse_model_node(const aiNode* node)
 	{
-		for (unsigned int i = 0; i < node->mNumMeshes; i++)
+		for (int i = 0; i < node->mNumMeshes; i++)
 		{
 			// The node object only contains indices to index the actual objects in the scene.
 			// The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 			const aiMesh* mesh = m_assimp_scene->mMeshes[node->mMeshes[i]];
-			m_renderables.push_back(parse_renderable(mesh));
+			m_renderables.push_back(parse_renderable(mesh, i));
 		}
 
 		// After we've processed all of the meshes (if any) we then recursively process each of the children nodes.
-		for (unsigned int i = 0; i < node->mNumChildren; i++)
+		for (int i = 0; i < node->mNumChildren; i++)
 		{
 			parse_model_node(node->mChildren[i]);
 		}
+
+		/*
+		for (int i = 0; i < m_assimp_scene->mNumMaterials; i++)
+		{
+			aiMaterial* assimp_mat = m_assimp_scene->mMaterials[i];
+			material_texture albedoTexture = {
+				nullptr, false
+			};
+
+			material_texture normalTexture = {
+				nullptr, false
+			};
+
+			material_texture metalRoughTexture = {
+				nullptr, false
+			};
+
+			material_texture aoTexture = {
+				nullptr, false
+			};
+			const std::map<material_texture_type, material_texture> textures = {
+				{material_texture_type::albedo, albedoTexture},
+				{material_texture_type::normal, normalTexture},
+				{material_texture_type::metallic, metalRoughTexture},
+				{material_texture_type::roughness, metalRoughTexture},
+				{material_texture_type::ambient_occlusion, aoTexture}
+			};
+
+			const material_specification material_specification = {
+				textures,
+				glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+				1.0f,
+				1.0f,
+				1.0f,
+			};
+
+			shared<material> mat = retro_application::get_application().get_assets_manager()->create_material(material_specification);
+			m_materials.insert(std::pair(i, mat));
+		}
+		*/
+
 		return true;
 	}
 
-	shared<renderable> model::parse_renderable(const aiMesh* mesh)
+	shared<renderable> model::parse_renderable(const aiMesh* mesh, int index)
 	{
 		// Create temp vectors.
 		std::vector<renderable_vertex> vertices;
@@ -123,38 +165,34 @@ namespace retro::renderer
 			"Mesh has " + std::to_string(mesh->mNumVertices) + " vertices and " + std::to_string(mesh->mNumFaces) +
 			" faces.");
 
+		/*
 		if (mesh->mMaterialIndex > 0)
 		{
 			// process materials
-			aiMaterial* material = m_assimp_scene->mMaterials[mesh->mMaterialIndex];
-			logger::info("Model Material: ");
-			logger::info("	- Textures Albedo: " + material->GetTextureCount(aiTextureType_BASE_COLOR));
-			logger::info("	- Textures Normal: " + material->GetTextureCount(aiTextureType_NORMAL_CAMERA));
-			logger::info("	- Textures Metallic: " + material->GetTextureCount(aiTextureType_METALNESS));
-			logger::info("	- Textures Roughness: " + material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS));
-			logger::info("	- Textures AO: " + material->GetTextureCount(aiTextureType_AMBIENT_OCCLUSION));
+			aiMaterial* assimp_mat = m_assimp_scene->mMaterials[mesh->mMaterialIndex];
 
 			// 1. diffuse maps
 			std::vector<renderable_texture> diffuseMaps = parse_material_texture(
-				material, aiTextureType_BASE_COLOR, "texture_diffuse");
+				assimp_mat, aiTextureType_BASE_COLOR, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 			// 2. normal maps
 			std::vector<renderable_texture> normalMaps = parse_material_texture(
-				material, aiTextureType_NORMAL_CAMERA, "texture_normal");
+				assimp_mat, aiTextureType_NORMAL_CAMERA, "texture_normal");
 			textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 			// 3. metal maps
 			std::vector<renderable_texture> metalMaps = parse_material_texture(
-				material, aiTextureType_METALNESS, "texture_metallic");
+				assimp_mat, aiTextureType_METALNESS, "texture_metallic");
 			textures.insert(textures.end(), metalMaps.begin(), metalMaps.end());
 			// 4. rough maps
 			std::vector<renderable_texture> roughMaps = parse_material_texture(
-				material, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
+				assimp_mat, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
 			textures.insert(textures.end(), roughMaps.begin(), roughMaps.end());
 			// 5. AO maps
 			std::vector<renderable_texture> aoMaps = parse_material_texture(
-				material, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
+				assimp_mat, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
 			textures.insert(textures.end(), aoMaps.begin(), aoMaps.end());
 		}
+		*/
 
 		if (textures.empty())
 		{

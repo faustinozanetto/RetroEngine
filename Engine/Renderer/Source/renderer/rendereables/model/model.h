@@ -8,6 +8,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
+#include "renderer/materials/material.h"
+
 namespace retro::renderer
 {
 	struct model_specification
@@ -30,7 +32,7 @@ namespace retro::renderer
 
 		/* Methods */
 		std::vector<shared<renderable>>& get_model_renderables();
-		const std::vector<renderable_texture>& get_embedded_textures() const { return m_textures_loaded; }
+		std::vector<renderable_texture>& get_embedded_textures() { return m_textures_loaded; }
 
 		/* Asset */
 		void serialize() override;
@@ -41,7 +43,7 @@ namespace retro::renderer
 	private:
 		bool load_model_from_path(const std::string& path);
 		bool parse_model_node(const aiNode* node);
-		shared<renderable> parse_renderable(const aiMesh* mesh);
+		shared<renderable> parse_renderable(const aiMesh* mesh, int index);
 		std::vector<renderable_texture>
 			parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
 

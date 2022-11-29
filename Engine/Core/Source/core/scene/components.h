@@ -15,10 +15,10 @@ namespace retro
 		name_component(const name_component&) = default;
 		name_component(const std::string& name);
 	};
-	
+
 	struct transform_component
 	{
-		glm::vec3 position = {0.0f, 0.0f, 0.0f};
+		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 rotation = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 scale = { 1.0f, 1.0f, 1.0f };
 
@@ -41,11 +41,10 @@ namespace retro
 
 	struct material_component
 	{
-		shared<renderer::material> material;
+		std::map<int, shared<renderer::material>> materials;
 
 		material_component() = default;
 		material_component(const material_component&) = default;
-		material_component(const shared<renderer::material>& material);
 	};
 
 	enum class light_type
@@ -53,7 +52,7 @@ namespace retro
 		point = 0,
 		directional = 1
 	};
-	
+
 	struct light_renderer_component
 	{
 		shared<renderer::light> light;

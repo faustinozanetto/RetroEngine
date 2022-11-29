@@ -19,6 +19,7 @@ IncludeDir["GLAD"] = "%{wks.location}/ThirdParty/GLAD/include"
 IncludeDir["GLM"] = "%{wks.location}/ThirdParty/GLM"
 IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 IncludeDir["IMGUI"] = "%{wks.location}/ThirdParty/IMGUI"
+IncludeDir["IMGUIBROWSER"] = "%{wks.location}/ThirdParty/IMGUIBROWSER"
 IncludeDir["STB"] = "%{wks.location}/ThirdParty/STB"
 IncludeDir["ASSIMP"] = "%{wks.location}/ThirdParty/ASSIMP/include"
 IncludeDir["ENTT"] = "%{wks.location}/ThirdParty/ENTT/include"
@@ -27,6 +28,7 @@ group "Dependencies"
     include "ThirdParty/GLFW"
     include "ThirdParty/GLAD"
     include "ThirdParty/IMGUI"
+    include "ThirdParty/IMGUIBROWSER"
     include "ThirdParty/STB"
 group ""
 
@@ -68,6 +70,7 @@ project "EngineCore"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",  
         "%{IncludeDir.ENTT}"
     }
@@ -131,6 +134,7 @@ project "EngineRenderer"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",  
         "%{IncludeDir.ENTT}"
     }
@@ -190,6 +194,7 @@ project "EngineEditor"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",
         "%{IncludeDir.ENTT}"
     }
@@ -254,6 +259,7 @@ project "Showcase"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",
         "%{IncludeDir.ENTT}"
     }

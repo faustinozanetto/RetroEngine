@@ -23,7 +23,9 @@ namespace retro
 		shared<renderer::material> create_material(const renderer::material_specification& material_specification);
 		shared<renderer::model> create_model(const renderer::model_specification& model_specification);
 
-		const std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>> &get_assets() const
+		std::unordered_map<shared<uuid>, shared<asset>>& get_assets_by_type(asset_type type);
+
+		const std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>>& get_assets() const
 		{
 			return m_assets;
 		}

@@ -46,9 +46,7 @@ namespace retro::renderer
 		/* Constructor & Destructor */
 		renderable(const std::vector<renderable_vertex>& vertices, const std::vector<uint32_t>& indices,
 			const std::vector<renderable_texture>& textures);
-		~renderable() override = default;
-		renderable(const renderable&) = delete;
-		renderable& operator=(const renderable&) = delete;
+		~renderable() override;
 
 		/* Methods */
 		void bind() override;
@@ -61,7 +59,10 @@ namespace retro::renderer
 		const shared<index_buffer>& get_index_buffer() const;
 		const std::vector<renderable_vertex>& get_vertices() const;
 		const std::vector<uint32_t>& get_indices() const;
-		std::vector<renderable_texture> get_textures() const { return m_renderable_textures; }
+		std::vector<renderable_texture> get_textures() const;
+
+		int get_material_index() const;
+		void set_material_index(int material_index);
 
 		/* Instantiate */
 		static shared<renderable> create(const std::vector<renderable_vertex>& vertices,
@@ -75,5 +76,6 @@ namespace retro::renderer
 		std::vector<renderable_texture> m_renderable_textures;
 		std::vector<renderable_vertex> m_vertices;
 		std::vector<uint32_t> m_indices;
+		int m_material_index;
 	};
 }
