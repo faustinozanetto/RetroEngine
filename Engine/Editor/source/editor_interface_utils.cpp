@@ -2,8 +2,11 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "editor_main_interface.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "core/application/retro_application.h"
+#include "renderer/texture/texture.h"
 
 namespace retro::editor
 {
@@ -57,7 +60,7 @@ namespace retro::editor
 		return modified;
 	}
 
-	bool editor_interface_utils::draw_property(const std::string& name, int& value, int min, int max, int step)
+	bool editor_interface_utils::draw_property(const std::string& name, int& value, int min, int max)
 	{
 		bool modified = false;
 		ImGui::PushID(name.c_str());
@@ -70,7 +73,7 @@ namespace retro::editor
 		ImGui::NextColumn();
 
 		const std::string id = "##" + name;
-		if (ImGui::DragInt(id.c_str(), &value, step, min, max))
+		if (ImGui::SliderInt(id.c_str(), &value, min, max))
 		{
 			modified = true;
 		}
@@ -267,41 +270,76 @@ namespace retro::editor
 		return modified;
 	}
 
-	bool editor_interface_utils::draw_property(shared<renderer::texture>& texture)
+	bool editor_interface_utils::draw_property(const shared<renderer::texture>& texture)
 	{
 		bool modified = false;
-		ImGui::Columns(2);
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });
-		ImGui::Text("Size %dx%d", texture->get_width(), texture->get_height());
-		ImGui::Text("Mip Maps: %d", texture->get_mip_maps_levels());
-		ImGui::Text("Channels: %d", texture->get_channels());
-		ImGui::Text("Path: %s", texture->get_texture_specification().path.c_str());
-		if (ImGui::IsItemHovered())
+		if (texture) {
+			ImGui::Columns(2);
+			ImGui::Text("Size %dx%d", texture->get_width(), texture->get_height());
+			ImGui::Text("Mip Maps: %d", texture->get_mip_maps_levels());
+			ImGui::Text("Channels: %d", texture->get_channels());
+			ImGui::Text("Path: %s", texture->get_texture_specification().path.c_str());
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip(texture->get_texture_specification().path.c_str());
+			}
+
+			ImGui::NextColumn();
+
+			if (ImGui::ImageButton(
+				reinterpret_cast<ImTextureID>(texture->get_object_handle()),
+				{ 64.0f, 64.0f },
+				ImVec2(0.0f, 1.0f),
+				ImVec2(1.0f, 0.0f)))
+			{
+				modified = true;
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Image(
+					reinterpret_cast<ImTextureID>(texture->get_object_handle()),
+					{ 256.0f, 256.0f },
+					ImVec2(0.0f, 1.0f),
+					ImVec2(1.0f, 0.0f));
+				ImGui::EndTooltip();
+			}
+			ImGui::Columns(1);
+		}
+		else
 		{
-			ImGui::SetTooltip(texture->get_texture_specification().path.c_str());
+			if (ImGui::Button("Texture not found, load one?"))
+			{
+				modified = true;
+			}
 		}
 		ImGui::PopStyleVar();
-		ImGui::NextColumn();
+		return modified;
+	}
 
-		if (ImGui::ImageButton(
-			reinterpret_cast<ImTextureID>(texture->get_object_handle()),
-			{ 64.0f, 64.0f },
-			ImVec2(0.0f, 1.0f),
-			ImVec2(1.0f, 0.0f)))
+	bool editor_interface_utils::draw_property(renderer::material_texture& material_texture)
+	{
+		bool modified = false;
+		draw_property("Enabled", material_texture.enabled);
+		// If the texture property has been clicked, handle the file browser.
+		if (draw_property(material_texture.mat_texture))
 		{
-			modified = true;
+			editor_main_interface::s_file_browser.SetTitle("Load texture");
+			editor_main_interface::s_file_browser.Open();
 		}
-		if (ImGui::IsItemHovered())
+		editor_main_interface::s_file_browser.Display();
+		// Handle the new texture update.
+		if (editor_main_interface::s_file_browser.HasSelected())
 		{
-			ImGui::BeginTooltip();
-			ImGui::Image(
-				reinterpret_cast<ImTextureID>(texture->get_object_handle()),
-				{ 256.0f, 256.0f },
-				ImVec2(0.0f, 1.0f),
-				ImVec2(1.0f, 0.0f));
-			ImGui::EndTooltip();
+			std::string file_path = editor_main_interface::s_file_browser.GetSelected().string();
+			const shared<renderer::texture>& tex = retro_application::get_application().get_assets_manager()->create_texture(
+				{
+					file_path, renderer::texture_filtering::linear, renderer::texture_wrapping::clamp_border
+				});
+			material_texture.mat_texture = tex;
+			editor_main_interface::s_file_browser.ClearSelected();
 		}
-		ImGui::Columns(1);
 		return modified;
 	}
 }

@@ -158,18 +158,30 @@ namespace retro::renderer
 
 		for (auto&& [actor, model_renderer, name, transform] : view.each())
 		{
-			shared<material> mat = nullptr;
+			s_scene_renderer_data.m_geometry_shader->set_mat4("m_model", transform.get_transform_matrix());
+			// If the actor has a material component.
 			if (s_scene_renderer_data.m_scene->get_actor_registry().has<material_component>(actor))
 			{
 				const auto& material = s_scene_renderer_data.m_scene->get_actor_registry().get<
 					material_component>(actor);
-				material.material->set_shader(s_scene_renderer_data.m_geometry_shader);
-				mat = material.material;
+				for (const auto& renderable : model_renderer.model->get_model_renderables())
+				{
+					if (auto it{ material.materials.find(renderable->get_material_index()) }; it != std::end(material.materials))
+					{
+						// Get the entry of the iterator.
+						const auto& [key, value] { *it };
+						// Set shader and submit command.
+						value->set_shader(s_scene_renderer_data.m_geometry_shader);
+						renderer::submit_command({
+							s_scene_renderer_data.m_geometry_shader,
+						renderable->get_vertex_array_buffer(),
+							value,
+							});
+					}
+				}
 			}
-			for (const auto& renderable : model_renderer.model->get_model_renderables())
-			{
-				s_scene_renderer_data.m_geometry_shader->set_mat4("m_model", transform.get_transform_matrix());
-				if (mat == nullptr)
+			else {
+				for (const auto& renderable : model_renderer.model->get_model_renderables())
 				{
 					s_scene_renderer_data.m_geometry_shader->
 						set_vec_float4("material.albedo", { 0.1f, 0.1f, 0.1f, 1.0f });
@@ -181,8 +193,7 @@ namespace retro::renderer
 					s_scene_renderer_data.m_geometry_shader->set_int("material.hasNormalMap", 0);
 					s_scene_renderer_data.m_geometry_shader->set_int("material.hasRoughnessMap", 0);
 					s_scene_renderer_data.m_geometry_shader->set_int("material.hasAmbientOcclusionMap", 0);
-
-					for (renderable_texture texture : renderable->get_textures())
+					for (const renderable_texture& texture : renderable->get_textures())
 					{
 						if (texture.type == "texture_diffuse")
 						{
@@ -210,12 +221,12 @@ namespace retro::renderer
 							renderer::bind_texture(texture.id, 4);
 						}
 					}
+					renderer::submit_command({
+						s_scene_renderer_data.m_geometry_shader,
+						renderable->get_vertex_array_buffer(),
+						nullptr,
+						});
 				}
-				renderer::submit_command({
-					s_scene_renderer_data.m_geometry_shader,
-					renderable->get_vertex_array_buffer(),
-					mat,
-					});
 			}
 		}
 

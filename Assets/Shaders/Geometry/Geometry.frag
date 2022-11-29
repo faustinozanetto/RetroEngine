@@ -64,7 +64,7 @@ void main() {
     /* Roughness */
     float roughness;
     if (material.hasRoughnessMap == 1) {
-        roughness = texture(uRoughnessMap, geometryInput.texCoords).b;
+        roughness = texture(uRoughnessMap, geometryInput.texCoords).g;
     } else {
         roughness = material.roughness;
     }
@@ -72,7 +72,7 @@ void main() {
     /* Metallic */
     float metallic;
     if (material.hasMetallicMap == 1) {
-        metallic = texture(uMetallicMap, geometryInput.texCoords).g;
+        metallic = texture(uMetallicMap, geometryInput.texCoords).b;
     } else {
         metallic = material.metallic;
     }

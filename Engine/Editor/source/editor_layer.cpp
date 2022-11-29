@@ -456,9 +456,9 @@ namespace retro::editor
 			create_model({
 				"Assets/Models/vietnam_helmet/scene.gltf"
 				});
-		helmet_actor->add_component<name_component>("vietnam_helemet");
+		helmet_actor->add_component<name_component>("vietnam_helmet");
 		helmet_actor->add_component<model_renderer_component>(helmet_model);
-		//helmet_actor->add_component<material_component>(helmet_mat);
+		helmet_actor->add_component<material_component>();
 		helmet_actor->add_component<transform_component>();
 
 		/*  POINT LIGHT */
@@ -479,12 +479,45 @@ namespace retro::editor
 		light->add_component<transform_component>();
 
 		/*  FLOOR */
+		renderer::material_texture albedoTexture = {
+				nullptr, false
+		};
+
+		renderer::material_texture normalTexture = {
+			nullptr, false
+		};
+
+		renderer::material_texture metalRoughTexture = {
+			nullptr, false
+		};
+
+		renderer::material_texture aoTexture = {
+			nullptr, false
+		};
+		const std::map<renderer::material_texture_type, renderer::material_texture> textures = {
+			{renderer::material_texture_type::albedo, albedoTexture},
+			{renderer::material_texture_type::normal, normalTexture},
+			{renderer::material_texture_type::metallic, metalRoughTexture},
+			{renderer::material_texture_type::roughness, metalRoughTexture},
+			{renderer::material_texture_type::ambient_occlusion, aoTexture}
+		};
+
+		const renderer::material_specification materialSpecification = {
+			textures,
+			glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+			1.0f,
+			1.0f,
+			1.0f,
+		};
+
+		auto floor_mat = retro_application::get_application().get_assets_manager()->create_material(materialSpecification);
 		const shared<actor>& floor = retro_application::get_application().get_scene_manager()->get_active_scene()->
 			create_actor();
 		const shared<renderer::model>& floor_model = retro_application::get_application().get_assets_manager()->
 			create_model({ "Assets/Models/Plane.obj" });
 		floor->add_component<name_component>("Floor");
 		floor->add_component<model_renderer_component>(floor_model);
+		floor->add_component<material_component>().materials.insert(std::pair<int, shared<renderer::material>>(0, floor_mat));
 		auto& floor_trans = floor->add_component<transform_component>();
 		floor_trans.position = { 0.0f, -0.2f, 0.0f };
 		floor_trans.scale = { 20.0f, 1.0f, 20.0f };

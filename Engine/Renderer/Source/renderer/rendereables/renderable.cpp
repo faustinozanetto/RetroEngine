@@ -10,7 +10,12 @@ namespace retro::renderer
 		m_vertices = vertices;
 		m_indices = indices;
 		m_renderable_textures = textures;
+		m_material_index = 0;
 		construct_renderable();
+	}
+
+	renderable::~renderable()
+	{
 	}
 
 	void renderable::bind()
@@ -66,6 +71,21 @@ namespace retro::renderer
 	const std::vector<uint32_t>& renderable::get_indices() const
 	{
 		return m_indices;
+	}
+
+	std::vector<renderable_texture> renderable::get_textures() const
+	{
+		return m_renderable_textures;
+	}
+
+	int renderable::get_material_index() const
+	{
+		return m_material_index;
+	}
+
+	void renderable::set_material_index(int material_index)
+	{
+		m_material_index = material_index;
 	}
 
 	shared<renderable> renderable::create(const std::vector<renderable_vertex>& vertices,

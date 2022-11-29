@@ -252,25 +252,6 @@ public:
 						ImGui::NextColumn();
 					}
 
-					if (m_Scene->get_actor_registry().has<retro::material_component>(actor))
-					{
-						auto& material_component = m_Scene->get_actor_registry().get<retro::material_component>(actor);
-						for (auto& texture : material_component.material->get_material_specification().textures)
-						{
-							auto label = "Enabled " + retro::renderer::material::get_texture_type_to_string(
-								texture.first);
-							ImGui::Checkbox(label.c_str(), &texture.second.enabled);
-						}
-						ImGui::ColorPicker4(
-							"Albedo", glm::value_ptr(material_component.material->get_material_specification().albedo));
-						ImGui::SliderFloat("Roughness",
-							&material_component.material->get_material_specification().roughness, 0.0f,
-							1.0f);
-						ImGui::SliderFloat(
-							"Metallic", &material_component.material->get_material_specification().metallic, 0.0f,
-							1.0f);
-					}
-
 					ImGui::TreePop();
 				}
 			}
