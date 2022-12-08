@@ -35,7 +35,6 @@ namespace retro::renderer
 		std::vector<renderable_texture>& get_embedded_textures() { return m_textures_loaded; }
 
 		/* Asset */
-		void serialize() override;
 
 		/* Instantiate */
 		static shared<model> create(const model_specification& model_specification);

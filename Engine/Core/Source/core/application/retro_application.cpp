@@ -7,13 +7,13 @@
 
 namespace retro
 {
-	retro_application *retro_application::s_instance = nullptr;
+	retro_application* retro_application::s_instance = nullptr;
 
 	retro_application::retro_application() : retro_application({ "Retro Application" })
 	{
 	}
 
-	retro_application::retro_application(const retro_application_specification &retro_application_specification)
+	retro_application::retro_application(const retro_application_specification& retro_application_specification)
 	{
 		std::filesystem::current_path("../../");
 		// Update variables.
@@ -24,7 +24,7 @@ namespace retro
 		logger::line();
 		// Create window.
 		const auto windowSpecification = renderer::window_specification(
-				"Retro Engine", 1920, 1080, false);
+			"Retro Engine", 1920, 1080, false);
 		m_window = renderer::window::create(windowSpecification);
 		// Initialize Renderer
 		renderer::renderer::initialize(renderer::renderer_api_type::open_gl, *m_window.get());
@@ -53,8 +53,8 @@ namespace retro
 			{
 				// Update layers.
 				for (auto it = m_layers_manager->get_layer_stack().begin(); it <
-																																		m_layers_manager->get_layer_stack().end();
-						 ++it)
+					m_layers_manager->get_layer_stack().end();
+					++it)
 				{
 					it->get()->on_layer_updated();
 				}
@@ -64,10 +64,10 @@ namespace retro
 			{
 				// Update interface layer.
 				for (auto it = m_interface_layers_manager->get_layer_stack().begin(); it <
-																																							m_interface_layers_manager->get_layer_stack().end();
-						 ++it)
+					m_interface_layers_manager->get_layer_stack().end();
+					++it)
 				{
-					const auto interfaceLayer = dynamic_cast<interface_layer *>(it->get());
+					const auto interfaceLayer = dynamic_cast<interface_layer*>(it->get());
 					interfaceLayer->on_layer_updated();
 					interfaceLayer->on_interface_renderer();
 				}
@@ -78,22 +78,22 @@ namespace retro
 		}
 	}
 
-	const unique<renderer::window> &retro_application::get_window() const
+	const unique<renderer::window>& retro_application::get_window() const
 	{
 		return m_window;
 	}
 
-	const unique<layer_manager> &retro_application::get_layers_manager() const
+	const unique<layer_manager>& retro_application::get_layers_manager() const
 	{
 		return m_layers_manager;
 	}
 
-	const unique<layer_manager> &retro_application::get_interfaces_layer_manager() const
+	const unique<layer_manager>& retro_application::get_interfaces_layer_manager() const
 	{
 		return m_interface_layers_manager;
 	}
 
-	const unique<assets_manager> &retro_application::get_assets_manager() const
+	const unique<assets_manager>& retro_application::get_assets_manager() const
 	{
 		return m_assets_manager;
 	}
@@ -103,7 +103,7 @@ namespace retro
 		return m_scene_manager;
 	}
 
-	retro_application &retro_application::get_application()
+	retro_application& retro_application::get_application()
 	{
 		return *s_instance;
 	}

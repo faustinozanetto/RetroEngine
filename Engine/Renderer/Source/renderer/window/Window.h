@@ -12,8 +12,8 @@ namespace retro::renderer
 		bool v_sync;
 
 		window_specification(const std::string& window_title = "Retro Engine", int width = 1920,
-		                     int height = 1080, bool v_sync = false) : window_title(window_title), width(width),
-		                                                              height(height), v_sync(v_sync)
+			int height = 1080, bool v_sync = false) : window_title(window_title), width(width),
+			height(height), v_sync(v_sync)
 		{
 		}
 	};

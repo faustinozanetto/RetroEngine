@@ -68,7 +68,7 @@ uniform PointLight pointLight;
 uniform DirectionalLight directionalLight;
 
 float correction_factor = 1.0;
-float u_gamma = 3.6f;
+float u_gamma = 3.6;
 
 layout(location = 0) out vec4 FragColor;
 
@@ -497,7 +497,7 @@ float     searchRegionRadiusUV)
 
         // Add random rotation to the offset 
         offset = vec2(random_rotation.x * offset.x - random_rotation.y * offset.y,
-        random_rotation.y * offset.x + random_rotation.x * offset.y);
+                      random_rotation.y * offset.x + random_rotation.x * offset.y);
 
         // Here use sampler without HW PCF filtering
         offset *= searchRegionRadiusUV;
@@ -537,7 +537,7 @@ float shadowPCF(vec3 FragPos, vec2 uv, float z0, float bias, float filter_radius
 
         // Add random rotation to the offset 
         offset = vec2(random_rotation.x * offset.x - random_rotation.y * offset.y,
-        random_rotation.y * offset.x + random_rotation.x * offset.y);
+                      random_rotation.y * offset.x + random_rotation.x * offset.y);
         offset *= filter_radius_uv;
 
         sum += texture(gShadowMapPCF, vec3(uv + offset, z0 - bias));

@@ -12,6 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "imgui.h"
+#include "core/application/retro_application.h"
 #include "renderer/lighting/directional_light.h"
 
 namespace retro::renderer
@@ -29,6 +30,8 @@ namespace retro::renderer
 		setup_lights();
 		setup_environment();
 
+		s_scene_renderer_data.shadow_map_pass = create_shared<shadow_map_pass>();
+
 		s_scene_renderer_data.m_csm_shadows.m_dir_shadow_frustum_planes = glm::vec2(120, 250);
 		s_scene_renderer_data.m_csm_shadows.m_dir_shadow_frustum_size = 20.0f;
 		s_scene_renderer_data.m_csm_shadows.m_light_radius_uv = 0.0f;
@@ -36,8 +39,7 @@ namespace retro::renderer
 
 		s_scene_renderer_data.shadows_ubo = uniform_buffer::create(sizeof(shadows_data), 4);
 
-		s_scene_renderer_data.shadows_data.light_view_projection = s_scene_renderer_data.m_csm_shadows.
-			m_dir_light_view_projection;
+		s_scene_renderer_data.shadows_data.light_view_projection = s_scene_renderer_data.m_csm_shadows.m_dir_light_view_projection;
 		s_scene_renderer_data.shadows_data.light_view = s_scene_renderer_data.m_csm_shadows.m_dir_light_view;
 		s_scene_renderer_data.shadows_ubo->set_data(&s_scene_renderer_data.shadows_data, sizeof(shadows_data));
 
@@ -47,7 +49,7 @@ namespace retro::renderer
 		create_directional_shadow_map(s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.x,
 			s_scene_renderer_data.m_csm_shadows.m_dir_light_shadow_map_res.y);
 
-		//pcf sampler
+		// pcf sampler
 		{
 			glCreateSamplers(1, &s_scene_renderer_data.m_csm_shadows.m_pcf_sampler);
 			glSamplerParameteri(s_scene_renderer_data.m_csm_shadows.m_pcf_sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -81,16 +83,13 @@ namespace retro::renderer
 		// Update camera UBO.
 		s_scene_renderer_data.m_camera->update();
 		s_scene_renderer_data.m_camera_data.u_ViewMatrix = s_scene_renderer_data.m_camera->get_view_matrix();
-		s_scene_renderer_data.m_camera_data.u_ProjectionMatrix = s_scene_renderer_data.m_camera->
-			get_projection_matrix();
+		s_scene_renderer_data.m_camera_data.u_ProjectionMatrix = s_scene_renderer_data.m_camera->get_projection_matrix();
 		s_scene_renderer_data.m_camera_data.u_Position = s_scene_renderer_data.m_camera->get_position();
-		s_scene_renderer_data.m_camera_data.u_ViewProjectionMatrix = s_scene_renderer_data.m_camera->
-			get_view_projection();
+		s_scene_renderer_data.m_camera_data.u_ViewProjectionMatrix = s_scene_renderer_data.m_camera->get_view_projection();
 		s_scene_renderer_data.m_camera_ubo->set_data(&s_scene_renderer_data.m_camera_data, sizeof(camera_data));
 
 		// Update lights UBO
-		const auto lights = s_scene_renderer_data.m_scene->get_actor_registry().view<
-			light_renderer_component, name_component, transform_component>();
+		const auto lights = s_scene_renderer_data.m_scene->get_actor_registry().view<light_renderer_component, name_component, transform_component>();
 		for (auto&& [actor, light, name, transform] : lights.each())
 		{
 			if (light.type == light_type::point)
@@ -122,8 +121,7 @@ namespace retro::renderer
 		const auto view = s_scene_renderer_data.m_scene->get_actor_registry().group<model_renderer_component>(
 			entt::get<name_component, transform_component>);
 
-		s_scene_renderer_data.shadows_data.light_view_projection = s_scene_renderer_data.m_csm_shadows.
-			m_dir_light_view_projection;
+		s_scene_renderer_data.shadows_data.light_view_projection = s_scene_renderer_data.m_csm_shadows.m_dir_light_view_projection;
 		s_scene_renderer_data.shadows_data.light_view = s_scene_renderer_data.m_csm_shadows.m_dir_light_view;
 		s_scene_renderer_data.shadows_ubo->set_data(&s_scene_renderer_data.shadows_data, sizeof(shadows_data));
 
@@ -133,20 +131,19 @@ namespace retro::renderer
 		renderer::set_clear_color({ 0.0f, 0.0f, 0.0f, 1.0f });
 		s_scene_renderer_data.m_csm_shadows_shader->bind();
 		renderer::clear_screen();
-		glCullFace(GL_FRONT);
+
 		for (auto&& [actor, model_renderer, name, transform] : view.each())
 		{
 			for (const auto& renderable : model_renderer.model->get_model_renderables())
 			{
 				s_scene_renderer_data.m_csm_shadows_shader->set_mat4("u_model", transform.get_transform_matrix());
 				renderer::submit_command({
-					s_scene_renderer_data.m_csm_shadows_shader,
-					renderable->get_vertex_array_buffer(),
-					nullptr,
+						s_scene_renderer_data.m_csm_shadows_shader,
+						renderable->get_vertex_array_buffer(),
+						nullptr,
 					});
 			}
 		}
-		glCullFace(GL_BACK);
 		s_scene_renderer_data.m_shadow_frame_buffer->un_bind();
 
 		/* ==================== GEOMETRY PASS ==================== */
@@ -162,29 +159,36 @@ namespace retro::renderer
 			// If the actor has a material component.
 			if (s_scene_renderer_data.m_scene->get_actor_registry().has<material_component>(actor))
 			{
-				const auto& material = s_scene_renderer_data.m_scene->get_actor_registry().get<
-					material_component>(actor);
+				const auto& material = s_scene_renderer_data.m_scene->get_actor_registry().get<material_component>(actor);
 				for (const auto& renderable : model_renderer.model->get_model_renderables())
 				{
 					if (auto it{ material.materials.find(renderable->get_material_index()) }; it != std::end(material.materials))
 					{
 						// Get the entry of the iterator.
-						const auto& [key, value] { *it };
+						const auto& [key, value] {*it};
 						// Set shader and submit command.
 						value->set_shader(s_scene_renderer_data.m_geometry_shader);
 						renderer::submit_command({
-							s_scene_renderer_data.m_geometry_shader,
-						renderable->get_vertex_array_buffer(),
-							value,
+								s_scene_renderer_data.m_geometry_shader,
+								renderable->get_vertex_array_buffer(),
+								value,
+							});
+					}
+					else
+					{
+						renderer::submit_command({
+								s_scene_renderer_data.m_geometry_shader,
+								renderable->get_vertex_array_buffer(),
+								nullptr,
 							});
 					}
 				}
 			}
-			else {
+			else
+			{
 				for (const auto& renderable : model_renderer.model->get_model_renderables())
 				{
-					s_scene_renderer_data.m_geometry_shader->
-						set_vec_float4("material.albedo", { 0.1f, 0.1f, 0.1f, 1.0f });
+					s_scene_renderer_data.m_geometry_shader->set_vec_float4("material.albedo", { 0.1f, 0.1f, 0.1f, 1.0f });
 					s_scene_renderer_data.m_geometry_shader->set_float("material.metallic", 0.0f);
 					s_scene_renderer_data.m_geometry_shader->set_float("material.roughness", 1.0f);
 					s_scene_renderer_data.m_geometry_shader->set_float("material.ambient_occlusion", 1.0f);
@@ -222,9 +226,9 @@ namespace retro::renderer
 						}
 					}
 					renderer::submit_command({
-						s_scene_renderer_data.m_geometry_shader,
-						renderable->get_vertex_array_buffer(),
-						nullptr,
+							s_scene_renderer_data.m_geometry_shader,
+							renderable->get_vertex_array_buffer(),
+							nullptr,
 						});
 				}
 			}
@@ -243,15 +247,11 @@ namespace retro::renderer
 		s_scene_renderer_data.m_lighting_shader->set_int("u_pcf_samples",
 			s_scene_renderer_data.m_csm_shadows.m_pcf_filter_samples);
 		s_scene_renderer_data.m_lighting_shader->set_float("u_light_radius_uv",
-			s_scene_renderer_data.m_csm_shadows.m_light_radius_uv / (
-				s_scene_renderer_data.m_csm_shadows.
-				m_dir_shadow_frustum_size * 2.0f));
+			s_scene_renderer_data.m_csm_shadows.m_light_radius_uv / (s_scene_renderer_data.m_csm_shadows.m_dir_shadow_frustum_size * 2.0f));
 		s_scene_renderer_data.m_lighting_shader->set_float("u_light_near",
-			s_scene_renderer_data.m_csm_shadows.
-			m_dir_shadow_frustum_planes.x);
+			s_scene_renderer_data.m_csm_shadows.m_dir_shadow_frustum_planes.x);
 		s_scene_renderer_data.m_lighting_shader->set_float("u_light_far",
-			s_scene_renderer_data.m_csm_shadows.
-			m_dir_shadow_frustum_planes.y);
+			s_scene_renderer_data.m_csm_shadows.m_dir_shadow_frustum_planes.y);
 
 		s_scene_renderer_data.m_lighting_shader->set_float("pointLight.radius",
 			s_scene_renderer_data.m_pointLight.radius);
@@ -282,14 +282,10 @@ namespace retro::renderer
 		renderer::bind_texture(s_scene_renderer_data.m_shadow_frame_buffer->get_depth_attachment_id(), 8);
 		renderer::bind_texture(s_scene_renderer_data.m_shadow_frame_buffer->get_depth_attachment_id(), 9);
 		renderer::bind_texture(s_scene_renderer_data.m_csm_shadows.m_random_angles_tex3d_id, 10);
-		s_scene_renderer_data.m_lighting_shader->set_mat4("uTransform", glm::mat4(1.0f));
-		renderer::submit_command({
-			s_scene_renderer_data.m_lighting_shader, s_scene_renderer_data.m_screen_vao, nullptr
-			});
+		renderer::submit_command({ s_scene_renderer_data.m_lighting_shader, s_scene_renderer_data.m_screen_vao, nullptr });
 		s_scene_renderer_data.m_lighting_shader->un_bind();
 
 		/*==================== FINAL PASS ====================*/
-		s_scene_renderer_data.m_final_frame_buffer->bind();
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, s_scene_renderer_data.m_geometry_frame_buffer->get_object_handle());
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_scene_renderer_data.m_final_frame_buffer->get_object_handle());
 		glBlitFramebuffer(0, 0, static_cast<int>(s_scene_renderer_data.m_final_frame_buffer->get_width()),
@@ -302,6 +298,20 @@ namespace retro::renderer
 		s_scene_renderer_data.m_lighting_environment->render_environment();
 		glDepthFunc(GL_LESS);
 		s_scene_renderer_data.m_final_frame_buffer->un_bind();
+
+		if (s_scene_renderer_data.fxaa_enabled)
+		{
+			s_scene_renderer_data.m_fxaa_frame_buffer->bind();
+			renderer::clear_screen();
+			s_scene_renderer_data.m_fxaa_shader->bind();
+			s_scene_renderer_data.m_fxaa_shader->set_vec_float2("RCPFrame",
+				{ float(1.0 / float(s_scene_renderer_data.m_fxaa_frame_buffer->get_width())),
+				 float(1.0 / float(s_scene_renderer_data.m_fxaa_frame_buffer->get_height())) });
+			renderer::bind_texture(s_scene_renderer_data.m_final_frame_buffer->get_attachment_id(0), 0);
+			renderer::submit_command({ s_scene_renderer_data.m_fxaa_shader, s_scene_renderer_data.m_screen_vao, nullptr });
+			s_scene_renderer_data.m_fxaa_shader->un_bind();
+			s_scene_renderer_data.m_fxaa_frame_buffer->un_bind();
+		}
 	}
 
 	void scene_renderer::end_render()
@@ -326,6 +336,11 @@ namespace retro::renderer
 	shared<frame_buffer>& scene_renderer::get_final_frame_buffer()
 	{
 		return s_scene_renderer_data.m_final_frame_buffer;
+	}
+
+	shared<frame_buffer>& scene_renderer::get_fxaa_frame_buffer()
+	{
+		return s_scene_renderer_data.m_fxaa_frame_buffer;
 	}
 
 	shared<lighting_environment>& scene_renderer::get_lighting_environment()
@@ -423,83 +438,68 @@ namespace retro::renderer
 
 	void scene_renderer::load_shaders()
 	{
-		s_scene_renderer_data.m_geometry_shader = shader::create("Assets/Shaders/Geometry/Geometry.vert",
-			"Assets/Shaders/Geometry/Geometry.frag");
-		s_scene_renderer_data.m_screen_shader = shader::create("Assets/Shaders/Screen/Screen.vert",
-			"Assets/Shaders/Screen/Screen.frag");
-		s_scene_renderer_data.m_lighting_shader = shader::create(
-			"Assets/Shaders/Lighting/Lighting.vert",
-			"Assets/Shaders/Lighting/Lighting.frag");
-		s_scene_renderer_data.m_shadow_shader = shader::create(
-			"Assets/Shaders/Shadows/Shadows.vert", "Assets/Shaders/Shadows/Shadows.frag");
+		s_scene_renderer_data.m_geometry_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Geometry/Geometry.vert",
+																														 "Assets/Shaders/Geometry/Geometry.frag" });
+		s_scene_renderer_data.m_screen_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Screen/Screen.vert",
+																													 "Assets/Shaders/Screen/Screen.frag" });
+		s_scene_renderer_data.m_lighting_shader = retro_application::get_application().get_assets_manager()->create_shader({
+				"Assets/Shaders/Lighting/Lighting.vert",
+				"Assets/Shaders/Lighting/Lighting.frag" });
+		s_scene_renderer_data.m_shadow_shader = retro_application::get_application().get_assets_manager()->create_shader({
+				"Assets/Shaders/Shadows/Shadows.vert", "Assets/Shaders/Shadows/Shadows.frag" });
 
-		s_scene_renderer_data.m_csm_shadows_shader = shader::create(
-			"Assets/Shaders/Shadows/GeneratePCSS.vert", "Assets/Shaders/Shadows/GeneratePCSS.frag"
-		);
+		s_scene_renderer_data.m_csm_shadows_shader = retro_application::get_application().get_assets_manager()->create_shader({
+				"Assets/Shaders/Shadows/GeneratePCSS.vert", "Assets/Shaders/Shadows/GeneratePCSS.frag" });
+
+		s_scene_renderer_data.m_fxaa_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Screen/Screen.vert", "Assets/Shaders/FXAA/FXAA.frag" });
 	}
 
 	void scene_renderer::generate_frame_buffers()
 	{
 		texture_specification geom_tex_spec = {
-			glm::uvec2(1920, 1080),
-			texture_filtering::linear,
-			texture_wrapping::clamp_edge,
-			GL_RGBA,GL_RGB16F
-		};
-		s_scene_renderer_data.m_geometry_frame_buffer = frame_buffer::create({
-			1920, 1080, {
-				{"position", geom_tex_spec},
-				{"albedo", geom_tex_spec},
-				{"normal", geom_tex_spec},
-				{"rough-meta-ao", geom_tex_spec},
-				{"viewPosition", geom_tex_spec}
-			}
-			});
+				glm::uvec2(1920, 1080),
+				texture_filtering::linear,
+				texture_wrapping::clamp_edge,
+				GL_RGBA, GL_RGB16F };
+		s_scene_renderer_data.m_geometry_frame_buffer = frame_buffer::create({ 1920, 1080, {{"position", geom_tex_spec}, {"albedo", geom_tex_spec}, {"normal", geom_tex_spec}, {"rough-meta-ao", geom_tex_spec}, {"viewPosition", geom_tex_spec}} });
 
 		texture_specification shadow_tex_spec = {
-			glm::uvec2(4096, 4096),
-			texture_filtering::nearest,
-			texture_wrapping::clamp_border,
-			GL_DEPTH_COMPONENT32F,
-			GL_RGB16F
-		};
-		s_scene_renderer_data.m_shadow_frame_buffer = frame_buffer::create({
-			4096, 4096, {
-				{
-					"shadow", {
-						shadow_tex_spec
-					}
-				}
-			}
-			});
+				glm::uvec2(4096, 4096),
+				texture_filtering::nearest,
+				texture_wrapping::clamp_border,
+				GL_DEPTH_COMPONENT32F,
+				GL_RGB16F };
+		s_scene_renderer_data.m_shadow_frame_buffer = frame_buffer::create({ 4096, 4096, {{"shadow", {shadow_tex_spec}}} });
 
 		texture_specification final_tex_spec = {
-			glm::uvec2(1920, 1080),
-			texture_filtering::linear,
-			texture_wrapping::clamp_edge,
-			GL_RGBA,GL_RGB16F
-		};
+				glm::uvec2(1920, 1080),
+				texture_filtering::linear,
+				texture_wrapping::clamp_edge,
+				GL_RGBA, GL_RGB16F };
 		s_scene_renderer_data.m_final_frame_buffer =
-			frame_buffer::create({
-				1920, 1080, {
-					{"final", final_tex_spec}
-				}
-				});
+			frame_buffer::create({ 1920, 1080, {{"final", final_tex_spec}} });
+
+		texture_specification fxaa_tex_spec = {
+				glm::uvec2(1920, 1080),
+				texture_filtering::linear,
+				texture_wrapping::clamp_edge,
+				GL_RGBA, GL_RGB16F };
+		s_scene_renderer_data.m_fxaa_frame_buffer = frame_buffer::create({ 1920, 1080, {{"fxaa", fxaa_tex_spec}} });
 	}
 
 	void scene_renderer::create_screen_vao()
 	{
 		float squareVertices[5 * 4] = {
-			1.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
-			1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-			-1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left
+				1.0f, 1.0f, 0.0f, 1.0f, 1.0f,		// top right
+				1.0f, -1.0f, 0.0f, 1.0f, 0.0f,	// bottom right
+				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
+				-1.0f, 1.0f, 0.0f, 0.0f, 1.0f		// top left
 		};
 
 		// Fill index buffer
 		uint32_t squareIndices[6] = {
-			0, 3, 1, // first triangle
-			1, 3, 2, // second triangle
+				0, 3, 1, // first triangle
+				1, 3, 2, // second triangle
 		};
 		s_scene_renderer_data.m_screen_vao = vertex_array_buffer::create();
 		const auto vbo = vertex_object_buffer::create(
@@ -507,10 +507,8 @@ namespace retro::renderer
 		const auto ibo = index_buffer::create(
 			squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 		s_scene_renderer_data.m_screen_vao->bind();
-		vbo->set_layout({
-			{FloatVec3, "aPos"},
-			{FloatVec2, "aTexCoord"}
-			});
+		vbo->set_layout({ {FloatVec3, "aPos"},
+										 {FloatVec2, "aTexCoord"} });
 		s_scene_renderer_data.m_screen_vao->add_vertex_buffer(vbo);
 		s_scene_renderer_data.m_screen_vao->set_index_buffer(ibo);
 		s_scene_renderer_data.m_screen_vao->un_bind();
@@ -539,12 +537,10 @@ namespace retro::renderer
 
 	void scene_renderer::setup_environment()
 	{
-		const shared<texture_cubemap> sky_cubemap = texture_cubemap::create({
-			"Assets/Textures/HDR/drakensberg_solitary_mountain_4k.hdr",
-			texture_filtering::linear,
-			texture_wrapping::clamp_edge
-			});
+		const shared<texture_cubemap>& sky_cubemap = texture_cubemap::create({ "Assets/Textures/HDR/drakensberg_solitary_mountain_4k.hdr",
+																																					texture_filtering::linear,
+																																					texture_wrapping::clamp_edge });
 		s_scene_renderer_data.m_lighting_environment = lighting_environment::create(
-			{ sky_cubemap, 2048, 512, 2048, 2048 });
+			{ sky_cubemap, 1024, 256, 1024, 1024 });
 	}
 }

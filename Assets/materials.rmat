@@ -1,0 +1,47 @@
+{
+    "value0": 4,
+    "value1": 0,
+    "value2": 1,
+    "value3": 2,
+    "value4": 3,
+    "value5": 1048575,
+    "value6": 4,
+    "value7": 0,
+    "value8": {
+        "value0": "vietnam_helmet"
+    },
+    "value9": 1,
+    "value10": {
+        "value0": "Point Light"
+    },
+    "value11": 2,
+    "value12": {
+        "value0": "Directional Light"
+    },
+    "value13": 3,
+    "value14": {
+        "value0": "Floor"
+    },
+    "value15": 2,
+    "value16": 0,
+    "value17": {
+        "mats": [
+            {
+                "key": 0,
+                "value": {
+                    "value0": 1.0
+                }
+            }
+        ]
+    },
+    "value18": 3,
+    "value19": {
+        "mats": [
+            {
+                "key": 0,
+                "value": {
+                    "value0": 1.0
+                }
+            }
+        ]
+    }

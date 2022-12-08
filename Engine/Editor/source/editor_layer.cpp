@@ -8,6 +8,8 @@
 #include "renderer/lighting/point_light.h"
 #include "renderer/materials/material.h"
 #include "renderer/renderer/scene_renderer.h"
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/json.hpp>
 
 namespace retro::editor
 {
@@ -291,7 +293,6 @@ namespace retro::editor
 
 		*/
 
-		/*
 		{
 			float hk_unit_scale_factor = 1.25f;
 			float hk_radius = hk_unit_scale_factor;
@@ -302,7 +303,7 @@ namespace retro::editor
 			glm::vec3 start_pos = glm::vec3(-offset.x * float(grid_size.x / 2), 0.0,
 				-offset.y * float(grid_size.y / 2));
 
-			const shared<renderer::model>& sphere_model = renderer::model::create("Assets/Models/Suzanne.gltf");
+			const shared<renderer::model>& sphere_model = retro_application::get_application().get_assets_manager()->create_model({ "Assets/Models/Sphere.obj" });
 
 			renderer::material_texture albedoTexture = {
 				nullptr, false
@@ -347,14 +348,13 @@ namespace retro::editor
 					sphere->add_component<name_component>(
 						"Sphere (" + std::to_string(x) + ", " + std::to_string(y) + ")");
 					sphere->add_component<model_renderer_component>(sphere_model);
-					sphere->add_component<material_component>(material);
+					sphere->add_component<material_component>().materials.insert(std::pair(0, material));
 					auto& transform = sphere->add_component<transform_component>();
 					transform.position = position;
 					transform.scale = glm::vec3(0.5f);
 				}
 			}
 		}
-		*/
 	}
 
 	void editor_layer::on_layer_unregistered()
@@ -400,6 +400,11 @@ namespace retro::editor
 			m_camera->move(m_camera->get_position(), glm::conjugate(m_camera->get_orientation()) * glm::vec3(0, -1, 0),
 				cam_mov_amount);
 
+		if (input::input_manager::is_key_pressed(input::key::K))
+		{
+			serialize_material();
+		}
+
 		if (input::input_manager::is_mouse_button_pressed(input::key::ButtonRight))
 		{
 			if (!m_is_mouse_move)
@@ -442,24 +447,23 @@ namespace retro::editor
 		renderer::scene_renderer::end_render();
 	}
 
+	void editor_layer::serialize_material()
+	{
+		{
+			std::ofstream file("Assets/materials.rmat");
+			cereal::JSONOutputArchive  oarchive(file); // Create an output archive
+			auto snapshot = entt::snapshot{ retro_application::get_application().get_scene_manager()->get_active_scene()->get_actor_registry() };
+			snapshot.entities(oarchive).component<name_component, material_component>(oarchive);
+			file.close();
+		} // archive goes out of scope, ensuring all contents are flushed
+	}
+
 	void editor_layer::initialize_editor_scene()
 	{
-		const shared<scene> scene = scene::create("Editor Scene");
+		const shared<scene>& scene = scene::create("Editor Scene");
 		retro_application::get_application().get_scene_manager()->set_active_scene(scene);
 		renderer::camera_specification camera_specification = { 50.0f, 0.01f, 1000.0f };
 		m_camera = retro::create_shared<renderer::camera>(camera_specification);
-
-		const shared<actor>& helmet_actor = retro_application::get_application().get_scene_manager()->
-			get_active_scene()->
-			create_actor();
-		auto helmet_model = retro_application::get_application().get_assets_manager()->
-			create_model({
-				"Assets/Models/vietnam_helmet/scene.gltf"
-				});
-		helmet_actor->add_component<name_component>("vietnam_helmet");
-		helmet_actor->add_component<model_renderer_component>(helmet_model);
-		helmet_actor->add_component<material_component>();
-		helmet_actor->add_component<transform_component>();
 
 		/*  POINT LIGHT */
 		const shared<actor> light_actor = retro_application::get_application().get_scene_manager()->

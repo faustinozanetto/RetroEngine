@@ -239,10 +239,6 @@ namespace retro::renderer
 		return textures;
 	}
 
-	void model::serialize()
-	{
-	}
-
 	shared<model> model::create(const model_specification& model_specification)
 	{
 		return create_shared<model>(model_specification);

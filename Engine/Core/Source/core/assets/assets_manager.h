@@ -22,6 +22,7 @@ namespace retro
 		shared<renderer::texture> create_texture(const renderer::texture_specification& texture_specification);
 		shared<renderer::material> create_material(const renderer::material_specification& material_specification);
 		shared<renderer::model> create_model(const renderer::model_specification& model_specification);
+		shared<renderer::shader> create_shader(const renderer::shader_specification& shader_specification);
 
 		std::unordered_map<shared<uuid>, shared<asset>>& get_assets_by_type(asset_type type);
 

@@ -2,6 +2,9 @@
 
 #include <glm/glm.hpp>
 
+#include <cereal/types/map.hpp>
+#include "cereal/types/memory.hpp"
+
 #include "renderer/lighting/light.h"
 #include "renderer/materials/material.h"
 #include "renderer/rendereables/model/model.h"
@@ -14,6 +17,11 @@ namespace retro
 		name_component() = default;
 		name_component(const name_component&) = default;
 		name_component(const std::string& name);
+
+		template<class Archive>
+		void serialize(Archive& ar) {
+			ar(name);
+		}
 	};
 
 	struct transform_component
@@ -45,6 +53,16 @@ namespace retro
 
 		material_component() = default;
 		material_component(const material_component&) = default;
+
+		template<class Archive>
+		void serialize(Archive& ar) {
+			std::map<int, renderer::material> mats;
+			for (auto& entry : materials)
+			{
+				mats.insert(std::pair(entry.first, *entry.second.get()));
+			}
+			ar(CEREAL_NVP(mats));
+		}
 	};
 
 	enum class light_type

@@ -16,6 +16,10 @@ namespace retro
         m_asset_type = asset_type;
     }
 
+    asset::~asset()
+    {
+    }
+
     shared<uuid>& asset::get_uuid()
     {
         return m_uuid;

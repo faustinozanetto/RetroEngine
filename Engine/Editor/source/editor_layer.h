@@ -17,6 +17,8 @@ namespace retro::editor
 		void on_layer_unregistered() override;
 		void on_layer_updated() override;
 
+		void serialize_material();
+
 	private:
 		void initialize_editor_scene();
 
