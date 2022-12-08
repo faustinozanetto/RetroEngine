@@ -75,6 +75,19 @@ namespace retro::renderer
 		return "";
 	}
 
+	void material::use_default_material(const shared<shader>& shader)
+	{
+		shader->set_vec_float4("material.albedo", { 0.1f, 0.1f, 0.1f, 1.0f });
+		shader->set_float("material.metallic", 0.0f);
+		shader->set_float("material.roughness", 1.0f);
+		shader->set_float("material.ambient_occlusion", 1.0f);
+		shader->set_int("material.hasAlbedoMap", 0);
+		shader->set_int("material.hasMetallicMap", 0);
+		shader->set_int("material.hasNormalMap", 0);
+		shader->set_int("material.hasRoughnessMap", 0);
+		shader->set_int("material.hasAmbientOcclusionMap", 0);
+	}
+
 	shared<material> material::create()
 	{
 		return create_shared<material>();

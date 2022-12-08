@@ -303,7 +303,7 @@ namespace retro::editor
 			glm::vec3 start_pos = glm::vec3(-offset.x * float(grid_size.x / 2), 0.0,
 				-offset.y * float(grid_size.y / 2));
 
-			const shared<renderer::model>& sphere_model = retro_application::get_application().get_assets_manager()->create_model({ "Assets/Models/Sphere.obj" });
+			const shared<renderer::model>& sphere_model = retro_application::get_application().get_assets_manager()->create_model({ "Assets/Models/Monkey.obj" });
 
 			renderer::material_texture albedoTexture = {
 				nullptr, false

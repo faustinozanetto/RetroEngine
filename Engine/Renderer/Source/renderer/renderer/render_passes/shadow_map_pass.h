@@ -3,6 +3,7 @@
 #include "render_pass.h"
 
 #include "core/base.h"
+#include "glad/glad.h"
 #include "glm/glm.hpp"
 
 #include "renderer/texture/texture.h"
@@ -27,17 +28,28 @@ namespace retro::renderer
 		void begin_pass() override;
 
 		shared<frame_buffer>& get_pass_output() override;
+		int get_blocker_samples() const { return m_blocker_samples; }
+		int get_pcf_samples() const { return m_pcf_samples; }
+		float get_light_radius() const { return m_light_radius; }
+		float get_frustum_size() const { return m_dir_shadow_frustum_size; }
+		glm::vec2& get_frustum_planes() { return m_dir_shadow_frustum_planes; }
+		GLuint get_random_angles_tex() const { return m_random_angles_tex3d_id; }
+		GLuint get_pcf_sampler() const { return m_pcf_sampler; }
 
 	private:
 		void update_shadow_matrices();
 		void generate_shadow_ubo();
+		void update_shadow_ubo();
 		void generate_shadow_map();
 		void generate_shadow_fbo();
+		void generate_random_angles_tex();
+		void generate_pcf_sampler();
+		void load_shaders();
 
 	private:
-		int blocker_samples = 25;
-		int pcf_samples = 25;
-		float light_radius = 0.5f;
+		int m_blocker_samples = 25;
+		int m_pcf_samples = 25;
+		float m_light_radius = 0.02f;
 
 		glm::vec2 m_scene_size;
 		glm::uvec2 m_dir_light_shadow_map_res;
@@ -47,7 +59,10 @@ namespace retro::renderer
 		float      m_dir_shadow_frustum_size;
 
 		glm::vec2 m_shadow_map_res;
-		shared<texture> m_shadow_map;
+		//shared<texture> m_shadow_map;
+		GLuint m_shadow_map;
+		GLuint m_random_angles_tex3d_id;
+		GLuint m_pcf_sampler;
 
 		shadow_data m_shadow_data;
 

@@ -41,13 +41,15 @@ namespace retro::editor
 					{
 						if (asset_type.first == asset_type::texture)
 						{
-							const shared<renderer::texture>& texture = std::dynamic_pointer_cast<renderer::texture>(asset.second);
-							editor_interface_utils::draw_property(texture);
+							if (const shared<renderer::texture>& texture = std::dynamic_pointer_cast<renderer::texture>(asset.second)) {
+								editor_interface_utils::draw_property(texture);
+							}
 						}
 						else if (asset_type.first == asset_type::model)
 						{
-							const shared<renderer::model>& model = std::dynamic_pointer_cast<renderer::model>(asset.second);
-							ImGui::Text("Rendereable Count: %d", model->get_model_renderables().size());
+							if (const shared<renderer::model>& model = std::dynamic_pointer_cast<renderer::model>(asset.second)) {
+								ImGui::Text("Rendereable Count: %d", model->get_model_renderables().size());
+							}
 						}
 						ImGui::TreePop();
 					}

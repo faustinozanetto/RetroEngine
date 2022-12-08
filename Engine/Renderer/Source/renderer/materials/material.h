@@ -23,7 +23,7 @@ namespace retro::renderer
 		shared<texture> mat_texture;
 		bool enabled;
 
-		material_texture() = default;
+		material_texture() : mat_texture(nullptr), enabled(false) {}
 
 		material_texture(const shared<texture>& texture, bool is_enabled) : mat_texture(texture), enabled(is_enabled)
 		{
@@ -40,6 +40,13 @@ namespace retro::renderer
 		float ambient_occlusion = 0.0f;
 
 		material_specification() = default;
+
+		material_specification(
+			const glm::vec4& albedo, float metallic, float roughness) :
+			textures({}), albedo(albedo),
+			metallic(metallic), roughness(roughness)
+		{
+		}
 
 		material_specification(
 			std::map<material_texture_type, material_texture> textures,
@@ -88,6 +95,7 @@ namespace retro::renderer
 		void set_metallic(float metallic) { m_material_specification.metallic = metallic; }
 
 		static std::string get_texture_type_to_string(material_texture_type material_texture_type);
+		static void use_default_material(const shared<shader>& shader);
 
 		/* Instantiate */
 		static shared<material> create();
