@@ -15,6 +15,7 @@
 #include "renderer/shader/shader.h"
 
 #include "glad/glad.h"
+#include "render_passes/geometry_pass.h"
 #include "render_passes/shadow_map_pass.h"
 
 #define NUM_CASCADES 3
@@ -45,30 +46,6 @@ namespace retro::renderer
 		float intensity;
 	};
 
-	struct csm_shadows
-	{
-		int m_blocker_search_samples = 25;
-		int m_pcf_filter_samples = 25;
-		float m_light_radius_uv = 0.5f;
-
-		glm::vec2 scene_size;
-		glm::uvec2 m_dir_light_shadow_map_res;
-		glm::mat4 m_dir_light_view_projection;
-		glm::mat4 m_dir_light_view;
-		glm::vec2  m_dir_shadow_frustum_planes;
-		float      m_dir_shadow_frustum_size;
-
-		GLuint m_dir_shadow_map;
-		GLuint m_random_angles_tex3d_id;
-		GLuint m_pcf_sampler;
-	};
-
-	struct shadows_data
-	{
-		glm::mat4 light_view_projection;
-		glm::mat4 light_view;
-	};
-
 	struct scene_renderer_data
 	{
 		camera_data m_camera_data;
@@ -79,21 +56,20 @@ namespace retro::renderer
 		shared<uniform_buffer> m_camera_ubo;
 		shared<uniform_buffer> m_lights_ubo;
 		shared<uniform_buffer> shadows_ubo;
-		shared<shader> m_geometry_shader;
+
 		shared<shader> m_lighting_shader;
 		shared<shader> m_shadow_shader;
 		shared<shader> m_screen_shader;
-		shared<shader> m_csm_shadows_shader;
+
 		shared<shader> m_fxaa_shader;
-		shared<frame_buffer> m_geometry_frame_buffer;
-		shared<frame_buffer> m_shadow_frame_buffer;
+
 		shared<frame_buffer> m_final_frame_buffer;
 		shared<frame_buffer> m_fxaa_frame_buffer;
 		shared<vertex_array_buffer> m_screen_vao;
 		shared<lighting_environment> m_lighting_environment;
 		shared<shadow_map_pass> shadow_map_pass;
-		csm_shadows m_csm_shadows;
-		shadows_data shadows_data;
+		shared<geometry_pass> geometry_pass;
+
 		bool fxaa_enabled;
 	};
 
@@ -115,8 +91,6 @@ namespace retro::renderer
 		static scene_renderer_data& get_data();
 		static uint32_t get_final_texture();
 
-		static void create_directional_shadow_map(uint32_t width, uint32_t height);
-		static void update_light_matrices();
 		static GLuint generate_random_angles_texture_3d(uint32_t size);
 
 	private:

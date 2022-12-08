@@ -845,12 +845,6 @@ void main() {
   //  result = result / (result + vec3(1.0));
     // gamma correct
   //  result = pow(result, vec3(1.0/2.2));
-    vec3 color = ACESInputMat * result.rgb;
-    color = RRTAndODTFit(color);
-    color = ACESOutputMat * color;
 
-    color = gammaCorrect(color);
-    color = clamp(color, 0.0, 1.0);
-
-    FragColor = vec4(color, Alpha);
+    FragColor = vec4(result, Alpha);
 }
