@@ -26,3 +26,6 @@
 [submodule "ThirdParty/IMGUIBROWSER"]
 	path = ThirdParty/IMGUIBROWSER
 	url = https://github.com/AirGuanZ/imgui-filebrowser
+[submodule "ThirdParty/CEREAL"]
+	path = ThirdParty/CEREAL
+	url = https://github.com/USCiLab/cereal

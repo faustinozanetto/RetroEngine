@@ -24,79 +24,111 @@ namespace retro::editor
 		{
 			retro_application::get_application().get_window()->set_vsync_enabled(m_use_vsync);
 		}
+		editor_interface_utils::draw_property("Enable FXAA", renderer::scene_renderer::get_data().fxaa_enabled);
 		ImGui::Separator();
-		if (ImGui::TreeNode("Frame Buffers"))
+		if (ImGui::TreeNode("GeometryBuffer"))
 		{
-			if (ImGui::TreeNode("GeometryBuffer"))
+			for (const auto& attachment : renderer::scene_renderer::get_geometry_frame_buffer()->get_attachments_specifications())
 			{
-				for (const auto& attachment : renderer::scene_renderer::get_geometry_frame_buffer()->get_attachments_specifications())
+				if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(attachment.first)), "Buffer %s",
+					attachment.second.name.c_str()))
 				{
-					if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(attachment.first)), "Buffer %s",
-						attachment.second.name.c_str()))
+					ImGui::Columns(2);
+
+					if (ImGui::ImageButton(
+						reinterpret_cast<ImTextureID>(attachment.first),
+						{ 64.0f, 64.0f },
+						ImVec2(0.0f, 1.0f),
+						ImVec2(1.0f, 0.0f)))
 					{
-						ImGui::Columns(2);
-
-						if (ImGui::ImageButton(
-							reinterpret_cast<ImTextureID>(attachment.first),
-							{ 64.0f, 64.0f },
-							ImVec2(0.0f, 1.0f),
-							ImVec2(1.0f, 0.0f)))
-						{
-							editor_main_interface::s_render_target = attachment.first;
-						}
-						// Hover tooltip.
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::BeginTooltip();
-							ImGui::Image(reinterpret_cast<ImTextureID>(attachment.first), ImVec2(256, 256),
-								ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-							ImGui::EndTooltip();
-						}
-						ImGui::NextColumn();
-
-						ImGui::Text("Size: %dx%d", renderer::scene_renderer::get_geometry_frame_buffer()->get_width(),
-							renderer::scene_renderer::get_geometry_frame_buffer()->get_height());
-						ImGui::NextColumn();
-						ImGui::TreePop();
+						editor_main_interface::s_render_target = attachment.first;
 					}
+					// Hover tooltip.
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Image(reinterpret_cast<ImTextureID>(attachment.first), ImVec2(256, 256),
+							ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+						ImGui::EndTooltip();
+					}
+					ImGui::NextColumn();
+
+					ImGui::Text("Size: %dx%d", renderer::scene_renderer::get_geometry_frame_buffer()->get_width(),
+						renderer::scene_renderer::get_geometry_frame_buffer()->get_height());
+					ImGui::NextColumn();
+					ImGui::TreePop();
 				}
-				ImGui::TreePop();
 			}
+			ImGui::TreePop();
+		}
 
-			if (ImGui::TreeNode("FinalBuffer"))
+		if (ImGui::TreeNode("FinalBuffer"))
+		{
+			for (const auto& attachment : renderer::scene_renderer::get_final_frame_buffer()->get_attachments_specifications())
 			{
-				for (const auto& attachment : renderer::scene_renderer::get_final_frame_buffer()->get_attachments_specifications())
+				if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(attachment.first)), "Buffer %s",
+					attachment.second.name.c_str()))
 				{
-					if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(attachment.first)), "Buffer %s",
-						attachment.second.name.c_str()))
+					ImGui::Columns(2);
+
+					if (ImGui::ImageButton(
+						reinterpret_cast<ImTextureID>(attachment.first),
+						{ 64.0f, 64.0f },
+						ImVec2(0.0f, 1.0f),
+						ImVec2(1.0f, 0.0f)))
 					{
-						ImGui::Columns(2);
-
-						if (ImGui::ImageButton(
-							reinterpret_cast<ImTextureID>(attachment.first),
-							{ 64.0f, 64.0f },
-							ImVec2(0.0f, 1.0f),
-							ImVec2(1.0f, 0.0f)))
-						{
-							editor_main_interface::s_render_target = attachment.first;
-						}
-						// Hover tooltip.
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::BeginTooltip();
-							ImGui::Image(reinterpret_cast<ImTextureID>(attachment.first), ImVec2(256, 256),
-								ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-							ImGui::EndTooltip();
-						}
-						ImGui::NextColumn();
-
-						ImGui::Text("Size: %dx%d", renderer::scene_renderer::get_geometry_frame_buffer()->get_width(),
-							renderer::scene_renderer::get_geometry_frame_buffer()->get_height());
-						ImGui::NextColumn();
-						ImGui::TreePop();
+						editor_main_interface::s_render_target = attachment.first;
 					}
+					// Hover tooltip.
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Image(reinterpret_cast<ImTextureID>(attachment.first), ImVec2(256, 256),
+							ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+						ImGui::EndTooltip();
+					}
+					ImGui::NextColumn();
+
+					ImGui::Text("Size: %dx%d", renderer::scene_renderer::get_geometry_frame_buffer()->get_width(),
+						renderer::scene_renderer::get_geometry_frame_buffer()->get_height());
+					ImGui::NextColumn();
+					ImGui::TreePop();
 				}
-				ImGui::TreePop();
+			}
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("FXAA Buffer"))
+		{
+			for (const auto& attachment : renderer::scene_renderer::get_fxaa_frame_buffer()->get_attachments_specifications())
+			{
+				if (ImGui::TreeNode(reinterpret_cast<void*>(static_cast<intptr_t>(attachment.first)), "Buffer %s",
+					attachment.second.name.c_str()))
+				{
+					ImGui::Columns(2);
+
+					if (ImGui::ImageButton(
+						reinterpret_cast<ImTextureID>(attachment.first),
+						{ 64.0f, 64.0f },
+						ImVec2(0.0f, 1.0f),
+						ImVec2(1.0f, 0.0f)))
+					{
+						editor_main_interface::s_render_target = attachment.first;
+					}
+					// Hover tooltip.
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Image(reinterpret_cast<ImTextureID>(attachment.first), ImVec2(256, 256),
+							ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+						ImGui::EndTooltip();
+					}
+					ImGui::NextColumn();
+
+					ImGui::Text("Size: %dx%d", renderer::scene_renderer::get_fxaa_frame_buffer()->get_width(),
+						renderer::scene_renderer::get_data().m_fxaa_frame_buffer->get_height());
+					ImGui::NextColumn();
+					ImGui::TreePop();
+				}
 			}
 			ImGui::TreePop();
 		}

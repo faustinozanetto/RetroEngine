@@ -4,7 +4,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shadow_map.h"
 #include "core/base.h"
 #include "core/scene/scene.h"
 #include "renderer/buffers/fbo/frame_buffer.h"
@@ -14,6 +13,9 @@
 #include "renderer/lighting/lighting_environment.h"
 #include "renderer/rendereables/model/model.h"
 #include "renderer/shader/shader.h"
+
+#include "glad/glad.h"
+#include "render_passes/shadow_map_pass.h"
 
 #define NUM_CASCADES 3
 #define NUM_FRUSTUM_CORNERS 8
@@ -82,14 +84,17 @@ namespace retro::renderer
 		shared<shader> m_shadow_shader;
 		shared<shader> m_screen_shader;
 		shared<shader> m_csm_shadows_shader;
+		shared<shader> m_fxaa_shader;
 		shared<frame_buffer> m_geometry_frame_buffer;
 		shared<frame_buffer> m_shadow_frame_buffer;
 		shared<frame_buffer> m_final_frame_buffer;
+		shared<frame_buffer> m_fxaa_frame_buffer;
 		shared<vertex_array_buffer> m_screen_vao;
 		shared<lighting_environment> m_lighting_environment;
-		shared<shadow_map> m_shadow_map;
+		shared<shadow_map_pass> shadow_map_pass;
 		csm_shadows m_csm_shadows;
 		shadows_data shadows_data;
+		bool fxaa_enabled;
 	};
 
 	class scene_renderer
@@ -104,6 +109,7 @@ namespace retro::renderer
 		static shared<frame_buffer>& get_geometry_frame_buffer();
 		static shared<frame_buffer>& get_depth_frame_buffer();
 		static shared<frame_buffer>& get_final_frame_buffer();
+		static shared<frame_buffer>& get_fxaa_frame_buffer();
 		static shared<lighting_environment>& get_lighting_environment();
 		static shared<camera>& get_camera();
 		static scene_renderer_data& get_data();

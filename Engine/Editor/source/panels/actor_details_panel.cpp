@@ -67,11 +67,12 @@ namespace retro::editor
 			{
 				material_component& material_component = active_scene->get_actor_registry().get<retro::material_component>(
 					editor_main_interface::s_selected_actor);
-				auto available_textures = retro_application::get_application().get_assets_manager()->get_assets_by_type(asset_type::texture);
+				const auto& available_textures = retro_application::get_application().get_assets_manager()->get_assets_by_type(asset_type::texture);
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 				flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 				if (ImGui::TreeNodeEx("Materials")) {
-					for (const auto& material : material_component.materials)
+					const std::map<int, shared<renderer::material>> materials = material_component.materials;
+					for (const auto& material : materials)
 					{
 						if (ImGui::TreeNodeEx(reinterpret_cast<void*>(material.first), flags, "Material #%d", material.first))
 						{
@@ -95,23 +96,19 @@ namespace retro::editor
 									editor_interface_utils::draw_property(texture_type.second);
 									// If there are loaded textures, show the combo box.
 									if (!available_textures.empty()) {
-										const char* combo_preview_value;
-											static uint64_t selected_tex_uuid = 0;
-										combo_preview_value = std::to_string(selected_tex_uuid).c_str();
-										if (ImGui::BeginCombo("Select Existing Texture", combo_preview_value))
+										static uint64_t selected_tex_uuid = available_textures.begin()->first->get_uuid();
+										if (ImGui::BeginCombo("##Select Existing Texture", std::to_string(selected_tex_uuid).c_str()))
 										{
 											for (const auto& tex : available_textures) {
-												const bool is_selected = (selected_tex_uuid == tex.first->get());
-												if (ImGui::Selectable(std::to_string(tex.first->get()).c_str(), is_selected)) {
-													selected_tex_uuid = tex.first->get();
-													logger::info("Selected: " + std::to_string(tex.first->get()));
+												const bool is_selected = (selected_tex_uuid == tex.first->get_uuid());
+												if (ImGui::Selectable(std::to_string(tex.first->get_uuid()).c_str(), is_selected)) {
+													selected_tex_uuid = tex.first->get_uuid();
+													texture_type.second.mat_texture = std::dynamic_pointer_cast<renderer::texture>(tex.second);
 												}
-
 												// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
 												if (is_selected)
 													ImGui::SetItemDefaultFocus();
 											}
-
 											ImGui::EndCombo();
 										}
 									}
@@ -156,7 +153,7 @@ namespace retro::editor
 							1.0f,
 						};
 						const shared<renderer::material>& material = retro_application::get_application().get_assets_manager()->create_material(material_specification);
-						int new_mat_index = material_component.materials.size() + 1;
+						int new_mat_index = material_component.materials.size();
 						material_component.materials.insert(std::pair(new_mat_index, material));
 					}
 					ImGui::TreePop();
@@ -166,9 +163,26 @@ namespace retro::editor
 			if (active_scene->get_actor_registry().has<model_renderer_component>(
 				editor_main_interface::s_selected_actor))
 			{
-				const auto& model_renderer_component = active_scene->get_actor_registry().get<retro::model_renderer_component>(
+				auto& model_renderer_component = active_scene->get_actor_registry().get<retro::model_renderer_component>(
 					editor_main_interface::s_selected_actor);
-				ImGui::Text("Rendereable Count: %d", model_renderer_component.model->get_model_renderables().size());
+				ImGui::Text("Rendereable Count: %llu", model_renderer_component.model->get_model_renderables().size());
+				if (ImGui::Button("Load Model"))
+				{
+					editor_main_interface::s_file_browser.SetTitle("Load model");
+					editor_main_interface::s_file_browser.Open();
+				}
+				editor_main_interface::s_file_browser.Display();
+				// Handle the new texture update.
+				if (editor_main_interface::s_file_browser.HasSelected())
+				{
+					std::string file_path = editor_main_interface::s_file_browser.GetSelected().string();
+					const shared<renderer::model>& model = retro_application::get_application().get_assets_manager()->create_model(
+						{
+							file_path
+						});
+					model_renderer_component.model = model;
+					editor_main_interface::s_file_browser.ClearSelected();
+				}
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 				flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 				if (ImGui::TreeNodeEx(model_renderer_component.model->get_uuid().get(), flags, "Rendereables"))
@@ -184,8 +198,8 @@ namespace retro::editor
 									editor_main_interface::s_selected_actor);
 								if (!material_component.materials.empty()) {
 									int mat_index = renderable->get_material_index();
-									if (editor_interface_utils::draw_property("Material Index", mat_index, 1,
-										material_component.materials.size()))
+									if (editor_interface_utils::draw_property("Material Index", mat_index, 0,
+										material_component.materials.size() - 1))
 									{
 										renderable->set_material_index(mat_index);
 									}

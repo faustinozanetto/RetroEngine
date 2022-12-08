@@ -7,9 +7,9 @@ namespace retro
 	public:
 		uuid();
 		uuid(uint64_t uuid);
-		uuid(const uuid &) = default;
+		uuid(const uuid&) = default;
 
-		uint64_t get() const { return m_uuid; }
+		uint64_t get_uuid() const { return m_uuid; }
 
 	private:
 		uint64_t m_uuid;

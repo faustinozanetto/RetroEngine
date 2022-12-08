@@ -27,7 +27,7 @@ namespace retro::renderer
 		RETRO_CORE_ASSERT(data, "Failed to load data from image");
 
 		// Updating size.
-		m_texture_specification.size = {width, height};
+		m_texture_specification.size = { width, height };
 		m_Channels = channels;
 
 		logger::info(
@@ -71,9 +71,5 @@ namespace retro::renderer
 	void open_gl_texture_cubemap::un_bind()
 	{
 		glBindTexture(m_object_handle, 0);
-	}
-
-	void open_gl_texture_cubemap::serialize()
-	{
 	}
 }

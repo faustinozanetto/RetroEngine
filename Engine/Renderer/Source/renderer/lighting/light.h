@@ -16,7 +16,7 @@ namespace retro::renderer
 		float& get_intensity() { return m_intensity; }
 		void set_intensity(float intensity) { m_intensity = intensity; }
 	private:
-		glm::vec3 m_color = {0.8f, 0.8f, 0.8f};
+		glm::vec3 m_color = { 0.8f, 0.8f, 0.8f };
 		float m_intensity = 1.0f;
 	};
 }

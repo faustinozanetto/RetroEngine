@@ -89,12 +89,14 @@ namespace retro::renderer
 
 		static std::string get_texture_type_to_string(material_texture_type material_texture_type);
 
-		/* Asset */
-		void serialize() override;
-
 		/* Instantiate */
 		static shared<material> create();
 		static shared<material> create(const material_specification& material_specification);
+
+		template<class Archive>
+		void serialize(Archive& ar) {
+			ar(m_material_specification.roughness);
+		}
 
 	private:
 		static std::string get_material_texture_uniform(material_texture_type material_texture_type);

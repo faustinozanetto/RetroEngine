@@ -47,6 +47,15 @@ namespace retro
 		return model;
 	}
 
+	shared<renderer::shader> assets_manager::create_shader(const renderer::shader_specification& shader_specification)
+	{
+		auto shader = renderer::shader::create(shader_specification);
+		m_assets[asset_type::model].insert(std::make_pair(shader->get_uuid(), shader));
+		RETRO_CORE_ASSERT(shader, "Failed to create shader.");
+
+		return shader;
+	}
+
 	std::unordered_map<shared<uuid>, shared<asset>>& assets_manager::get_assets_by_type(asset_type type)
 	{
 		return m_assets[type];

@@ -23,6 +23,7 @@ IncludeDir["IMGUIBROWSER"] = "%{wks.location}/ThirdParty/IMGUIBROWSER"
 IncludeDir["STB"] = "%{wks.location}/ThirdParty/STB"
 IncludeDir["ASSIMP"] = "%{wks.location}/ThirdParty/ASSIMP/include"
 IncludeDir["ENTT"] = "%{wks.location}/ThirdParty/ENTT/include"
+IncludeDir["CEREAL"] = "%{wks.location}/ThirdParty/CEREAL/include"
 
 group "Dependencies"
     include "ThirdParty/GLFW"
@@ -71,8 +72,9 @@ project "EngineCore"
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
         "%{IncludeDir.IMGUIBROWSER}",
-        "%{IncludeDir.ASSIMP}",  
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ASSIMP}",
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     filter "system:windows"
@@ -90,13 +92,13 @@ project "EngineCore"
     filter "configurations:Release"
         optimize "Speed"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
 
     filter "configurations:Dist"
         optimize "Full"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
 
 project "EngineRenderer"
@@ -136,7 +138,8 @@ project "EngineRenderer"
         "%{IncludeDir.IMGUI}",
         "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",  
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     links {
@@ -162,13 +165,13 @@ project "EngineRenderer"
     filter "configurations:Release"
         optimize "Speed"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
 
     filter "configurations:Dist"
         optimize "Full"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
 
 project "EngineEditor"
@@ -196,7 +199,8 @@ project "EngineEditor"
         "%{IncludeDir.IMGUI}",
         "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     libdirs {
@@ -226,14 +230,14 @@ project "EngineEditor"
         defines {  "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
     
     filter "configurations:Dist"
         defines { "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
 
 project "Showcase"
@@ -261,7 +265,8 @@ project "Showcase"
         "%{IncludeDir.IMGUI}",
         "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     libdirs {
@@ -291,12 +296,12 @@ project "Showcase"
         defines {  "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
 
     filter "configurations:Dist"
         defines { "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc143-mt.lib",
+            "assimp-vc142-mt.lib",
         }
