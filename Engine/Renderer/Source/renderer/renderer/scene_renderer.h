@@ -55,7 +55,6 @@ namespace retro::renderer
 		shared<scene> m_scene;
 		shared<uniform_buffer> m_camera_ubo;
 		shared<uniform_buffer> m_lights_ubo;
-		shared<uniform_buffer> shadows_ubo;
 
 		shared<shader> m_lighting_shader;
 		shared<shader> m_shadow_shader;
@@ -90,6 +89,8 @@ namespace retro::renderer
 		static shared<camera>& get_camera();
 		static scene_renderer_data& get_data();
 		static uint32_t get_final_texture();
+
+		static shared<shadow_map_pass>& get_shadow_pass();
 
 		static GLuint generate_random_angles_texture_3d(uint32_t size);
 

@@ -34,7 +34,6 @@ namespace retro
 	{
 		return translate(glm::mat4(1.0f), position) * toMat4(glm::quat(rotation)) * glm::scale(glm::mat4(1.0f), scale);
 	}
-
 	model_renderer_component::model_renderer_component(const shared<renderer::model>& model)
 	{
 		this->model = model;

@@ -2,7 +2,10 @@
 
 #include "showcase_layer.h"
 
+#include <execution>
+
 #include "imgui.h"
+#include "stb_image.h"
 #include "core/application/retro_application.h"
 #include "core/input/input_manager.h"
 #include "core/scene/actor.h"
@@ -11,6 +14,13 @@
 
 namespace retro
 {
+	struct tex_data
+	{
+		const unsigned char* data;
+		int width, height, channels;
+
+		tex_data(const unsigned char* data, int width, int height, int channels) : data(data), width(width), height(height), channels(channels) {}
+	};
 	showcase_layer::showcase_layer(const std::string& name) : layer(name)
 	{
 	}
@@ -34,6 +44,45 @@ namespace retro
 		renderer::scene_renderer::set_scene(
 			retro_application::get_application().get_scene_manager()->get_active_scene());
 		renderer::scene_renderer::initialize(m_camera);
+
+		std::vector<std::string> textures_path;
+		const std::string path = "Assets/Models/NightCity/textures/";
+		const std::string directory = path.substr(0, path.find_last_of('/'));
+		for (const auto& entry : std::filesystem::directory_iterator(path))
+		{
+			textures_path.emplace_back(entry.path().string());
+		}
+
+		/*
+		std::vector<tex_data> textures_data;
+		std::for_each(std::execution::par, std::begin(textures_path), std::end(textures_path), [&](std::string& file)
+			{
+				logger::info("Loading async tex: " + file);
+		// Variables for stb.
+		int width, height, channels;
+		stbi_uc* data;
+
+		// Load file using STB.
+		stbi_set_flip_vertically_on_load(1);
+		{
+			data = stbi_load(file.c_str(), &width, &height, &channels, 0);
+		}
+		tex_data tex_data = { data, width, height, channels };
+		textures_data.emplace_back(tex_data);
+			});
+
+		std::vector<shared<renderer::texture>> textures;
+		textures.resize(textures_data.size());
+		int i = 0;
+		for (const tex_data& tex : textures_data)
+		{
+			auto asset_tex = renderer::texture::create(tex.width, tex.height, tex.channels, tex.data);
+			textures.insert(textures.begin() + i, asset_tex);
+			i++;
+		}
+		*/
+		const std::vector<shared<renderer::texture>>& textures = retro_application::get_application().get_assets_manager()->create_textures(textures_path);
+		logger::info("Textures: " + textures.size());
 	}
 
 	void showcase_layer::on_layer_unregistered()

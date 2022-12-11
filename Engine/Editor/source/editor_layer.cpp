@@ -290,9 +290,23 @@ namespace retro::editor
 			transform.position = { 0.0f, -0.4f, 9.0f };
 			mat.material->serialize();
 		}
-
 		*/
+		auto ww2city = retro_application::get_application().get_scene_manager()->get_active_scene()->
+			create_actor();
+		const shared<renderer::model>& ww2city_model = retro_application::get_application().get_assets_manager()->create_model(
+			{ "Assets/Models/NightCity/scene.gltf" });
+		ww2city->add_component<name_component>("WW2 City");
+		auto& model_renderer = ww2city->add_component<model_renderer_component>(ww2city_model);
+		auto& material = ww2city->add_component<material_component>();
+		material.materials = model_renderer.model->get_embedded_materials();
+		for (int i = 0; i < model_renderer.model->get_model_renderables().size(); i++)
+		{
+			model_renderer.model->get_model_renderables()[i]->set_material_index(i);
+		}
+		auto& transform = ww2city->add_component<transform_component>();
+		transform.scale = glm::vec3(0.002f);
 
+		/*
 		{
 			float hk_unit_scale_factor = 1.25f;
 			float hk_radius = hk_unit_scale_factor;
@@ -355,6 +369,7 @@ namespace retro::editor
 				}
 			}
 		}
+		*/
 	}
 
 	void editor_layer::on_layer_unregistered()
@@ -508,8 +523,9 @@ namespace retro::editor
 
 		const renderer::material_specification materialSpecification = {
 			textures,
+			"Floor Mat",
 			glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-			1.0f,
+			0.0f,
 			1.0f,
 			1.0f,
 		};

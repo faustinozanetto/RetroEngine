@@ -21,30 +21,29 @@ namespace retro::renderer
 		return m_renderables;
 	}
 
-	bool model::load_model_from_path(const std::string& path)
+	void model::load_model_from_path(const std::string& path)
 	{
 		// Create assimp importer.
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(
 			path,
 			aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
-			aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
+			aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace | aiProcess_PreTransformVertices);
 		m_assimp_scene = scene;
 		// Error handling.
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			const std::string& error = importer.GetErrorString();
 			logger::error("model::load_model_from_path | Assimp error: " + error);
-			return false;
 		}
 		logger::info("	- Materials: " + m_assimp_scene->mNumMaterials);
 		// Retrieve the directory path of the filepath.
 		m_directory_path = path.substr(0, path.find_last_of('/'));
 		// Process the root node recursively.
-		return parse_model_node(m_assimp_scene->mRootNode);
+		parse_model_node(m_assimp_scene->mRootNode);
 	}
 
-	bool model::parse_model_node(const aiNode* node)
+	void model::parse_model_node(const aiNode* node)
 	{
 		for (int i = 0; i < node->mNumMeshes; i++)
 		{
@@ -59,48 +58,6 @@ namespace retro::renderer
 		{
 			parse_model_node(node->mChildren[i]);
 		}
-
-		/*
-		for (int i = 0; i < m_assimp_scene->mNumMaterials; i++)
-		{
-			aiMaterial* assimp_mat = m_assimp_scene->mMaterials[i];
-			material_texture albedoTexture = {
-				nullptr, false
-			};
-
-			material_texture normalTexture = {
-				nullptr, false
-			};
-
-			material_texture metalRoughTexture = {
-				nullptr, false
-			};
-
-			material_texture aoTexture = {
-				nullptr, false
-			};
-			const std::map<material_texture_type, material_texture> textures = {
-				{material_texture_type::albedo, albedoTexture},
-				{material_texture_type::normal, normalTexture},
-				{material_texture_type::metallic, metalRoughTexture},
-				{material_texture_type::roughness, metalRoughTexture},
-				{material_texture_type::ambient_occlusion, aoTexture}
-			};
-
-			const material_specification material_specification = {
-				textures,
-				glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-				1.0f,
-				1.0f,
-				1.0f,
-			};
-
-			shared<material> mat = retro_application::get_application().get_assets_manager()->create_material(material_specification);
-			m_materials.insert(std::pair(i, mat));
-		}
-		*/
-
-		return true;
 	}
 
 	shared<renderable> model::parse_renderable(const aiMesh* mesh, int index)
@@ -132,8 +89,7 @@ namespace retro::renderer
 			if (mesh->HasTextureCoords(0)) // does the mesh contain texture coordinates?
 			{
 				// tex coords
-				texCoords.x = mesh->mTextureCoords[0][i].x;
-				texCoords.y = mesh->mTextureCoords[0][i].y;
+				texCoords = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 				// tangent
 				tangent.x = mesh->mTangents[i].x;
 				tangent.y = mesh->mTangents[i].y;
@@ -164,6 +120,72 @@ namespace retro::renderer
 		logger::info(
 			"Mesh has " + std::to_string(mesh->mNumVertices) + " vertices and " + std::to_string(mesh->mNumFaces) +
 			" faces.");
+
+		if (m_assimp_scene->HasMaterials())
+		{
+			aiMaterial* assimp_mat = m_assimp_scene->mMaterials[mesh->mMaterialIndex];
+			std::vector<renderable_texture> albedo_maps = parse_material_texture(
+				assimp_mat, aiTextureType_DIFFUSE, "texture_diffuse");
+			material_texture albedo_mat_tex = {
+				nullptr, false
+			};
+			if (!albedo_maps.empty()) {
+				albedo_mat_tex.mat_texture = albedo_maps.at(0).tex;
+				albedo_mat_tex.enabled = true;
+			}
+
+			std::vector<renderable_texture> normal_maps = parse_material_texture(
+				assimp_mat, aiTextureType_NORMALS, "texture_normal");
+			material_texture normal_mat_tex = {
+				nullptr, false
+			};
+			if (!normal_maps.empty()) {
+				normal_mat_tex.mat_texture = normal_maps.at(0).tex;
+				normal_mat_tex.enabled = true;
+			}
+
+			std::vector<renderable_texture> roughness_maps = parse_material_texture(
+				assimp_mat, aiTextureType_NORMALS, "texture_roughness");
+			material_texture roughness_mat_tex = {
+				nullptr, false
+			};
+			if (!roughness_maps.empty()) {
+				roughness_mat_tex.mat_texture = roughness_maps.at(0).tex;
+				roughness_mat_tex.enabled = true;
+			}
+
+			std::vector<renderable_texture> ao_maps = parse_material_texture(
+				assimp_mat, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
+			material_texture ao_mat_tex = {
+				nullptr, false
+			};
+			if (!ao_maps.empty()) {
+				ao_mat_tex.mat_texture = ao_maps.at(0).tex;
+				ao_mat_tex.enabled = true;
+			}
+
+			const std::map<material_texture_type, material_texture> textures = {
+				{material_texture_type::albedo, albedo_mat_tex},
+				{material_texture_type::normal, normal_mat_tex},
+				{material_texture_type::metallic, roughness_mat_tex},
+				{material_texture_type::roughness, roughness_mat_tex},
+				{material_texture_type::ambient_occlusion, ao_mat_tex}
+			};
+
+			const std::string& mat_name = assimp_mat->GetName().C_Str();
+
+			const material_specification material_specification = {
+				textures,
+				mat_name,
+				glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+				1.0f,
+				1.0f,
+				1.0f,
+			};
+
+			const shared<material>& embedded_material = retro_application::get_application().get_assets_manager()->create_material(material_specification);
+			m_embedded_materials.insert(std::pair(mesh->mMaterialIndex, embedded_material));
+		}
 
 		/*
 		if (mesh->mMaterialIndex > 0)
@@ -199,7 +221,9 @@ namespace retro::renderer
 			logger::info("The model has no textures.");
 		}
 
-		return create_shared<renderable>(vertices, indices, textures);
+		shared<renderable> model_renderable = create_shared<renderable>(vertices, indices, textures);;
+		model_renderable->set_name(mesh->mName.C_Str());
+		return model_renderable;
 	}
 
 	std::vector<renderable_texture> model::parse_material_texture(aiMaterial* mat, aiTextureType type,
@@ -224,16 +248,28 @@ namespace retro::renderer
 			}
 			if (!skip)
 			{
-				std::string texture_path = m_directory_path + "/" + str.C_Str();
-				shared<texture> texture = retro_application::get_application().get_assets_manager()->create_texture(
-					{ texture_path, texture_filtering::linear, texture_wrapping::clamp_edge });
 				renderable_texture rendereable_texture;
-				m_textures.push_back(texture);
-				rendereable_texture.id = texture->get_object_handle();
-				rendereable_texture.type = type_name;
-				rendereable_texture.path = texture_path;
-				textures.push_back(rendereable_texture);
-				m_textures_loaded.push_back(rendereable_texture); // add to loaded textures
+				std::string filename = str.C_Str();
+				filename = m_directory_path + '\\' + filename;
+				shared<texture> texture = nullptr;
+				if (auto tex = m_assimp_scene->GetEmbeddedTexture(str.C_Str())) {
+					auto width = tex->mWidth;
+					auto height = tex->mHeight;
+					texture = retro_application::get_application().get_assets_manager()->create_texture(
+						width, height, reinterpret_cast<unsigned char*>(tex->pcData));
+				}
+				else {
+					texture = retro_application::get_application().get_assets_manager()->create_texture(
+						{ filename, texture_filtering::linear ,texture_wrapping::clamp_edge });
+				}
+				if (texture) {
+					m_textures.push_back(texture);
+					rendereable_texture.tex = texture;
+					rendereable_texture.type = type_name;
+					rendereable_texture.path = filename;
+					textures.push_back(rendereable_texture);
+					m_textures_loaded.push_back(rendereable_texture); // add to loaded textures
+				}
 			}
 		}
 		return textures;
