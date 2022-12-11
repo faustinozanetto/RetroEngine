@@ -37,14 +37,6 @@ namespace retro::renderer
 		clamp_border = 4,
 	};
 
-	enum class TextureFormat
-	{
-		none = 0,
-		rgb = 1,
-		rgba = 2,
-		red = 3,
-	};
-
 	struct texture_specification
 	{
 		std::string path;
@@ -57,7 +49,7 @@ namespace retro::renderer
 		texture_specification() = default;
 
 		texture_specification(std::string path, texture_filtering filtering,
-			texture_wrapping wrapping) : path(std::move(path)), filtering(filtering), wrapping(wrapping)
+			texture_wrapping wrapping) : path(std::move(path)), filtering(filtering), wrapping(wrapping), size({ 0,0 })
 		{
 		}
 
@@ -67,6 +59,20 @@ namespace retro::renderer
 			wrapping(wrapping), format(format), dataFormat(dataFormat)
 		{
 		}
+	};
+
+	/**
+	 * \brief Structure used when loading textures with multi-threading. Contains the information that returns
+	 * stbi when loading the texture from path for later usage to create the actual texture graphics object.
+	 */
+	struct texture_multi_threaded
+	{
+		const unsigned char* data;
+		int width, height, channels;
+
+		texture_multi_threaded() = default;
+
+		texture_multi_threaded(int width, int height, int channels, const unsigned char* data) : width(width), height(height), channels(channels), data(data) {}
 	};
 
 	class texture : public graphics_object, public asset
@@ -95,8 +101,11 @@ namespace retro::renderer
 		static std::string get_texture_filtering_to_string(texture_filtering texture_filtering);
 		static std::string get_texture_wrapping_to_string(texture_wrapping texture_wrapping);
 
+		static texture_multi_threaded load_texture_raw_contents(const std::string& path);
+
 		/* Instantiate */
 		static shared<texture> create(const texture_specification& texture_specification);
 		static shared<texture> create(uint32_t width, uint32_t height, const unsigned char* data);
+		static shared<texture> create(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data);
 	};
 }

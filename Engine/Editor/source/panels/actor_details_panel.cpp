@@ -11,6 +11,7 @@
 #include "core/scene/actor.h"
 #include "renderer/lighting/directional_light.h"
 #include "renderer/lighting/point_light.h"
+#include "renderer/renderer/scene_renderer.h"
 
 namespace retro::editor
 {
@@ -68,13 +69,16 @@ namespace retro::editor
 				material_component& material_component = active_scene->get_actor_registry().get<retro::material_component>(
 					editor_main_interface::s_selected_actor);
 				const auto& available_textures = retro_application::get_application().get_assets_manager()->get_assets_by_type(asset_type::texture);
-				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-				flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+				ImGuiTreeNodeFlags mat_flags = ImGuiTreeNodeFlags_OpenOnArrow;
+				mat_flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 				if (ImGui::TreeNodeEx("Materials")) {
-					const std::map<int, shared<renderer::material>> materials = material_component.materials;
+					const std::map<int, shared<renderer::material>>& materials = material_component.materials;
 					for (const auto& material : materials)
 					{
-						if (ImGui::TreeNodeEx(reinterpret_cast<void*>(material.first), flags, "Material #%d", material.first))
+						bool mat_node_open = ImGui::TreeNodeEx(material.second->get_material_specification().name.c_str(), mat_flags,
+							"Material %s #%d", material.second->get_material_specification().name.c_str(), material.first);
+
+						if (mat_node_open)
 						{
 							editor_interface_utils::draw_property(
 								"Albedo", material.second->get_material_specification().albedo, true);
@@ -147,6 +151,7 @@ namespace retro::editor
 						};
 						const renderer::material_specification material_specification = {
 							mat_textures,
+							"Material",
 							glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 							1.0f,
 							1.0f,
@@ -189,8 +194,9 @@ namespace retro::editor
 				{
 					int renderable_idx = 0;
 					for (const shared<renderer::renderable>& renderable : model_renderer_component.model->get_model_renderables()) {
-						if (ImGui::TreeNodeEx(reinterpret_cast<void*>(renderable_idx), flags, "#%d", renderable_idx))
-						{
+						bool rendereable_node_open = ImGui::TreeNodeEx((void*)(intptr_t)renderable_idx, flags, "%s", renderable->get_name().c_str());
+
+						if (rendereable_node_open) {
 							// If actor has a material_component, show the slider for the material index.
 							if (active_scene->get_actor_registry().has<material_component>(editor_main_interface::s_selected_actor))
 							{
@@ -235,6 +241,8 @@ namespace retro::editor
 						-180.0, 180.0, 0.1f))
 					{
 						directionalLight->set_direction(m_dir_light.x, m_dir_light.y);
+						renderer::scene_renderer::get_shadow_pass()->update_shadow_matrices();
+						renderer::scene_renderer::get_shadow_pass()->update_shadow_ubo();
 					}
 				}
 				else if (light_renderer_component.type == light_type::point)

@@ -27,6 +27,9 @@ namespace retro::renderer
 
 		void begin_pass() override;
 
+		void update_shadow_ubo();
+		void update_shadow_matrices();
+
 		shared<frame_buffer>& get_pass_output() override;
 		int get_blocker_samples() const { return m_blocker_samples; }
 		int get_pcf_samples() const { return m_pcf_samples; }
@@ -37,9 +40,8 @@ namespace retro::renderer
 		GLuint get_pcf_sampler() const { return m_pcf_sampler; }
 
 	private:
-		void update_shadow_matrices();
+
 		void generate_shadow_ubo();
-		void update_shadow_ubo();
 		void generate_shadow_map();
 		void generate_shadow_fbo();
 		void generate_random_angles_tex();

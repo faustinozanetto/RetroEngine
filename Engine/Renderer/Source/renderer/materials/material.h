@@ -33,6 +33,7 @@ namespace retro::renderer
 	struct material_specification
 	{
 		shared<shader> mat_shader;
+		std::string name;
 		std::map<material_texture_type, material_texture> textures;
 		glm::vec4 albedo = glm::vec4(1.0f);
 		float metallic = 0.0f;
@@ -50,23 +51,26 @@ namespace retro::renderer
 
 		material_specification(
 			std::map<material_texture_type, material_texture> textures,
+			const std::string& name,
 			const glm::vec4& albedo, float metallic, float roughness) :
-			textures(std::move(textures)), albedo(albedo),
+			textures(std::move(textures)), name(name), albedo(albedo),
 			metallic(metallic), roughness(roughness)
 		{
 		}
 
 		material_specification(
 			std::map<material_texture_type, material_texture> textures,
+			const std::string& name,
 			const glm::vec4& albedo, float metallic, float roughness, float ao) :
-			textures(std::move(textures)), albedo(albedo),
+			textures(std::move(textures)), name(name), albedo(albedo),
 			metallic(metallic), roughness(roughness), ambient_occlusion(ao)
 		{
 		}
 
 		material_specification(const shared<shader>& shader,
+			const std::string& name,
 			std::map<material_texture_type, material_texture> textures,
-			const glm::vec4& albedo, float metallic, float roughness) : mat_shader(shader),
+			const glm::vec4& albedo, float metallic, float roughness) : mat_shader(shader), name(name),
 			textures(std::move(textures)), albedo(albedo),
 			metallic(metallic), roughness(roughness)
 		{

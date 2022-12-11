@@ -7,12 +7,13 @@
 #include "renderer/buffers/vao/vertex_array_buffer.h"
 #include "renderer/buffers/vbo/vertex_object_buffer.h"
 #include "renderer/renderer/graphics_object.h"
+#include "renderer/texture/texture.h"
 
 namespace retro::renderer
 {
 	struct renderable_texture
 	{
-		unsigned int id;
+		shared<texture> tex;
 		std::string type;
 		std::string path;
 	};
@@ -64,6 +65,9 @@ namespace retro::renderer
 		int get_material_index() const;
 		void set_material_index(int material_index);
 
+		const std::string& get_name() const { return m_name; }
+		void set_name(const std::string& name) { m_name = name; }
+
 		/* Instantiate */
 		static shared<renderable> create(const std::vector<renderable_vertex>& vertices,
 			const std::vector<uint32_t>& indices,
@@ -76,6 +80,7 @@ namespace retro::renderer
 		std::vector<renderable_texture> m_renderable_textures;
 		std::vector<renderable_vertex> m_vertices;
 		std::vector<uint32_t> m_indices;
+		std::string m_name;
 		int m_material_index;
 	};
 }

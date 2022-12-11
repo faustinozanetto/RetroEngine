@@ -74,9 +74,6 @@ namespace retro::renderer
 		s_scene_renderer_data.m_lighting_environment->set_view_projection(
 			s_scene_renderer_data.m_camera_data.u_ViewMatrix, s_scene_renderer_data.m_camera_data.u_ProjectionMatrix);
 
-		const auto view = s_scene_renderer_data.m_scene->get_actor_registry().group<model_renderer_component>(
-			entt::get<name_component, transform_component>);
-
 		/* ==================== SHADOW PASS ==================== */
 		s_scene_renderer_data.shadow_map_pass->begin_pass();
 
@@ -207,6 +204,11 @@ namespace retro::renderer
 	uint32_t scene_renderer::get_final_texture()
 	{
 		return s_scene_renderer_data.m_final_frame_buffer->get_attachment_id(0);
+	}
+
+	shared<shadow_map_pass>& scene_renderer::get_shadow_pass()
+	{
+		return s_scene_renderer_data.shadow_map_pass;
 	}
 
 	GLuint scene_renderer::generate_random_angles_texture_3d(uint32_t size)

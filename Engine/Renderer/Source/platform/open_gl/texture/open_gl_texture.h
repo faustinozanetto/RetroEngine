@@ -14,6 +14,7 @@ namespace retro::renderer
 		/* Constructor & Destructor */
 		open_gl_texture(const texture_specification& texture_specification);
 		open_gl_texture(uint32_t width, uint32_t height, const unsigned char* data);
+		open_gl_texture(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data);
 		~open_gl_texture() override;
 
 		/* Methods */
@@ -47,7 +48,7 @@ namespace retro::renderer
 		void setup_image_from_path();
 		void setup_image_no_path();
 	protected:
-		texture_specification m_texture_specification;
+		texture_specification m_texture_specification{};
 		int m_mip_map_levels{};
 		int m_channels;
 	};

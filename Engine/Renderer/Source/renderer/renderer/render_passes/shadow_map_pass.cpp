@@ -47,15 +47,16 @@ namespace retro::renderer
 
 		ImGui::End();
 
-		update_shadow_matrices();
-		update_shadow_ubo();
-
 		// Prepare for shadow pass.
 		m_shadow_fbo->bind();
-		renderer::set_renderer_state(renderer_state::depth_test, true);
-		renderer::set_clear_color({ 0.0f, 0.0f, 0.0f, 1.0f });
+		//renderer::set_renderer_state(renderer_state::depth_test, true);
+		//renderer::set_clear_color({ 0.0f, 0.0f, 0.0f, 1.0f });
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		glCullFace(GL_FRONT);
+
 		m_shadow_shader->bind();
-		renderer::clear_screen();
+		//renderer::clear_screen();
 
 		const auto view = retro_application::get_application().get_scene_manager()->get_active_scene()->get_actor_registry().group<model_renderer_component>(
 			entt::get<transform_component>);
@@ -74,6 +75,7 @@ namespace retro::renderer
 
 		m_shadow_shader->un_bind();
 		m_shadow_fbo->un_bind();
+		glCullFace(GL_BACK);
 	}
 
 	shared<frame_buffer>& shadow_map_pass::get_pass_output()

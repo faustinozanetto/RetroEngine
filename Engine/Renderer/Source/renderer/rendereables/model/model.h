@@ -4,11 +4,10 @@
 #include "core/assets/asset.h"
 #include "renderer/rendereables/renderable.h"
 #include "renderer/texture/texture.h"
+#include "renderer/materials/material.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-
-#include "renderer/materials/material.h"
 
 namespace retro::renderer
 {
@@ -32,6 +31,7 @@ namespace retro::renderer
 
 		/* Methods */
 		std::vector<shared<renderable>>& get_model_renderables();
+		std::map<int, shared<material>>& get_embedded_materials() { return m_embedded_materials; }
 		std::vector<renderable_texture>& get_embedded_textures() { return m_textures_loaded; }
 
 		/* Asset */
@@ -40,8 +40,8 @@ namespace retro::renderer
 		static shared<model> create(const model_specification& model_specification);
 
 	private:
-		bool load_model_from_path(const std::string& path);
-		bool parse_model_node(const aiNode* node);
+		void load_model_from_path(const std::string& path);
+		void parse_model_node(const aiNode* node);
 		shared<renderable> parse_renderable(const aiMesh* mesh, int index);
 		std::vector<renderable_texture>
 			parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
@@ -52,6 +52,7 @@ namespace retro::renderer
 		std::vector<shared<texture>> m_textures;
 		std::vector<renderable_texture> m_textures_loaded;
 		std::vector<shared<renderable>> m_renderables;
+		std::map<int, shared<material>> m_embedded_materials;
 		std::string m_directory_path;
 	};
 }

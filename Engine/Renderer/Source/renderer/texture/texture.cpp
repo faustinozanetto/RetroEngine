@@ -32,6 +32,19 @@ namespace retro::renderer
 		return "Unknown";
 	}
 
+	texture_multi_threaded texture::load_texture_raw_contents(const std::string& path)
+	{
+		// Variables for stb.
+		int width, height, channels;
+		stbi_uc* data;
+		// Load file using STB.
+		stbi_set_flip_vertically_on_load(1);
+		{
+			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		}
+		return { width, height, channels, data };
+	}
+
 	shared<texture> texture::create(const texture_specification& texture_specification)
 	{
 		switch (renderer::get_renderer_api_type())
@@ -61,6 +74,23 @@ namespace retro::renderer
 		case renderer_api_type::open_gl:
 		{
 			return create_shared<open_gl_texture>(width, height, data);
+		}
+		}
+		return {};
+	}
+
+	shared<texture> texture::create(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data)
+	{
+		switch (renderer::get_renderer_api_type())
+		{
+		case renderer_api_type::none:
+		{
+			logger::error("texture::create | Unknown renderer api!.");
+			return nullptr;
+		}
+		case renderer_api_type::open_gl:
+		{
+			return create_shared<open_gl_texture>(width, height, channels, data);
 		}
 		}
 		return {};

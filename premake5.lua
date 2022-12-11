@@ -92,13 +92,13 @@ project "EngineCore"
     filter "configurations:Release"
         optimize "Speed"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
 
     filter "configurations:Dist"
         optimize "Full"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
 
 project "EngineRenderer"
@@ -165,13 +165,13 @@ project "EngineRenderer"
     filter "configurations:Release"
         optimize "Speed"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
 
     filter "configurations:Dist"
         optimize "Full"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
 
 project "EngineEditor"
@@ -230,14 +230,14 @@ project "EngineEditor"
         defines {  "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
     
     filter "configurations:Dist"
         defines { "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
 
 project "Showcase"
@@ -296,12 +296,12 @@ project "Showcase"
         defines {  "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
 
     filter "configurations:Dist"
         defines { "WIN32_LEAN_AND_MEAN" }
         optimize "on"
         links {
-            "assimp-vc142-mt.lib",
+            "assimp-vc143-mt.lib",
         }
