@@ -10,6 +10,7 @@ namespace retro::renderer {
 
 		static shared<texture_2d> create(const texture_specification& texture_specification);
 		static shared<texture_2d> create(uint32_t width, uint32_t height, const unsigned char* data);
+		static shared<texture_2d> create(uint32_t width, uint32_t height, const void* pixels);
 		static shared<texture_2d> create(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data);
 	};
 }

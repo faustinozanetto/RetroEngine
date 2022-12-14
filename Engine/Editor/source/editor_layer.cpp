@@ -294,7 +294,7 @@ namespace retro::editor
 		auto ww2city = retro_application::get_application().get_scene_manager()->get_active_scene()->
 			create_actor();
 		const shared<renderer::model>& ww2city_model = retro_application::get_application().get_assets_manager()->create_model(
-			{ "Assets/Models/Sponza/sponza.obj" });
+			{ "Assets/Models/NightCity/scene.gltf" });
 		ww2city->add_component<name_component>("Bistro");
 		auto& model_renderer = ww2city->add_component<model_renderer_component>(ww2city_model);
 		auto& material = ww2city->add_component<material_component>();
@@ -304,7 +304,7 @@ namespace retro::editor
 			model_renderer.model->get_model_renderables()[i]->set_material_index(i);
 		}
 		auto& transform = ww2city->add_component<transform_component>();
-		transform.scale = glm::vec3(0.01f);
+		transform.scale = glm::vec3(0.5f);
 
 		/*		{
 					float hk_unit_scale_factor = 1.25f;

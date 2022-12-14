@@ -24,7 +24,7 @@ namespace retro::renderer
 			GL_RGBA, GL_RGB16F
 		};
 		m_voxelization_fbo = frame_buffer::create({
-			1920, 1080,
+			1920, 1080, false,
 			{
 				{"voxelization", vox_tex_spec}}
 			});
@@ -106,6 +106,10 @@ namespace retro::renderer
 
 		glGenerateMipmap(GL_TEXTURE_3D);
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	}
+
+	void global_illumination_pass::resize(uint32_t width, uint32_t height)
+	{
 	}
 
 	void global_illumination_pass::visualize_voxels()

@@ -121,6 +121,6 @@ namespace retro
 			renderer::texture_wrapping::clamp_edge,
 			GL_RGBA, GL_RGB16F };
 		m_fbo =
-			renderer::frame_buffer::create({ 1920, 1080, {{"fbo", final_tex_spec}} });
+			renderer::frame_buffer::create({ 1920, 1080,false, {{"fbo", final_tex_spec}} });
 	}
 }

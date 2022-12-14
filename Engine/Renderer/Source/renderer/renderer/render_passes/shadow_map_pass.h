@@ -25,6 +25,7 @@ namespace retro::renderer
 		~shadow_map_pass() override;
 
 		void begin_pass() override;
+		void resize(uint32_t width, uint32_t height) override;
 
 		void update_shadow_ubo();
 		void update_shadow_matrices(const glm::vec3& light_dir);

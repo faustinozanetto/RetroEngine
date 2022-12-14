@@ -42,6 +42,23 @@ namespace retro::renderer
 		return {};
 	}
 
+	shared<texture_2d> texture_2d::create(uint32_t width, uint32_t height, const void* pixels)
+	{
+		switch (renderer::get_renderer_api_type())
+		{
+		case renderer_api_type::none:
+		{
+			logger::error("texture_2d::create | Unknown renderer api!.");
+			return nullptr;
+		}
+		case renderer_api_type::open_gl:
+		{
+			return create_shared<open_gl_texture_2d>(width, height, pixels);
+		}
+		}
+		return {};
+	}
+
 	shared<texture_2d> texture_2d::create(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data)
 	{
 		switch (renderer::get_renderer_api_type())

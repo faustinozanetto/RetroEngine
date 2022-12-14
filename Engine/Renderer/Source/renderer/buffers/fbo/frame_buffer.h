@@ -34,17 +34,17 @@ namespace retro::renderer
 	{
 		uint32_t width;
 		uint32_t height;
-
+		bool has_depth_attachment;
 		std::vector<frame_buffer_texture_specification> attachments;
 
 		frame_buffer_specification() : width(1920), height(1080), attachments({})
 		{
 		}
 
-		frame_buffer_specification(uint32_t width, uint32_t height,
+		frame_buffer_specification(uint32_t width, uint32_t height, bool has_depth_attachment,
 			std::initializer_list<frame_buffer_texture_specification> attachments) :
 			width(width),
-			height(height), attachments(attachments)
+			height(height), has_depth_attachment(has_depth_attachment), attachments(attachments)
 		{
 		}
 	};

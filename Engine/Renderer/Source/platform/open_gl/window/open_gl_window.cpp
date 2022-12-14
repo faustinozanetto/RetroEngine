@@ -98,12 +98,8 @@ namespace retro::renderer
 		windowSpecification.width = width;
 		windowSpecification.height = height;
 
-		std::stringstream ss;
-		ss << "WindowResizeEvent: " << width << ", " << height;
 		renderer::set_viewport(0, 0, width, height);
-		scene_renderer::get_final_frame_buffer()->resize(width, height);
-		scene_renderer::get_geometry_frame_buffer()->resize(width, height);
-		logger::info(ss.str());
+		scene_renderer::resize(width, height);
 			});
 	}
 }
