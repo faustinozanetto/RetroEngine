@@ -41,7 +41,7 @@ namespace retro::editor
 					{
 						if (asset_type.first == asset_type::texture)
 						{
-							if (const shared<renderer::texture>& texture = std::dynamic_pointer_cast<renderer::texture>(asset.second)) {
+							if (const shared<renderer::texture_2d>& texture = std::dynamic_pointer_cast<renderer::texture_2d>(asset.second)) {
 								editor_interface_utils::draw_property(texture);
 							}
 						}

@@ -15,7 +15,7 @@ namespace retro
 
 	retro_application::retro_application(const retro_application_specification& retro_application_specification)
 	{
-		std::filesystem::current_path("../");
+		std::filesystem::current_path("../../");
 		// Update variables.
 		s_instance = this;
 		m_application_specification = retro_application_specification;

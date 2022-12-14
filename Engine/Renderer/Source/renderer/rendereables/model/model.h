@@ -3,7 +3,7 @@
 #include "core/base.h"
 #include "core/assets/asset.h"
 #include "renderer/rendereables/renderable.h"
-#include "renderer/texture/texture.h"
+#include "renderer/texture/texture_2d.h"
 #include "renderer/materials/material.h"
 
 #include <assimp/Importer.hpp>
@@ -27,14 +27,14 @@ namespace retro::renderer
 	public:
 		/* Constructor & Destructor */
 		model(const model_specification& model_specification);
-		~model() override = default;
+		~model() override;
 
 		/* Methods */
 		std::vector<shared<renderable>>& get_model_renderables();
 		std::map<int, shared<material>>& get_embedded_materials() { return m_embedded_materials; }
 		std::vector<renderable_texture>& get_embedded_textures() { return m_textures_loaded; }
 
-		/* Asset */
+		void parse_model_materials();
 
 		/* Instantiate */
 		static shared<model> create(const model_specification& model_specification);
@@ -49,10 +49,11 @@ namespace retro::renderer
 	private:
 		const aiScene* m_assimp_scene{};
 		model_specification m_model_specification;
-		std::vector<shared<texture>> m_textures;
+		std::vector<shared<texture_2d>> m_textures;
 		std::vector<renderable_texture> m_textures_loaded;
 		std::vector<shared<renderable>> m_renderables;
 		std::map<int, shared<material>> m_embedded_materials;
+		std::map<int, std::map<material_texture_type, std::string>> m_material_textures;
 		std::string m_directory_path;
 	};
 }

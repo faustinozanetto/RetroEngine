@@ -19,6 +19,11 @@ namespace retro::renderer
 			// Assign shader sources.
 			m_shader_sources = process_shader_sources(vertexSource, fragmentSource, geometry_source);
 		}
+		else if (!shader_specification.compute_path.empty())
+		{
+			const std::string& compute_source = parse_shader_contents_from_file(shader_specification.compute_path);
+			m_shader_sources = process_shader_sources(compute_source);
+		}
 		else
 		{
 			// Assign shader sources.
@@ -167,6 +172,14 @@ namespace retro::renderer
 		shaderSources[vertex] = vertex_source;
 		shaderSources[geometry] = geometry_source;
 		m_loaded = 3;
+		return shaderSources;
+	}
+
+	std::map<shader_type, std::string> open_gl_shader::process_shader_sources(const std::string& compute_source)
+	{
+		std::map<shader_type, std::string> shaderSources = {};
+		shaderSources[compute] = compute_source;
+		m_loaded = 1;
 		return shaderSources;
 	}
 

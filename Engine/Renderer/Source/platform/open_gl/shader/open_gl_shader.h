@@ -11,7 +11,8 @@ namespace retro::renderer
 	{
 		vertex = GL_VERTEX_SHADER,
 		fragment = GL_FRAGMENT_SHADER,
-		geometry = GL_GEOMETRY_SHADER
+		geometry = GL_GEOMETRY_SHADER,
+		compute = GL_COMPUTE_SHADER
 	};
 
 	class open_gl_shader : public shader, public asset
@@ -48,6 +49,7 @@ namespace retro::renderer
 		std::map<shader_type, std::string> process_shader_sources(const std::string& vertex_source,
 			const std::string& fragment_source,
 			const std::string& geometry_source);
+		std::map<shader_type, std::string> process_shader_sources(const std::string& compute_source);
 
 		void compile_shader();
 

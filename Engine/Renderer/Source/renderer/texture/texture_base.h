@@ -18,7 +18,11 @@ namespace retro::renderer
 	{
 		none = 0,
 		linear = 1,
-		nearest = 2,
+		linear_mipmap_nearest = 2,
+		linear_mipmap_linear = 3,
+		nearest = 4,
+		nearest_mipmap_nearest = 5,
+		nearest_mipmap_linear = 6,
 	};
 
 	enum class texture_wrapping_coords
@@ -69,17 +73,19 @@ namespace retro::renderer
 	{
 		const unsigned char* data;
 		int width, height, channels;
+		std::string path;
 
 		texture_multi_threaded() = default;
 
-		texture_multi_threaded(int width, int height, int channels, const unsigned char* data) : width(width), height(height), channels(channels), data(data) {}
+		texture_multi_threaded(std::string path, int width, int height, int channels, const unsigned char* data) : path(
+			std::move(path)), width(width), height(height), channels(channels), data(data) {}
 	};
 
-	class texture : public graphics_object, public asset
+	class texture_base : public graphics_object, public asset
 	{
 	public:
 		/* Destructor */
-		~texture() override = default;
+		~texture_base() override = default;
 
 		/* Methods */
 
@@ -88,7 +94,7 @@ namespace retro::renderer
 		virtual void set_wrapping(texture_wrapping_coords wrapping_coords, texture_wrapping wrapping) = 0;
 
 		/* Getters */
-		virtual const texture_specification& get_texture_specification() const = 0;
+		virtual texture_specification& get_texture_specification() = 0;
 		virtual int get_mip_maps_levels() = 0;
 		virtual int get_channels() = 0;
 		virtual int get_width() = 0;
@@ -102,10 +108,5 @@ namespace retro::renderer
 		static std::string get_texture_wrapping_to_string(texture_wrapping texture_wrapping);
 
 		static texture_multi_threaded load_texture_raw_contents(const std::string& path);
-
-		/* Instantiate */
-		static shared<texture> create(const texture_specification& texture_specification);
-		static shared<texture> create(uint32_t width, uint32_t height, const unsigned char* data);
-		static shared<texture> create(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data);
 	};
 }

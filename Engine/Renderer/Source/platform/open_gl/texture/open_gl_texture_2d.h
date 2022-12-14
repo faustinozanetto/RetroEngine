@@ -4,18 +4,18 @@
 
 #include "glad/glad.h"
 
-#include "renderer/texture/texture.h"
+#include "renderer/texture/texture_2d.h"
 
 namespace retro::renderer
 {
-	class open_gl_texture final : public texture, public asset
+	class open_gl_texture_2d final : public texture_2d, public asset
 	{
 	public:
 		/* Constructor & Destructor */
-		open_gl_texture(const texture_specification& texture_specification);
-		open_gl_texture(uint32_t width, uint32_t height, const unsigned char* data);
-		open_gl_texture(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data);
-		~open_gl_texture() override;
+		open_gl_texture_2d(const texture_specification& texture_specification);
+		open_gl_texture_2d(uint32_t width, uint32_t height, const unsigned char* data);
+		open_gl_texture_2d(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data);
+		~open_gl_texture_2d() override;
 
 		/* Methods */
 		void bind() override;
@@ -25,13 +25,11 @@ namespace retro::renderer
 		void set_filtering(texture_filtering_type filtering_type, texture_filtering filtering) override;
 		void set_wrapping(texture_wrapping_coords wrapping_coords, texture_wrapping wrapping) override;
 
-		const texture_specification& get_texture_specification() const override;
+		texture_specification& get_texture_specification() override;
 		int get_mip_maps_levels() override;
 		int get_channels() override;
 		int get_width() override;
 		int get_height() override;
-
-		/* Asset */
 
 		/* Converts the enum value to the matching OpenGL enum. */
 		static GLint convert_texture_filtering(texture_filtering texture_filtering);

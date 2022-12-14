@@ -7,13 +7,11 @@
 #include "renderer/buffers/vao/vertex_array_buffer.h"
 #include "renderer/buffers/vbo/vertex_object_buffer.h"
 #include "renderer/renderer/graphics_object.h"
-#include "renderer/texture/texture.h"
 
 namespace retro::renderer
 {
 	struct renderable_texture
 	{
-		shared<texture> tex;
 		std::string type;
 		std::string path;
 	};

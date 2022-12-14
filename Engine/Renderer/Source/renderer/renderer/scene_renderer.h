@@ -16,6 +16,7 @@
 
 #include "glad/glad.h"
 #include "render_passes/geometry_pass.h"
+#include "render_passes/global_illumination_pass.h"
 #include "render_passes/shadow_map_pass.h"
 
 #define NUM_CASCADES 3
@@ -68,6 +69,7 @@ namespace retro::renderer
 		shared<lighting_environment> m_lighting_environment;
 		shared<shadow_map_pass> shadow_map_pass;
 		shared<geometry_pass> geometry_pass;
+		shared<global_illumination_pass> global_illumination_pass;
 
 		bool fxaa_enabled;
 	};

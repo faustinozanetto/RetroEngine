@@ -6,7 +6,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "core/application/retro_application.h"
-#include "renderer/texture/texture.h"
 
 namespace retro::editor
 {
@@ -270,7 +269,7 @@ namespace retro::editor
 		return modified;
 	}
 
-	bool editor_interface_utils::draw_property(const shared<renderer::texture>& texture)
+	bool editor_interface_utils::draw_property(const shared<renderer::texture_2d>& texture)
 	{
 		bool modified = false;
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 5 });
@@ -333,7 +332,7 @@ namespace retro::editor
 		if (editor_main_interface::s_file_browser.HasSelected())
 		{
 			std::string file_path = editor_main_interface::s_file_browser.GetSelected().string();
-			const shared<renderer::texture>& tex = retro_application::get_application().get_assets_manager()->create_texture(
+			const shared<renderer::texture_2d>& tex = retro_application::get_application().get_assets_manager()->create_texture_2d(
 				{
 					file_path, renderer::texture_filtering::linear, renderer::texture_wrapping::clamp_border
 				});

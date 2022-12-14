@@ -107,7 +107,7 @@ namespace retro::editor
 												const bool is_selected = (selected_tex_uuid == tex.first->get_uuid());
 												if (ImGui::Selectable(std::to_string(tex.first->get_uuid()).c_str(), is_selected)) {
 													selected_tex_uuid = tex.first->get_uuid();
-													texture_type.second.mat_texture = std::dynamic_pointer_cast<renderer::texture>(tex.second);
+													texture_type.second.mat_texture = std::dynamic_pointer_cast<renderer::texture_2d>(tex.second);
 												}
 												// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
 												if (is_selected)
@@ -241,7 +241,7 @@ namespace retro::editor
 						-180.0, 180.0, 0.1f))
 					{
 						directionalLight->set_direction(m_dir_light.x, m_dir_light.y);
-						renderer::scene_renderer::get_shadow_pass()->update_shadow_matrices();
+						renderer::scene_renderer::get_shadow_pass()->update_shadow_matrices(directionalLight->get_direction());
 						renderer::scene_renderer::get_shadow_pass()->update_shadow_ubo();
 					}
 				}
