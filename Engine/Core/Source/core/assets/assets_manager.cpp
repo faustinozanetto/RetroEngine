@@ -20,53 +20,64 @@ namespace retro
 	{
 	}
 
-	shared<renderer::texture> assets_manager::create_texture(
+	shared<renderer::texture_3d> assets_manager::create_texture_3d(
 		const renderer::texture_specification& texture_specification)
 	{
-		auto texture = renderer::texture::create(texture_specification);
+		auto texture = renderer::texture_3d::create(texture_specification);
 		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
 	}
 
-	shared<renderer::texture> assets_manager::create_texture(uint32_t width, uint32_t height, const unsigned char* data)
+	shared<renderer::texture_2d> assets_manager::create_texture_2d(
+		const renderer::texture_specification& texture_specification)
 	{
-		auto texture = renderer::texture::create(width, height, data);
+		auto texture = renderer::texture_2d::create(texture_specification);
 		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
 	}
 
-	shared<renderer::texture> assets_manager::create_texture(uint32_t width, uint32_t height, uint32_t channels,
+	shared<renderer::texture_2d> assets_manager::create_texture_2d(uint32_t width, uint32_t height, const unsigned char* data)
+	{
+		auto texture = renderer::texture_2d::create(width, height, data);
+		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
+		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
+
+		return texture;
+	}
+
+	shared<renderer::texture_2d> assets_manager::create_texture_2d(uint32_t width, uint32_t height, uint32_t channels,
 		const unsigned char* data)
 	{
-		auto texture = renderer::texture::create(width, height, channels, data);
+		auto texture = renderer::texture_2d::create(width, height, channels, data);
 		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
 	}
 
-	std::vector<shared<renderer::texture>> assets_manager::create_textures(
-		const std::vector<std::string>& texture_paths)
+	std::map<int, shared<renderer::texture_2d>> assets_manager::create_textures_2d(
+		const std::map<int, std::string>& texture_paths)
 	{
-		std::vector< renderer::texture_multi_threaded> raw_textures_data;
+		std::map<int, renderer::texture_multi_threaded> raw_textures_data;
 
-		std::for_each(std::execution::par, texture_paths.begin(), texture_paths.end(), [&](const std::string& path)
+		std::for_each(std::execution::par, texture_paths.begin(), texture_paths.end(), [&](std::pair<int, std::string> entry)
 			{
 				logger::info("Loading texture multi-threaded");
-		logger::info("		- Path: " + path);
-		const renderer::texture_multi_threaded& texture_multi_threaded = renderer::texture::load_texture_raw_contents(path);
-		raw_textures_data.emplace_back(texture_multi_threaded);
+		logger::info("		- Path: " + entry.second);
+		const renderer::texture_multi_threaded& texture_multi_threaded = renderer::texture_2d::load_texture_raw_contents(entry.second);
+		raw_textures_data.insert(std::pair(entry.first, texture_multi_threaded));
 			});
 
-		std::vector<shared<renderer::texture>> textures;
-		for (const renderer::texture_multi_threaded& tex : raw_textures_data)
+		std::map<int, shared<renderer::texture_2d>> textures;
+		for (const auto& [identifier, tex] : raw_textures_data)
 		{
-			const shared<renderer::texture>& asset_tex = create_texture(tex.width, tex.height, tex.channels, tex.data);
-			textures.emplace_back(asset_tex);
+			const shared<renderer::texture_2d>& asset_tex = create_texture_2d(tex.width, tex.height, tex.channels, tex.data);
+			asset_tex->get_texture_specification().path = tex.path;
+			textures.insert(std::pair(identifier, asset_tex));
 		}
 
 		return textures;

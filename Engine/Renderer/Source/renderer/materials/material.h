@@ -5,7 +5,7 @@
 #include "core/base.h"
 #include "core/assets/asset.h"
 #include "renderer/shader/shader.h"
-#include "renderer/texture/texture.h"
+#include "renderer/texture/texture_2d.h"
 
 namespace retro::renderer
 {
@@ -20,12 +20,12 @@ namespace retro::renderer
 
 	struct material_texture
 	{
-		shared<texture> mat_texture;
+		shared<texture_2d> mat_texture;
 		bool enabled;
 
 		material_texture() : mat_texture(nullptr), enabled(false) {}
 
-		material_texture(const shared<texture>& texture, bool is_enabled) : mat_texture(texture), enabled(is_enabled)
+		material_texture(const shared<texture_2d>& texture, bool is_enabled) : mat_texture(texture), enabled(is_enabled)
 		{
 		}
 	};

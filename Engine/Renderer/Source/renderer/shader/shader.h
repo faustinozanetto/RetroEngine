@@ -13,6 +13,9 @@ namespace retro::renderer
 		std::string vertex_path;
 		std::string fragment_path;
 		std::string geometry_path;
+		std::string compute_path;
+
+		shader_specification(const std::string& compute_path) : compute_path(compute_path) {}
 
 		shader_specification(const std::string& vertex_path, const std::string& fragment_path) : vertex_path(vertex_path),
 			fragment_path(fragment_path), geometry_path("") {}

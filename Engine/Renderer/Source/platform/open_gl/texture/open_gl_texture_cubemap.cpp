@@ -3,7 +3,7 @@
 #include <stb_image.h>
 #include "open_gl_texture_cubemap.h"
 #include "core/assert.h"
-#include "open_gl_texture.cpp"
+#include "open_gl_texture_2d.cpp"
 
 namespace retro::renderer
 {
@@ -15,8 +15,8 @@ namespace retro::renderer
 
 		logger::info("open_gl_texture_cubemap::open_gl_texture_cubemap | Loading cubemap: ");
 		logger::info("  - Path: " + m_texture_specification.path);
-		logger::info("  - Filtering: " + texture::get_texture_filtering_to_string(m_texture_specification.filtering));
-		logger::info("  - Wrapping: " + texture::get_texture_wrapping_to_string(m_texture_specification.wrapping));
+		logger::info("  - Filtering: " + texture_base::get_texture_filtering_to_string(m_texture_specification.filtering));
+		logger::info("  - Wrapping: " + texture_base::get_texture_wrapping_to_string(m_texture_specification.wrapping));
 
 		// Variables for stb.
 		int width, height, channels;

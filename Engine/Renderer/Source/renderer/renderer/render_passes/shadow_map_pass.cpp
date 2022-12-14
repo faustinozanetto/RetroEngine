@@ -10,7 +10,6 @@
 
 #include "core/application/retro_application.h"
 #include "core/scene/components.h"
-#include "renderer/renderer/renderer_api.h"
 #include "renderer/renderer/renderer.h"
 
 #define SHADOW_UBO_LOCATION 4
@@ -25,7 +24,7 @@ namespace retro::renderer
 		m_scene_size = glm::uvec2(10);
 
 		load_shaders();
-		update_shadow_matrices();
+		update_shadow_matrices({ -0.77f, 0.55f, 0.25f });
 		generate_shadow_ubo();
 		generate_shadow_map();
 		generate_shadow_fbo();
@@ -83,10 +82,8 @@ namespace retro::renderer
 		return m_shadow_fbo;
 	}
 
-	void shadow_map_pass::update_shadow_matrices()
+	void shadow_map_pass::update_shadow_matrices(const glm::vec3& light_dir)
 	{
-		glm::vec3 light_dir = { -0.71, -0.50, 0.50 };
-
 		const glm::vec3 max_extents = glm::vec3(m_scene_size.x);
 		const glm::vec3 min_extents = glm::vec3(-m_scene_size.y);
 		const glm::vec3 scene_center = (max_extents + min_extents) * 0.5f;

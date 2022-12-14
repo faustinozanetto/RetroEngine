@@ -3,9 +3,9 @@
 #include "open_gl_frame_buffer.h"
 
 #include "core/assert.h"
-#include "renderer/texture/texture.h"
+#include "renderer/texture/texture_base.h"
 #include "glad/glad.h"
-#include "platform/open_gl/texture/open_gl_texture.h"
+#include "platform/open_gl/texture/open_gl_texture_2d.h"
 
 namespace retro::renderer
 {
@@ -21,7 +21,7 @@ namespace retro::renderer
 		// Filtering
 		if (texture_specification.specification.filtering != texture_filtering::none)
 		{
-			const GLint filtering = open_gl_texture::convert_texture_filtering(
+			const GLint filtering = open_gl_texture_2d::convert_texture_filtering(
 				texture_specification.specification.filtering);
 			glTextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, filtering);
 			glTextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, filtering);
@@ -30,7 +30,7 @@ namespace retro::renderer
 		// Wrapping
 		if (texture_specification.specification.wrapping != texture_wrapping::none)
 		{
-			const GLint wrapping = open_gl_texture::convert_texture_wrapping(
+			const GLint wrapping = open_gl_texture_2d::convert_texture_wrapping(
 				texture_specification.specification.wrapping);
 			glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_R, wrapping);
 			glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, wrapping);
@@ -51,7 +51,7 @@ namespace retro::renderer
 		// Filtering
 		if (texture_specification.specification.filtering != texture_filtering::none)
 		{
-			const GLint filtering = open_gl_texture::convert_texture_filtering(
+			const GLint filtering = open_gl_texture_2d::convert_texture_filtering(
 				texture_specification.specification.filtering);
 			glTextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, filtering);
 			glTextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, filtering);
@@ -60,7 +60,7 @@ namespace retro::renderer
 		// Wrapping
 		if (texture_specification.specification.wrapping != texture_wrapping::none)
 		{
-			const GLint wrapping = open_gl_texture::convert_texture_wrapping(
+			const GLint wrapping = open_gl_texture_2d::convert_texture_wrapping(
 				texture_specification.specification.wrapping);
 			glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_R, wrapping);
 			glTextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, wrapping);

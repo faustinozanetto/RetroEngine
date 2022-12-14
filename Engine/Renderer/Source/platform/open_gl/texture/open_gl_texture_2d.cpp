@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "open_gl_texture.h"
+#include "open_gl_texture_2d.h"
 #include "core/assert.h"
 #include "core/assets/asset.h"
 
@@ -45,7 +45,7 @@ namespace retro::renderer
 		}
 	}
 
-	open_gl_texture::open_gl_texture(const texture_specification& texture_specification) : asset(asset_type::texture)
+	open_gl_texture_2d::open_gl_texture_2d(const texture_specification& texture_specification) : asset(asset_type::texture)
 	{
 		logger::line();
 		m_texture_specification = texture_specification;
@@ -54,7 +54,7 @@ namespace retro::renderer
 		logger::line();
 	}
 
-	open_gl_texture::open_gl_texture(uint32_t width, uint32_t height, const unsigned char* data) : asset(
+	open_gl_texture_2d::open_gl_texture_2d(uint32_t width, uint32_t height, const unsigned char* data) : asset(
 		asset_type::texture)
 	{
 		int lWidth, lHeight, channels;
@@ -124,7 +124,7 @@ namespace retro::renderer
 		logger::line();
 	}
 
-	open_gl_texture::open_gl_texture(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data) : asset(
+	open_gl_texture_2d::open_gl_texture_2d(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data) : asset(
 		asset_type::texture)
 	{
 		m_texture_specification.size = glm::vec2(width, height);
@@ -185,104 +185,127 @@ namespace retro::renderer
 		logger::line();
 	}
 
-	open_gl_texture::~open_gl_texture()
+	open_gl_texture_2d::~open_gl_texture_2d()
 	{
 		glDeleteTextures(1, &m_object_handle);
 	}
 
-	void open_gl_texture::bind()
+	void open_gl_texture_2d::bind()
 	{
 		bind(0);
 	}
 
-	void open_gl_texture::bind(int slot)
+	void open_gl_texture_2d::bind(int slot)
 	{
 		glBindTextureUnit(slot, m_object_handle);
 	}
 
-	void open_gl_texture::un_bind()
+	void open_gl_texture_2d::un_bind()
 	{
 		glBindTexture(m_object_handle, 0);
 	}
 
-	void open_gl_texture::set_filtering(texture_filtering_type filtering_type, texture_filtering filtering)
+	void open_gl_texture_2d::set_filtering(texture_filtering_type filtering_type, texture_filtering filtering)
 	{
 		glTextureParameteri(m_object_handle, convert_texture_filtering_type(filtering_type),
 			convert_texture_filtering(filtering));
 	}
 
-	void open_gl_texture::set_wrapping(texture_wrapping_coords wrapping_coords, texture_wrapping wrapping)
+	void open_gl_texture_2d::set_wrapping(texture_wrapping_coords wrapping_coords, texture_wrapping wrapping)
 	{
 		glTextureParameteri(m_object_handle, convert_texture_wrapping_coords(wrapping_coords),
 			convert_texture_wrapping(wrapping));
 	}
 
-	const texture_specification& open_gl_texture::get_texture_specification() const
+	texture_specification& open_gl_texture_2d::get_texture_specification()
 	{
 		return m_texture_specification;
 	}
 
-	int open_gl_texture::get_mip_maps_levels()
+	int open_gl_texture_2d::get_mip_maps_levels()
 	{
 		return m_mip_map_levels;
 	}
 
-	int open_gl_texture::get_channels()
+	int open_gl_texture_2d::get_channels()
 	{
 		return m_channels;
 	}
 
-	int open_gl_texture::get_width()
+	int open_gl_texture_2d::get_width()
 	{
 		return m_texture_specification.size.x;
 	}
 
-	int open_gl_texture::get_height()
+	int open_gl_texture_2d::get_height()
 	{
 		return m_texture_specification.size.y;
 	}
 
-	GLint open_gl_texture::convert_texture_filtering(texture_filtering texture_filtering)
+	GLint open_gl_texture_2d::convert_texture_filtering(texture_filtering texture_filtering)
 	{
 		GLint filter = 0;
 		switch (texture_filtering)
 		{
-		case texture_filtering::nearest:
+		case texture_filtering::nearest: {
 			filter = GL_NEAREST;
 			break;
-		case texture_filtering::linear:
+		}
+		case texture_filtering::linear: {
 			filter = GL_LINEAR;
 			break;
-		case texture_filtering::none:
+		}
+		case texture_filtering::linear_mipmap_nearest: {
+			filter = GL_LINEAR_MIPMAP_NEAREST;
+			break;
+		}
+		case texture_filtering::linear_mipmap_linear: {
+			filter = GL_LINEAR_MIPMAP_LINEAR;
+			break;
+		}
+		case texture_filtering::nearest_mipmap_nearest: {
+			filter = GL_NEAREST_MIPMAP_NEAREST;
+			break;
+		}
+		case texture_filtering::nearest_mipmap_linear: {
+			filter = GL_NEAREST_MIPMAP_LINEAR;
+			break;
+		}
+		case texture_filtering::none: {
 			filter = 0;
 			break;
+		}
 		}
 		return filter;
 	}
 
-	GLint open_gl_texture::convert_texture_wrapping(texture_wrapping texture_wrapping)
+	GLint open_gl_texture_2d::convert_texture_wrapping(texture_wrapping texture_wrapping)
 	{
 		GLint wrap = 0;
 		switch (texture_wrapping)
 		{
-		case texture_wrapping::repeat:
+		case texture_wrapping::repeat: {
 			wrap = GL_REPEAT;
 			break;
-		case texture_wrapping::mirror_repeat:
+		}
+		case texture_wrapping::mirror_repeat: {
 			wrap = GL_MIRRORED_REPEAT;
 			break;
-		case texture_wrapping::clamp_edge:
+		}
+		case texture_wrapping::clamp_edge: {
 			wrap = GL_CLAMP_TO_EDGE;
 			break;
-		case texture_wrapping::clamp_border:
+		}
+		case texture_wrapping::clamp_border: {
 			wrap = GL_CLAMP_TO_BORDER;
 			break;
+		}
 		case texture_wrapping::none: wrap = 0;
 		}
 		return wrap;
 	}
 
-	GLint open_gl_texture::convert_texture_wrapping_coords(texture_wrapping_coords wrapping_coords)
+	GLint open_gl_texture_2d::convert_texture_wrapping_coords(texture_wrapping_coords wrapping_coords)
 	{
 		switch (wrapping_coords)
 		{
@@ -295,7 +318,7 @@ namespace retro::renderer
 		}
 	}
 
-	GLint open_gl_texture::convert_texture_filtering_type(texture_filtering_type filtering_type)
+	GLint open_gl_texture_2d::convert_texture_filtering_type(texture_filtering_type filtering_type)
 	{
 		switch (filtering_type)
 		{
@@ -306,7 +329,7 @@ namespace retro::renderer
 		}
 	}
 
-	void open_gl_texture::setup_image_from_path()
+	void open_gl_texture_2d::setup_image_from_path()
 	{
 		logger::info("OpenGLTexture::OpenGLTexture | Loading texture from path: ");
 		logger::info("  - Path: " + m_texture_specification.path);
@@ -350,7 +373,7 @@ namespace retro::renderer
 		stbi_image_free(data);
 	}
 
-	void open_gl_texture::setup_image_no_path()
+	void open_gl_texture_2d::setup_image_no_path()
 	{
 		logger::info("OpenGLTexture::OpenGLTexture | Loading texture: ");
 		logger::info("  - Path: None");
@@ -404,7 +427,7 @@ namespace retro::renderer
 		glBindImageTexture(0, m_object_handle, 0, GL_FALSE, 0, GL_READ_WRITE, m_texture_specification.format);
 	}
 
-	bool open_gl_texture::setup_image_formats()
+	bool open_gl_texture_2d::setup_image_formats()
 	{
 		if (m_channels == 4)
 		{
@@ -433,7 +456,7 @@ namespace retro::renderer
 		return false;
 	}
 
-	void open_gl_texture::setup_image_buffers(const stbi_uc* data)
+	void open_gl_texture_2d::setup_image_buffers(const stbi_uc* data)
 	{
 		// Setup mipmaps.
 		m_mip_map_levels = static_cast<GLsizei>(floor(

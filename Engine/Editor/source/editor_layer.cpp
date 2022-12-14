@@ -8,7 +8,6 @@
 #include "renderer/lighting/point_light.h"
 #include "renderer/materials/material.h"
 #include "renderer/renderer/scene_renderer.h"
-#include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 
 namespace retro::editor
@@ -291,11 +290,12 @@ namespace retro::editor
 			mat.material->serialize();
 		}
 		*/
+
 		auto ww2city = retro_application::get_application().get_scene_manager()->get_active_scene()->
 			create_actor();
 		const shared<renderer::model>& ww2city_model = retro_application::get_application().get_assets_manager()->create_model(
-			{ "Assets/Models/NightCity/scene.gltf" });
-		ww2city->add_component<name_component>("WW2 City");
+			{ "Assets/Models/Sponza/sponza.obj" });
+		ww2city->add_component<name_component>("Bistro");
 		auto& model_renderer = ww2city->add_component<model_renderer_component>(ww2city_model);
 		auto& material = ww2city->add_component<material_component>();
 		material.materials = model_renderer.model->get_embedded_materials();
@@ -304,72 +304,71 @@ namespace retro::editor
 			model_renderer.model->get_model_renderables()[i]->set_material_index(i);
 		}
 		auto& transform = ww2city->add_component<transform_component>();
-		transform.scale = glm::vec3(0.002f);
+		transform.scale = glm::vec3(0.01f);
 
-		/*
-		{
-			float hk_unit_scale_factor = 1.25f;
-			float hk_radius = hk_unit_scale_factor;
-			float space_size = 0.5 * hk_radius;
+		/*		{
+					float hk_unit_scale_factor = 1.25f;
+					float hk_radius = hk_unit_scale_factor;
+					float space_size = 0.5 * hk_radius;
 
-			glm::ivec2 grid_size = { 3, 3 };
-			glm::vec3 offset = glm::vec3(hk_radius + space_size);
-			glm::vec3 start_pos = glm::vec3(-offset.x * float(grid_size.x / 2), 0.0,
-				-offset.y * float(grid_size.y / 2));
+					glm::ivec2 grid_size = { 3, 3 };
+					glm::vec3 offset = glm::vec3(hk_radius + space_size);
+					glm::vec3 start_pos = glm::vec3(-offset.x * float(grid_size.x / 2), 0.0,
+						-offset.y * float(grid_size.y / 2));
 
-			const shared<renderer::model>& sphere_model = retro_application::get_application().get_assets_manager()->create_model({ "Assets/Models/Monkey.obj" });
+					const shared<renderer::model>& sphere_model = retro_application::get_application().get_assets_manager()->create_model({ "Assets/Models/Monkey.obj" });
 
-			renderer::material_texture albedoTexture = {
-				nullptr, false
-			};
+					renderer::material_texture albedoTexture = {
+						nullptr, false
+					};
 
-			renderer::material_texture normalTexture = {
-				nullptr, false
-			};
+					renderer::material_texture normalTexture = {
+						nullptr, false
+					};
 
-			renderer::material_texture metalRoughTexture = {
-				nullptr, false
-			};
+					renderer::material_texture metalRoughTexture = {
+						nullptr, false
+					};
 
-			renderer::material_texture aoTexture = {
-				nullptr, false
-			};
-			const std::map<renderer::material_texture_type, renderer::material_texture> textures = {
-				{renderer::material_texture_type::albedo, albedoTexture},
-				{renderer::material_texture_type::normal, normalTexture},
-				{renderer::material_texture_type::metallic, metalRoughTexture},
-				{renderer::material_texture_type::roughness, metalRoughTexture},
-				{renderer::material_texture_type::ambient_occlusion, aoTexture}
-			};
+					renderer::material_texture aoTexture = {
+						nullptr, false
+					};
+					const std::map<renderer::material_texture_type, renderer::material_texture> textures = {
+						{renderer::material_texture_type::albedo, albedoTexture},
+						{renderer::material_texture_type::normal, normalTexture},
+						{renderer::material_texture_type::metallic, metalRoughTexture},
+						{renderer::material_texture_type::roughness, metalRoughTexture},
+						{renderer::material_texture_type::ambient_occlusion, aoTexture}
+					};
 
-			const renderer::material_specification materialSpecification = {
-				textures,
-				glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-				1.0f,
-				1.0f,
-				1.0f,
-			};
-			auto material = renderer::material::create(
-				materialSpecification);
+					const renderer::material_specification materialSpecification = {
+						textures,
+						"monkey mat",
+						glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+						1.0f,
+						1.0f,
+						1.0f,
+					};
+					auto material = renderer::material::create(
+						materialSpecification);
 
-			for (uint32_t y = 0; y < grid_size.y; ++y)
-			{
-				for (uint32_t x = 0; x < grid_size.x; ++x)
-				{
-					glm::vec3 position = start_pos + glm::vec3(x, 0.5f, y) * offset;
-					auto sphere = retro_application::get_application().get_scene_manager()->get_active_scene()->
-						create_actor();
-					sphere->add_component<name_component>(
-						"Sphere (" + std::to_string(x) + ", " + std::to_string(y) + ")");
-					sphere->add_component<model_renderer_component>(sphere_model);
-					sphere->add_component<material_component>().materials.insert(std::pair(0, material));
-					auto& transform = sphere->add_component<transform_component>();
-					transform.position = position;
-					transform.scale = glm::vec3(0.5f);
-				}
-			}
-		}
-		*/
+					for (uint32_t y = 0; y < grid_size.y; ++y)
+					{
+						for (uint32_t x = 0; x < grid_size.x; ++x)
+						{
+							glm::vec3 position = start_pos + glm::vec3(x, 0.5f, y) * offset;
+							auto sphere = retro_application::get_application().get_scene_manager()->get_active_scene()->
+								create_actor();
+							sphere->add_component<name_component>(
+								"Sphere (" + std::to_string(x) + ", " + std::to_string(y) + ")");
+							sphere->add_component<model_renderer_component>(sphere_model);
+							sphere->add_component<material_component>().materials.insert(std::pair(0, material));
+							auto& transform = sphere->add_component<transform_component>();
+							transform.position = position;
+							transform.scale = glm::vec3(0.5f);
+						}
+					}
+				}*/
 	}
 
 	void editor_layer::on_layer_unregistered()

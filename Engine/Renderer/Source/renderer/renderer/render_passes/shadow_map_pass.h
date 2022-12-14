@@ -6,7 +6,6 @@
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 
-#include "renderer/texture/texture.h"
 #include "renderer/buffers/fbo/frame_buffer.h"
 #include "renderer/buffers/ubo/uniform_buffer.h"
 #include "renderer/shader/shader.h"
@@ -28,7 +27,7 @@ namespace retro::renderer
 		void begin_pass() override;
 
 		void update_shadow_ubo();
-		void update_shadow_matrices();
+		void update_shadow_matrices(const glm::vec3& light_dir);
 
 		shared<frame_buffer>& get_pass_output() override;
 		int get_blocker_samples() const { return m_blocker_samples; }

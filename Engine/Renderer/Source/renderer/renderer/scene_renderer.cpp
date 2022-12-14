@@ -32,6 +32,7 @@ namespace retro::renderer
 
 		s_scene_renderer_data.shadow_map_pass = create_shared<shadow_map_pass>();
 		s_scene_renderer_data.geometry_pass = create_shared<geometry_pass>();
+		s_scene_renderer_data.global_illumination_pass = create_shared<global_illumination_pass>();
 	}
 
 	void scene_renderer::begin_render()
@@ -79,6 +80,8 @@ namespace retro::renderer
 
 		/* ==================== GEOMETRY PASS ==================== */
 		s_scene_renderer_data.geometry_pass->begin_pass();
+
+		s_scene_renderer_data.global_illumination_pass->begin_pass();
 
 		/*==================== LIGHTING PASS ==================== */
 		s_scene_renderer_data.m_final_frame_buffer->bind();
