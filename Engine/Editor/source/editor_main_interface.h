@@ -26,8 +26,8 @@ namespace retro::editor
 		static ImGui::FileBrowser s_file_browser;
 
 	private:
-		void start_dockspace();
-		void end_dockspace();
+		void setup_dockspace();
+		void setup_toolbar();
 		void render_viewport();
 
 		std::vector<shared<editor_panel>> m_panels;

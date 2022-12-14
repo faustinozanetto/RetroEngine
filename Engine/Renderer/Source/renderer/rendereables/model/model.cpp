@@ -32,7 +32,7 @@ namespace retro::renderer
 		const aiScene* scene = importer.ReadFile(
 			path,
 			aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
-			aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace | aiProcess_PreTransformVertices);
+			aiProcess_OptimizeMeshes | aiProcess_CalcTangentSpace | aiProcess_PreTransformVertices);
 		m_assimp_scene = scene;
 		// Error handling.
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)

@@ -77,6 +77,10 @@ namespace retro::renderer
 		glCullFace(GL_BACK);
 	}
 
+	void shadow_map_pass::resize(uint32_t width, uint32_t height)
+	{
+	}
+
 	shared<frame_buffer>& shadow_map_pass::get_pass_output()
 	{
 		return m_shadow_fbo;
@@ -143,7 +147,8 @@ namespace retro::renderer
 			texture_wrapping::clamp_border,
 			GL_DEPTH_COMPONENT32F,
 			GL_RGB16F };
-		m_shadow_fbo = frame_buffer::create({ 4096, 4096, {{"shadow", {shadow_tex_spec}}} });
+		m_shadow_fbo = frame_buffer::create({ 4096, 4096, true,
+			{{"shadow",  {shadow_tex_spec}}} });
 	}
 
 	void shadow_map_pass::generate_random_angles_tex()

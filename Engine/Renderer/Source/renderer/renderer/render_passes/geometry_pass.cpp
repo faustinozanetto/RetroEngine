@@ -77,6 +77,11 @@ namespace retro::renderer
 		m_geometry_fbo->un_bind();
 	}
 
+	void geometry_pass::resize(uint32_t width, uint32_t height)
+	{
+		m_geometry_fbo->resize(width, height);
+	}
+
 	shared<frame_buffer>& geometry_pass::get_pass_output()
 	{
 		return m_geometry_fbo;
@@ -91,7 +96,7 @@ namespace retro::renderer
 			GL_RGBA, GL_RGB16F
 		};
 		m_geometry_fbo = frame_buffer::create({
-			1920, 1080,
+			1920, 1080, true,
 			{
 				{"position", geom_tex_spec}, {"albedo", geom_tex_spec}, {"normal", geom_tex_spec},
 				{"rough-meta-ao", geom_tex_spec}, {"viewPosition", geom_tex_spec}

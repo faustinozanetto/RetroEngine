@@ -33,6 +33,8 @@ namespace retro::renderer
 		s_scene_renderer_data.shadow_map_pass = create_shared<shadow_map_pass>();
 		s_scene_renderer_data.geometry_pass = create_shared<geometry_pass>();
 		s_scene_renderer_data.global_illumination_pass = create_shared<global_illumination_pass>();
+		s_scene_renderer_data.ssao_pass = create_shared<ssao_pass>();
+		s_scene_renderer_data.fxaa_pass = create_shared<fxaa_pass>();
 	}
 
 	void scene_renderer::begin_render()
@@ -81,8 +83,10 @@ namespace retro::renderer
 		/* ==================== GEOMETRY PASS ==================== */
 		s_scene_renderer_data.geometry_pass->begin_pass();
 
-		s_scene_renderer_data.global_illumination_pass->begin_pass();
-
+		//s_scene_renderer_data.global_illumination_pass->begin_pass();
+		if (s_scene_renderer_data.ssao_enabled) {
+			s_scene_renderer_data.ssao_pass->begin_pass();
+		}
 		/*==================== LIGHTING PASS ==================== */
 		s_scene_renderer_data.m_final_frame_buffer->bind();
 		renderer::set_renderer_state(renderer_state::depth_test, false);
@@ -114,6 +118,7 @@ namespace retro::renderer
 			s_scene_renderer_data.m_directional_light.color);
 		s_scene_renderer_data.m_lighting_shader->set_vec_float4("directionalLight.direction",
 			s_scene_renderer_data.m_directional_light.direction);
+		s_scene_renderer_data.m_lighting_shader->set_int("u_ssao_enabled", s_scene_renderer_data.ssao_enabled);
 
 		renderer::bind_texture(s_scene_renderer_data.geometry_pass->get_pass_output()->get_attachment_id(0), 0); // position
 		renderer::bind_texture(s_scene_renderer_data.geometry_pass->get_pass_output()->get_attachment_id(1), 1); // albedo
@@ -128,6 +133,7 @@ namespace retro::renderer
 		renderer::bind_texture(s_scene_renderer_data.shadow_map_pass->get_pass_output()->get_depth_attachment_id(), 8);
 		renderer::bind_texture(s_scene_renderer_data.shadow_map_pass->get_pass_output()->get_depth_attachment_id(), 9);
 		renderer::bind_texture(s_scene_renderer_data.shadow_map_pass->get_random_angles_tex(), 10);
+		renderer::bind_texture(s_scene_renderer_data.ssao_pass->get_ssao_result(), 11);
 		renderer::submit_command({ s_scene_renderer_data.m_lighting_shader, s_scene_renderer_data.m_screen_vao, nullptr });
 		s_scene_renderer_data.m_lighting_shader->un_bind();
 
@@ -147,16 +153,7 @@ namespace retro::renderer
 
 		if (s_scene_renderer_data.fxaa_enabled)
 		{
-			s_scene_renderer_data.m_fxaa_frame_buffer->bind();
-			renderer::clear_screen();
-			s_scene_renderer_data.m_fxaa_shader->bind();
-			s_scene_renderer_data.m_fxaa_shader->set_vec_float2("RCPFrame",
-				{ float(1.0 / float(s_scene_renderer_data.m_fxaa_frame_buffer->get_width())),
-				 float(1.0 / float(s_scene_renderer_data.m_fxaa_frame_buffer->get_height())) });
-			renderer::bind_texture(s_scene_renderer_data.m_final_frame_buffer->get_attachment_id(0), 0);
-			renderer::submit_command({ s_scene_renderer_data.m_fxaa_shader, s_scene_renderer_data.m_screen_vao, nullptr });
-			s_scene_renderer_data.m_fxaa_shader->un_bind();
-			s_scene_renderer_data.m_fxaa_frame_buffer->un_bind();
+			s_scene_renderer_data.fxaa_pass->begin_pass();
 		}
 	}
 
@@ -184,11 +181,6 @@ namespace retro::renderer
 		return s_scene_renderer_data.m_final_frame_buffer;
 	}
 
-	shared<frame_buffer>& scene_renderer::get_fxaa_frame_buffer()
-	{
-		return s_scene_renderer_data.m_fxaa_frame_buffer;
-	}
-
 	shared<lighting_environment>& scene_renderer::get_lighting_environment()
 	{
 		return s_scene_renderer_data.m_lighting_environment;
@@ -212,6 +204,23 @@ namespace retro::renderer
 	shared<shadow_map_pass>& scene_renderer::get_shadow_pass()
 	{
 		return s_scene_renderer_data.shadow_map_pass;
+	}
+
+	shared<ssao_pass>& scene_renderer::get_ssao_pass()
+	{
+		return s_scene_renderer_data.ssao_pass;
+	}
+
+	shared<fxaa_pass>& scene_renderer::get_fxaa_pass()
+	{
+		return s_scene_renderer_data.fxaa_pass;
+	}
+
+	void scene_renderer::resize(uint32_t width, uint32_t height)
+	{
+		s_scene_renderer_data.ssao_pass->resize(width, height);
+		s_scene_renderer_data.geometry_pass->resize(width, height);
+		s_scene_renderer_data.m_final_frame_buffer->resize(width, height);
 	}
 
 	GLuint scene_renderer::generate_random_angles_texture_3d(uint32_t size)
@@ -259,8 +268,6 @@ namespace retro::renderer
 				"Assets/Shaders/Lighting/Lighting.frag" });
 		s_scene_renderer_data.m_shadow_shader = retro_application::get_application().get_assets_manager()->create_shader({
 				"Assets/Shaders/Shadows/Shadows.vert", "Assets/Shaders/Shadows/Shadows.frag" });
-
-		s_scene_renderer_data.m_fxaa_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Screen/Screen.vert", "Assets/Shaders/FXAA/FXAA.frag" });
 	}
 
 	void scene_renderer::generate_frame_buffers()
@@ -271,14 +278,8 @@ namespace retro::renderer
 				texture_wrapping::clamp_edge,
 				GL_RGBA, GL_RGB16F };
 		s_scene_renderer_data.m_final_frame_buffer =
-			frame_buffer::create({ 1920, 1080, {{"final", final_tex_spec}} });
-
-		texture_specification fxaa_tex_spec = {
-				glm::uvec2(1920, 1080),
-				texture_filtering::linear,
-				texture_wrapping::clamp_edge,
-				GL_RGBA, GL_RGB16F };
-		s_scene_renderer_data.m_fxaa_frame_buffer = frame_buffer::create({ 1920, 1080, {{"fxaa", fxaa_tex_spec}} });
+			frame_buffer::create({ 1920, 1080,
+				false, {{"final", final_tex_spec}} });
 	}
 
 	void scene_renderer::create_screen_vao()

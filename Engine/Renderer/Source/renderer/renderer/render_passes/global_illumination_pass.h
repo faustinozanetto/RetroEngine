@@ -15,6 +15,7 @@ namespace retro::renderer {
 		~global_illumination_pass() override;
 
 		void begin_pass() override;
+		void resize(uint32_t width, uint32_t height) override;
 
 		void visualize_voxels();
 

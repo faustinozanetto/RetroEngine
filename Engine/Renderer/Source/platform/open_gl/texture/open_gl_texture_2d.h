@@ -14,6 +14,7 @@ namespace retro::renderer
 		/* Constructor & Destructor */
 		open_gl_texture_2d(const texture_specification& texture_specification);
 		open_gl_texture_2d(uint32_t width, uint32_t height, const unsigned char* data);
+		open_gl_texture_2d(uint32_t width, uint32_t height, const void* pixels);
 		open_gl_texture_2d(uint32_t width, uint32_t height, uint32_t channels, const unsigned char* data);
 		~open_gl_texture_2d() override;
 

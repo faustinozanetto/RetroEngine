@@ -10,12 +10,13 @@
 namespace retro::renderer
 {
 	void open_gl_frame_buffer::generate_color_texture(uint32_t texture_handle, int index,
-		frame_buffer_texture_specification texture_specification)
+		const frame_buffer_texture_specification& texture_specification) const
 	{
+		glBindTexture(GL_TEXTURE_2D, texture_handle);
 		glTexImage2D(GL_TEXTURE_2D, 0, texture_specification.specification.dataFormat,
 			m_frame_buffer_specification.width,
 			m_frame_buffer_specification.height, 0, texture_specification.specification.format,
-			texture_specification.specification.dataFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE,
+			GL_FLOAT,
 			nullptr);
 
 		// Filtering
@@ -40,10 +41,11 @@ namespace retro::renderer
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_2D,
 			texture_handle,
 			0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void open_gl_frame_buffer::generate_depth_texture(uint32_t texture_handle,
-		frame_buffer_texture_specification texture_specification)
+		const frame_buffer_texture_specification texture_specification) const
 	{
 		glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, m_frame_buffer_specification.width,
 			m_frame_buffer_specification.height);
@@ -179,14 +181,11 @@ namespace retro::renderer
 		{
 			// Resize the array of opengl texture ids to fit the attachments.
 			m_attachments.resize(m_frame_buffer_texture_specifications.size());
-			// Create the textures.
-			glCreateTextures(GL_TEXTURE_2D, m_attachments.size(),
-				m_attachments.data());
 
 			// Generate the texture attachments.
 			for (int i = 0; i < m_attachments.size(); i++)
 			{
-				glBindTexture(GL_TEXTURE_2D, m_attachments[i]);
+				glGenTextures(1, &m_attachments[i]);
 				generate_color_texture(m_attachments[i], i, m_frame_buffer_texture_specifications[i]);
 			}
 		}
@@ -196,7 +195,7 @@ namespace retro::renderer
 		generate_depth_texture(m_depth_attachment, m_depth_texture_specification);
 
 		// Draw buffers.
-		if (m_attachments.size() > 1)
+		if (!m_attachments.empty())
 		{
 			const GLenum buffers[8] = {
 				GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3,
@@ -204,7 +203,7 @@ namespace retro::renderer
 			};
 			glDrawBuffers(m_attachments.size(), buffers);
 		}
-		else if (m_attachments.empty())
+		else
 		{
 			// Only depth-pass
 			glDrawBuffer(GL_NONE);

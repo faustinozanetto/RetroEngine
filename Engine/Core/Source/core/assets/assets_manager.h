@@ -36,6 +36,14 @@ namespace retro
 		 */
 		shared<renderer::texture_2d> create_texture_2d(uint32_t width, uint32_t height, const unsigned char* data);
 		/**
+		 * \brief Creates a texture using width, height and raw data.
+		 * \param width Width of the texture.
+		 * \param height Height of the texture.
+		 * \param pixels Pixels of the texture in raw format.
+		 * \return A shared pointer containing the texture.
+		 */
+		shared<renderer::texture_2d> create_texture_2d(uint32_t width, uint32_t height, const void* pixels);
+		/**
 		 * \brief Creates a texture using width, height, channels, and already loaded data of the texture.
 		 * \param width Width of the texture.
 		 * \param height Height of the texture.

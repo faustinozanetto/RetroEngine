@@ -58,11 +58,14 @@ layout(binding = 8) uniform sampler2D       gShadowMap;
 layout(binding = 9) uniform sampler2DShadow gShadowMapPCF;
 layout(binding = 10) uniform sampler3D            gRandomAngles;
 
+layout(binding = 11) uniform sampler2D gSSAO;
+
 uniform int   u_blocker_search_samples;
 uniform float u_light_radius_uv;
 uniform float u_light_near;
 uniform float u_light_far;
 uniform int   u_pcf_samples;
+uniform int u_ssao_enabled;
 
 uniform PointLight pointLight;
 uniform DirectionalLight directionalLight;
@@ -787,6 +790,7 @@ void main() {
     float Roughness = texture(gRoughMetalAO, TexCoords).r;
     float Metallic  = texture(gRoughMetalAO, TexCoords).g;
     float AO        = texture(gRoughMetalAO, TexCoords).b;
+    float SSAO = texture(gSSAO, TexCoords).r;
     vec3 CamPos = camera.u_Position;
 
     Surface surface;
@@ -836,15 +840,19 @@ void main() {
     vec2 BRDF  = texture(gBRDFLut, vec2(max(dot(surface.normal, V), 0.0), surface.roughness)).rg;
     vec3 specular = prefilteredColor * (F * BRDF.x + BRDF.y);
 
-	vec3 ambient = (Kd * diffuse + specular) * AO; 
+    float combined_ssao = 1.0;
+    if (u_ssao_enabled == 1) {
+        combined_ssao = SSAO;
+    }
+	vec3 ambient = (Kd * diffuse + specular) * combined_ssao; 
 
 	vec3 result = vec3(0);
 	result = (shadow) * Lighting + ambient;
     
     // HDR tonemapping
-  //  result = result / (result + vec3(1.0));
+    result = result / (result + vec3(1.0));
     // gamma correct
-  //  result = pow(result, vec3(1.0/2.2));
+    result = pow(result, vec3(1.0/2.2));
 
     FragColor = vec4(result, Alpha);
 }

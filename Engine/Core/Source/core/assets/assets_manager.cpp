@@ -49,6 +49,15 @@ namespace retro
 		return texture;
 	}
 
+	shared<renderer::texture_2d> assets_manager::create_texture_2d(uint32_t width, uint32_t height, const void* pixels)
+	{
+		auto texture = renderer::texture_2d::create(width, height, pixels);
+		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
+		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
+
+		return texture;
+	}
+
 	shared<renderer::texture_2d> assets_manager::create_texture_2d(uint32_t width, uint32_t height, uint32_t channels,
 		const unsigned char* data)
 	{
