@@ -73,9 +73,6 @@ namespace retro::renderer
 		shared<global_illumination_pass> global_illumination_pass;
 		shared<ssao_pass> ssao_pass;
 		shared<fxaa_pass> fxaa_pass;
-
-		bool fxaa_enabled;
-		bool ssao_enabled;
 	};
 
 	class scene_renderer
@@ -95,6 +92,7 @@ namespace retro::renderer
 		static scene_renderer_data& get_data();
 		static uint32_t get_final_texture();
 
+		static shared<geometry_pass>& get_geometry_pass();
 		static shared<shadow_map_pass>& get_shadow_pass();
 		static shared<ssao_pass>& get_ssao_pass();
 		static shared<fxaa_pass>& get_fxaa_pass();

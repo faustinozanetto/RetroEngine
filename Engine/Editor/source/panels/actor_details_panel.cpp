@@ -6,6 +6,7 @@
 #include "../editor_interface_utils.h"
 #include "../editor_main_interface.h"
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "core/scene/components.h"
 #include "core/scene/scene.h"
 #include "core/scene/actor.h"
@@ -29,7 +30,7 @@ namespace retro::editor
 
 	void actor_details_panel::on_render_panel()
 	{
-		const shared<scene>& active_scene = retro_application::get_application().get_scene_manager()->
+		const shared<scene>& active_scene = scene_manager::
 			get_active_scene();
 		ImGui::Begin("Actor Details");
 		if (editor_main_interface::s_selected_actor != entt::null)
@@ -68,7 +69,7 @@ namespace retro::editor
 			{
 				material_component& material_component = active_scene->get_actor_registry().get<retro::material_component>(
 					editor_main_interface::s_selected_actor);
-				const auto& available_textures = retro_application::get_application().get_assets_manager()->get_assets_by_type(asset_type::texture);
+				const auto& available_textures = assets_manager::get().get_assets_by_type(asset_type::texture);
 				ImGuiTreeNodeFlags mat_flags = ImGuiTreeNodeFlags_OpenOnArrow;
 				mat_flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 				if (ImGui::TreeNodeEx("Materials")) {
@@ -157,7 +158,7 @@ namespace retro::editor
 							1.0f,
 							1.0f,
 						};
-						const shared<renderer::material>& material = retro_application::get_application().get_assets_manager()->create_material(material_specification);
+						const shared<renderer::material>& material = assets_manager::get().create_material(material_specification);
 						int new_mat_index = material_component.materials.size();
 						material_component.materials.insert(std::pair(new_mat_index, material));
 					}
@@ -181,7 +182,7 @@ namespace retro::editor
 				if (editor_main_interface::s_file_browser.HasSelected())
 				{
 					std::string file_path = editor_main_interface::s_file_browser.GetSelected().string();
-					const shared<renderer::model>& model = retro_application::get_application().get_assets_manager()->create_model(
+					const shared<renderer::model>& model = assets_manager::get().create_model(
 						{
 							file_path
 						});

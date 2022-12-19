@@ -10,6 +10,8 @@
 #include "renderer/renderer/scene_renderer.h"
 #include <cereal/archives/json.hpp>
 
+#include "core/assets/assets_manager.h"
+
 namespace retro::editor
 {
 	editor_layer::editor_layer(const std::string& name) : layer(name)
@@ -24,7 +26,7 @@ namespace retro::editor
 	{
 		initialize_editor_scene();
 		renderer::scene_renderer::set_scene(
-			retro_application::get_application().get_scene_manager()->get_active_scene());
+			scene_manager::get_active_scene());
 		renderer::scene_renderer::initialize(m_camera);
 
 		/*
@@ -68,7 +70,7 @@ namespace retro::editor
 			};
 			auto baseWoodenMaterial = renderer::material::create(
 				materialSpecification);
-			auto baseWooden = retro_application::get_application().get_scene_manager()->get_active_scene()->
+			auto baseWooden = scene_manager::get_active_scene()->
 				create_actor();
 			baseWooden->add_component<name_component>("FighterHelmet Base");
 			baseWooden->add_component<model_renderer_component>(
@@ -78,7 +80,7 @@ namespace retro::editor
 			transform.scale = glm::vec3(0.01f);
 			transform.position = { 0.0f, -0.4f, 9.0f };
 
-			auto pipe = retro_application::get_application().get_scene_manager()->get_active_scene()->
+			auto pipe = scene_manager::get_active_scene()->
 				create_actor();
 			pipe->add_component<name_component>("FighterHelmet Pipe");
 			pipe->add_component<model_renderer_component>(
@@ -128,7 +130,7 @@ namespace retro::editor
 			};
 			auto maskMat = renderer::material::create(
 				materialSpecification);
-			auto mask = retro_application::get_application().get_scene_manager()->get_active_scene()->
+			auto mask = scene_manager::get_active_scene()->
 				create_actor();
 			mask->add_component<name_component>("FighterHelmet Mask");
 			mask->add_component<model_renderer_component>(
@@ -178,7 +180,7 @@ namespace retro::editor
 			};
 			auto helmetMat = renderer::material::create(
 				materialSpecification);
-			auto helmet = retro_application::get_application().get_scene_manager()->get_active_scene()->
+			auto helmet = scene_manager::get_active_scene()->
 				create_actor();
 			helmet->add_component<name_component>("FighterHelmet Helmet");
 			helmet->add_component<model_renderer_component>(
@@ -228,7 +230,7 @@ namespace retro::editor
 			};
 			auto lensesMat = renderer::material::create(
 				materialSpecification);
-			auto lenses = retro_application::get_application().get_scene_manager()->get_active_scene()->
+			auto lenses = scene_manager::get_active_scene()->
 				create_actor();
 			lenses->add_component<name_component>("FighterHelmet Lenses");
 			lenses->add_component<model_renderer_component>(
@@ -278,7 +280,7 @@ namespace retro::editor
 			};
 			auto metalsMat = renderer::material::create(
 				materialSpecification);
-			auto metals = retro_application::get_application().get_scene_manager()->get_active_scene()->
+			auto metals = scene_manager::get_active_scene()->
 				create_actor();
 			metals->add_component<name_component>("FighterHelmet Metals");
 			metals->add_component<model_renderer_component>(
@@ -291,9 +293,9 @@ namespace retro::editor
 		}
 		*/
 
-		auto ww2city = retro_application::get_application().get_scene_manager()->get_active_scene()->
+		auto ww2city = scene_manager::get_active_scene()->
 			create_actor();
-		const shared<renderer::model>& ww2city_model = retro_application::get_application().get_assets_manager()->create_model(
+		const shared<renderer::model>& ww2city_model = assets_manager::get().create_model(
 			{ "Assets/Models/NightCity/scene.gltf" });
 		ww2city->add_component<name_component>("Bistro");
 		auto& model_renderer = ww2city->add_component<model_renderer_component>(ww2city_model);
@@ -316,7 +318,7 @@ namespace retro::editor
 					glm::vec3 start_pos = glm::vec3(-offset.x * float(grid_size.x / 2), 0.0,
 						-offset.y * float(grid_size.y / 2));
 
-					const shared<renderer::model>& sphere_model = retro_application::get_application().get_assets_manager()->create_model({ "Assets/Models/Monkey.obj" });
+					const shared<renderer::model>& sphere_model = assets_manager::get().create_model({ "Assets/Models/Monkey.obj" });
 
 					renderer::material_texture albedoTexture = {
 						nullptr, false
@@ -357,7 +359,7 @@ namespace retro::editor
 						for (uint32_t x = 0; x < grid_size.x; ++x)
 						{
 							glm::vec3 position = start_pos + glm::vec3(x, 0.5f, y) * offset;
-							auto sphere = retro_application::get_application().get_scene_manager()->get_active_scene()->
+							auto sphere = scene_manager::get_active_scene()->
 								create_actor();
 							sphere->add_component<name_component>(
 								"Sphere (" + std::to_string(x) + ", " + std::to_string(y) + ")");
@@ -381,12 +383,12 @@ namespace retro::editor
 
 		/*
 		float time = renderer::renderer::get_time();
-		auto registry = retro_application::get_application().get_scene_manager()->get_active_scene()->
+		auto registry = scene_manager::get_active_scene()->
 			get_actor_registry().view<transform_component>();
 
 		for (auto& actor : registry)
 		{
-			if (!retro_application::get_application().get_scene_manager()->get_active_scene()->
+			if (!scene_manager::get_active_scene()->
 				get_actor_registry().has<light_renderer_component>(actor))
 			{
 				auto& transform = registry.get<transform_component>(actor);
@@ -466,7 +468,7 @@ namespace retro::editor
 		{
 			std::ofstream file("Assets/materials.rmat");
 			cereal::JSONOutputArchive  oarchive(file); // Create an output archive
-			auto snapshot = entt::snapshot{ retro_application::get_application().get_scene_manager()->get_active_scene()->get_actor_registry() };
+			auto snapshot = entt::snapshot{ scene_manager::get_active_scene()->get_actor_registry() };
 			snapshot.entities(oarchive).component<name_component, material_component>(oarchive);
 			file.close();
 		} // archive goes out of scope, ensuring all contents are flushed
@@ -475,12 +477,12 @@ namespace retro::editor
 	void editor_layer::initialize_editor_scene()
 	{
 		const shared<scene>& scene = scene::create("Editor Scene");
-		retro_application::get_application().get_scene_manager()->set_active_scene(scene);
+		scene_manager::set_active_scene(scene);
 		renderer::camera_specification camera_specification = { 50.0f, 0.01f, 1000.0f };
 		m_camera = retro::create_shared<renderer::camera>(camera_specification);
 
 		/*  POINT LIGHT */
-		const shared<actor> light_actor = retro_application::get_application().get_scene_manager()->
+		const shared<actor> light_actor = scene_manager::
 			get_active_scene()->
 			create_actor();
 		light_actor->add_component<name_component>("Point Light");
@@ -489,7 +491,7 @@ namespace retro::editor
 		light_actor->add_component<transform_component>();
 
 		/*  DIRECTIONAL LIGHT */
-		const shared<actor> light = retro_application::get_application().get_scene_manager()->get_active_scene()->
+		const shared<actor> light = scene_manager::get_active_scene()->
 			create_actor();
 		light->add_component<name_component>("Directional Light");
 		auto dir_light = create_shared<renderer::directional_light>();
@@ -529,10 +531,10 @@ namespace retro::editor
 			1.0f,
 		};
 
-		auto floor_mat = retro_application::get_application().get_assets_manager()->create_material(materialSpecification);
-		const shared<actor>& floor = retro_application::get_application().get_scene_manager()->get_active_scene()->
+		auto floor_mat = assets_manager::get().create_material(materialSpecification);
+		const shared<actor>& floor = scene_manager::get_active_scene()->
 			create_actor();
-		const shared<renderer::model>& floor_model = retro_application::get_application().get_assets_manager()->
+		const shared<renderer::model>& floor_model = assets_manager::get().
 			create_model({ "Assets/Models/Plane.obj" });
 		floor->add_component<name_component>("Floor");
 		floor->add_component<model_renderer_component>(floor_model);

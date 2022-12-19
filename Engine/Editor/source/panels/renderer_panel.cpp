@@ -20,12 +20,8 @@ namespace retro::editor
 	void renderer_panel::on_render_panel()
 	{
 		ImGui::Begin("Renderer");
-		if (editor_interface_utils::draw_property("Enable VSync", m_use_vsync))
-		{
-			retro_application::get_application().get_window()->set_vsync_enabled(m_use_vsync);
-		}
 		ImGui::Separator();
-		if (ImGui::TreeNode("GeometryBuffer"))
+		if (ImGui::CollapsingHeader("GeometryBuffer"))
 		{
 			for (const auto& attachment : renderer::scene_renderer::get_geometry_frame_buffer()->get_attachments_specifications())
 			{
@@ -58,7 +54,6 @@ namespace retro::editor
 					ImGui::TreePop();
 				}
 			}
-			ImGui::TreePop();
 		}
 
 		if (ImGui::TreeNode("FinalBuffer"))
@@ -278,83 +273,59 @@ namespace retro::editor
 				ImGui::TreePop();
 			}
 
-			/*
-			// Prefilter Map
-			if (ImGui::TreeNode("Environment Prefilter Map"))
-			{
-				ImGui::Image(
-					reinterpret_cast<ImTextureID>(renderer::scene_renderer::get_lighting_environment()->
-						get_prefilter_texture()),
-					{64.0f, 64.0f},
-					ImVec2(0.0f, 1.0f),
-					ImVec2(1.0f, 0.0f)
-				);
-
-				// Hover tooltip.
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Image(reinterpret_cast<ImTextureID>(renderer::scene_renderer::get_lighting_environment()->
-									 get_prefilter_texture()), ImVec2(256, 256),
-								 ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-					ImGui::EndTooltip();
-				}
-				ImGui::TreePop();
-			}
-
-			// Irradiance Map
-			if (ImGui::TreeNode("Environment Irradiance Map"))
-			{
-				ImGui::Image(
-					reinterpret_cast<ImTextureID>(renderer::scene_renderer::get_lighting_environment()->
-						get_irradiance_texture()),
-					{64.0f, 64.0f},
-					ImVec2(0.0f, 1.0f),
-					ImVec2(1.0f, 0.0f)
-				);
-
-				// Hover tooltip.
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Image(reinterpret_cast<ImTextureID>(renderer::scene_renderer::get_lighting_environment()->
-									 get_irradiance_texture()), ImVec2(256, 256),
-								 ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-					ImGui::EndTooltip();
-				}
-				ImGui::TreePop();
-			}
-			*/
 			ImGui::TreePop();
 		}
+		render_window_parameters();
 		render_ssao_parameters();
 		render_fxaa_parameters();
 		ImGui::End();
 	}
 
+	void renderer_panel::render_window_parameters() const
+	{
+		ImGui::PushID("window_params");
+		if (ImGui::CollapsingHeader("Configure Window"))
+		{
+			const auto& window = retro_application::get_application().get_window();
+			bool vsync_enabled = window->get_window_specification().v_sync;
+			if (editor_interface_utils::draw_property("Enable VSync", vsync_enabled))
+			{
+				window->set_vsync_enabled(vsync_enabled);
+			}
+		}
+		ImGui::PopID();
+	}
+
 	void renderer_panel::render_ssao_parameters() const
 	{
+		ImGui::PushID("ssao_params");
 		if (ImGui::CollapsingHeader("Configure SSAO"))
 		{
 			const auto& ssao_pass = renderer::scene_renderer::get_ssao_pass();
-			editor_interface_utils::draw_property("Enabled", renderer::scene_renderer::get_data().ssao_enabled);
+			render_pass_enabled(ssao_pass);
 			editor_interface_utils::draw_property("Radius", ssao_pass->get_ssao_parameters().radius, 0.0f, 1.0f, 0.01f);
 			editor_interface_utils::draw_property("Bias", ssao_pass->get_ssao_parameters().bias, 0.0f, 1.0f, 0.01f);
-			/*
-			if (editor_interface_utils::draw_property("Sample Count", ssao_pass->get_ssao_parameters().samples_count, 0, 128))
-			{
-				ssao_pass->generate_sample_kernel();
-			}
-			*/
 		}
+		ImGui::PopID();
 	}
 
 	void renderer_panel::render_fxaa_parameters() const
 	{
+		ImGui::PushID("fxaa_params");
 		if (ImGui::CollapsingHeader("Configure FXAA"))
 		{
 			const auto& fxaa_pass = renderer::scene_renderer::get_fxaa_pass();
-			editor_interface_utils::draw_property("Enabled", renderer::scene_renderer::get_data().fxaa_enabled);
+			render_pass_enabled(fxaa_pass);
+		}
+		ImGui::PopID();
+	}
+
+	void renderer_panel::render_pass_enabled(const shared<renderer::render_pass>& render_pass) const
+	{
+		bool enabled = render_pass->render_pass_enabled();
+		if (editor_interface_utils::draw_property("Enabled", enabled))
+		{
+			render_pass->set_render_pass_enabled(enabled);
 		}
 	}
 

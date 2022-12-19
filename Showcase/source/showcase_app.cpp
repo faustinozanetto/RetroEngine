@@ -2,12 +2,13 @@
 
 #include "core/entry_point.h"
 #include "showcase_layer.h"
+#include "core/layers/layer_manager.h"
 
 namespace retro
 {
 	showcase_app::showcase_app() : retro_application({ "showcase_app" })
 	{
-		get_layers_manager()->register_layer(retro::create_shared<showcase_layer>("showcase_layer"));
+		layer_manager::get().register_layer(retro::create_shared<showcase_layer>("showcase_layer"));
 	}
 
 	showcase_app::~showcase_app()

@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "glad/glad.h"
 
 namespace retro::renderer
@@ -58,15 +59,15 @@ namespace retro::renderer
 	lighting_environment::lighting_environment(const lighting_environment_specification& lighting_environment_specification)
 	{
 		m_lighting_environment_specification = lighting_environment_specification;
-		m_skybox_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Skybox/Skybox.vert",
+		m_skybox_shader = assets_manager::get().create_shader({ "Assets/Shaders/Skybox/Skybox.vert",
 			"Assets/Shaders/Skybox/Skybox.frag" });
-		m_equirectangular_to_cubemap_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Skybox/Equirectangular.vert",
+		m_equirectangular_to_cubemap_shader = assets_manager::get().create_shader({ "Assets/Shaders/Skybox/Equirectangular.vert",
 			"Assets/Shaders/Skybox/Equirectangular.frag" });
-		m_irradiance_convolution_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Skybox/IrradianceConvolution.vert",
+		m_irradiance_convolution_shader = assets_manager::get().create_shader({ "Assets/Shaders/Skybox/IrradianceConvolution.vert",
 			"Assets/Shaders/Skybox/IrradianceConvolution.frag" });
-		m_prefilter_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Skybox/Prefilter.vert",
+		m_prefilter_shader = assets_manager::get().create_shader({ "Assets/Shaders/Skybox/Prefilter.vert",
 			"Assets/Shaders/Skybox/Prefilter.frag" });
-		m_brdf_lut_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Skybox/BRDFLut.vert",
+		m_brdf_lut_shader = assets_manager::get().create_shader({ "Assets/Shaders/Skybox/BRDFLut.vert",
 			"Assets/Shaders/Skybox/BRDFLut.frag" });
 
 		/* Setup Skybox Cube */

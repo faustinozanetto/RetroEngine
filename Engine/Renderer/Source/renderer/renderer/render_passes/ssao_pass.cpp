@@ -3,6 +3,7 @@
 #include "ssao_pass.h"
 
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "renderer/renderer/renderer.h"
 #include "glad/glad.h"
 #include "renderer/renderer/scene_renderer.h"
@@ -68,11 +69,11 @@ namespace retro::renderer
 
 	void ssao_pass::load_shaders()
 	{
-		m_ssao_shader = retro_application::get_application().get_assets_manager()->create_shader(
+		m_ssao_shader = assets_manager::get().create_shader(
 			{
 					"Assets/Shaders/SSAO/SSAO.vert", "Assets/Shaders/SSAO/SSAO.frag" });
 
-		m_ssao_blur_shader = retro_application::get_application().get_assets_manager()->create_shader(
+		m_ssao_blur_shader = assets_manager::get().create_shader(
 			{
 					"Assets/Shaders/SSAO/SSAO.vert", "Assets/Shaders/SSAO/SSAOBlur.frag" });
 	}
@@ -189,7 +190,7 @@ namespace retro::renderer
 			ssao_noise.push_back(noise);
 		}
 
-		m_noise_texture = retro_application::get_application().get_assets_manager()->create_texture_2d(
+		m_noise_texture = assets_manager::get().create_texture_2d(
 			m_ssao_parameters.noise_texture_size, m_ssao_parameters.noise_texture_size, ssao_noise.data());
 		m_noise_texture->set_filtering(texture_filtering_type::min, texture_filtering::nearest);
 		m_noise_texture->set_filtering(texture_filtering_type::mag, texture_filtering::nearest);

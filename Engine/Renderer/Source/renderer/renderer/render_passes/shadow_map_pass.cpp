@@ -9,6 +9,7 @@
 #include "glad/glad.h"
 
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "core/scene/components.h"
 #include "renderer/renderer/renderer.h"
 
@@ -57,7 +58,7 @@ namespace retro::renderer
 		m_shadow_shader->bind();
 		//renderer::clear_screen();
 
-		const auto view = retro_application::get_application().get_scene_manager()->get_active_scene()->get_actor_registry().group<model_renderer_component>(
+		const auto view = scene_manager::get_active_scene()->get_actor_registry().group<model_renderer_component>(
 			entt::get<transform_component>);
 		for (auto&& [actor, model_renderer, transform] : view.each())
 		{
@@ -120,7 +121,7 @@ namespace retro::renderer
 	void shadow_map_pass::generate_shadow_map()
 	{
 		/*
-		m_shadow_map = retro_application::get_application().get_assets_manager()->create_texture(
+		m_shadow_map = assets_manager::create_texture(
 			{
 				m_shadow_map_res, texture_filtering::nearest, texture_wrapping::clamp_border, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT });
 				*/
@@ -203,7 +204,7 @@ namespace retro::renderer
 
 	void shadow_map_pass::load_shaders()
 	{
-		m_shadow_shader = retro_application::get_application().get_assets_manager()->create_shader(
+		m_shadow_shader = assets_manager::get().create_shader(
 			{
 					"Assets/Shaders/Shadows/GeneratePCSS.vert", "Assets/Shaders/Shadows/GeneratePCSS.frag" });
 	}

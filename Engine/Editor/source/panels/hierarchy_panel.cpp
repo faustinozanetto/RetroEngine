@@ -22,7 +22,7 @@ namespace retro::editor
 
 	void hierarchy_panel::on_render_panel()
 	{
-		const shared<scene>& active_scene = retro_application::get_application().get_scene_manager()->
+		const shared<scene>& active_scene = scene_manager::
 			get_active_scene();
 		ImGui::Begin("Hierarchy");
 		if (active_scene)
