@@ -4,6 +4,8 @@
 #include "core/application/retro_application.h"
 #include <assimp/postprocess.h>
 
+#include "core/assets/assets_manager.h"
+
 namespace retro::renderer
 {
 	model::model(const model_specification& model_specification) : asset(asset_type::model)
@@ -226,8 +228,7 @@ namespace retro::renderer
 			}
 
 			// Use the input map for loading the textures using multi threading.
-			const std::map<int, shared<texture_2d>>& loaded_textures = retro_application::get_application()
-				.get_assets_manager()->create_textures_2d(input_textures);
+			const std::map<int, shared<texture_2d>>& loaded_textures = assets_manager::get().create_textures_2d(input_textures);
 
 			material_texture albedo_mat_tex = {
 				nullptr, false
@@ -280,7 +281,7 @@ namespace retro::renderer
 				1.0f,
 			};
 
-			const shared<material>& created_mat = retro_application::get_application().get_assets_manager()->create_material(material_specification);
+			const shared<material>& created_mat = assets_manager::get().create_material(material_specification);
 
 			m_embedded_materials.insert(std::pair(mat_idx, created_mat));
 		}

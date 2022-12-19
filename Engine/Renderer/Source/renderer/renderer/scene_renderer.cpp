@@ -13,6 +13,7 @@
 
 #include "imgui.h"
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "renderer/lighting/directional_light.h"
 
 namespace retro::renderer
@@ -84,7 +85,7 @@ namespace retro::renderer
 		s_scene_renderer_data.geometry_pass->begin_pass();
 
 		//s_scene_renderer_data.global_illumination_pass->begin_pass();
-		if (s_scene_renderer_data.ssao_enabled) {
+		if (s_scene_renderer_data.ssao_pass->render_pass_enabled()) {
 			s_scene_renderer_data.ssao_pass->begin_pass();
 		}
 		/*==================== LIGHTING PASS ==================== */
@@ -118,7 +119,7 @@ namespace retro::renderer
 			s_scene_renderer_data.m_directional_light.color);
 		s_scene_renderer_data.m_lighting_shader->set_vec_float4("directionalLight.direction",
 			s_scene_renderer_data.m_directional_light.direction);
-		s_scene_renderer_data.m_lighting_shader->set_int("u_ssao_enabled", s_scene_renderer_data.ssao_enabled);
+		s_scene_renderer_data.m_lighting_shader->set_int("u_ssao_enabled", s_scene_renderer_data.ssao_pass->render_pass_enabled());
 
 		renderer::bind_texture(s_scene_renderer_data.geometry_pass->get_pass_output()->get_attachment_id(0), 0); // position
 		renderer::bind_texture(s_scene_renderer_data.geometry_pass->get_pass_output()->get_attachment_id(1), 1); // albedo
@@ -151,7 +152,7 @@ namespace retro::renderer
 		glDepthFunc(GL_LESS);
 		s_scene_renderer_data.m_final_frame_buffer->un_bind();
 
-		if (s_scene_renderer_data.fxaa_enabled)
+		if (s_scene_renderer_data.fxaa_pass->render_pass_enabled())
 		{
 			s_scene_renderer_data.fxaa_pass->begin_pass();
 		}
@@ -199,6 +200,11 @@ namespace retro::renderer
 	uint32_t scene_renderer::get_final_texture()
 	{
 		return s_scene_renderer_data.m_final_frame_buffer->get_attachment_id(0);
+	}
+
+	shared<geometry_pass>& scene_renderer::get_geometry_pass()
+	{
+		return s_scene_renderer_data.geometry_pass;
 	}
 
 	shared<shadow_map_pass>& scene_renderer::get_shadow_pass()
@@ -261,12 +267,12 @@ namespace retro::renderer
 
 	void scene_renderer::load_shaders()
 	{
-		s_scene_renderer_data.m_screen_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Screen/Screen.vert",
+		s_scene_renderer_data.m_screen_shader = assets_manager::get().create_shader({ "Assets/Shaders/Screen/Screen.vert",
 																													 "Assets/Shaders/Screen/Screen.frag" });
-		s_scene_renderer_data.m_lighting_shader = retro_application::get_application().get_assets_manager()->create_shader({
+		s_scene_renderer_data.m_lighting_shader = assets_manager::get().create_shader({
 				"Assets/Shaders/Lighting/Lighting.vert",
 				"Assets/Shaders/Lighting/Lighting.frag" });
-		s_scene_renderer_data.m_shadow_shader = retro_application::get_application().get_assets_manager()->create_shader({
+		s_scene_renderer_data.m_shadow_shader = assets_manager::get().create_shader({
 				"Assets/Shaders/Shadows/Shadows.vert", "Assets/Shaders/Shadows/Shadows.frag" });
 	}
 

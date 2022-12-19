@@ -8,6 +8,7 @@
 #include "panels/camera_panel.h"
 #include "panels/hierarchy_panel.h"
 #include "panels/renderer_panel.h"
+#include "panels/render_passes_panel.h"
 #include "panels/statistics_panel.h"
 #include "renderer/renderer/renderer.h"
 #include "renderer/renderer/scene_renderer.h"
@@ -41,6 +42,8 @@ namespace retro::editor
 		m_panels.emplace_back(renderer_panel);
 		shared<assets_panel> assets_panel = create_shared<editor::assets_panel>();
 		m_panels.emplace_back(assets_panel);
+		auto render_passes_panel = create_shared<editor::render_passes_panel>();
+		m_panels.emplace_back(render_passes_panel);
 
 		s_render_target = renderer::scene_renderer::get_final_texture();
 	}

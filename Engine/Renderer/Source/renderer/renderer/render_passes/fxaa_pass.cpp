@@ -4,6 +4,7 @@
 #include "glad/glad.h"
 
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "renderer/renderer/scene_renderer.h"
 #include "renderer/renderer/renderer.h"
 
@@ -45,7 +46,7 @@ namespace retro::renderer
 
 	void fxaa_pass::load_shaders()
 	{
-		m_fxaa_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Screen/Screen.vert",
+		m_fxaa_shader = assets_manager::get().create_shader({ "Assets/Shaders/Screen/Screen.vert",
 			"Assets/Shaders/FXAA/FXAA.frag" });
 	}
 

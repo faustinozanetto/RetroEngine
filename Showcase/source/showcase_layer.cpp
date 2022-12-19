@@ -4,6 +4,7 @@
 
 #include "imgui.h"
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "core/input/input_manager.h"
 #include "core/scene/actor.h"
 #include "renderer/renderer/renderer.h"
@@ -29,17 +30,17 @@ namespace retro
 	void showcase_layer::on_layer_registered()
 	{
 		const shared<scene>& scene = scene::create("Showcase Scene");
-		retro_application::get_application().get_scene_manager()->set_active_scene(scene);
+		scene_manager::set_active_scene(scene);
 		renderer::camera_specification camera_specification = { 50.0f, 0.01f, 1000.0f };
 		m_camera = retro::create_shared<renderer::camera>(camera_specification);
 
-		m_primes_shader = retro_application::get_application().get_assets_manager()->create_shader(
+		m_primes_shader = assets_manager::get().create_shader(
 			{ "Assets/Shaders/Screen/Screen.vert","Assets/Shaders/Test/Prime.frag" });
 
 		create_screen_vao();
 
 		renderer::scene_renderer::set_scene(
-			retro_application::get_application().get_scene_manager()->get_active_scene());
+			scene_manager::get_active_scene());
 		renderer::scene_renderer::initialize(m_camera);
 		/*
 		std::vector<std::string> textures_path;
@@ -50,7 +51,7 @@ namespace retro
 			textures_path.emplace_back(entry.path().string());
 		}
 
-		const std::vector<shared<renderer::texture>>& textures = retro_application::get_application().get_assets_manager()->create_textures(textures_path);
+		const std::vector<shared<renderer::texture>>& textures = assets_manager::get().create_textures(textures_path);
 		logger::info("Textures: " + textures.size());
 		*/
 	}

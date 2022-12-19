@@ -1,22 +1,19 @@
 #pragma once
 
-#include "core/managers/manager.h"
 #include "core/assets/asset.h"
+#include "core/utils/singleton.h"
 #include "renderer/materials/material.h"
 #include "renderer/rendereables/model/model.h"
 #include "renderer/texture/texture_3d.h"
 
 namespace retro
 {
-	class assets_manager : public manager
+	class assets_manager : public singleton<assets_manager>
 	{
+		friend class singleton;
 	public:
-		/* Constructor & Destructor */
 		assets_manager();
-		~assets_manager() override;
-
-		/* Methods */
-		void shutdown() override;
+		~assets_manager();
 
 		/* Assets creation */
 		shared<renderer::texture_3d> create_texture_3d(const renderer::texture_specification& texture_specification);
@@ -65,15 +62,12 @@ namespace retro
 
 		std::unordered_map<shared<uuid>, shared<asset>>& get_assets_by_type(asset_type type);
 
-		const std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>>& get_assets() const
+		const std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>>& get_assets()
 		{
-			return m_assets;
+			return s_assets;
 		}
 
-		/* Instantiate */
-		static unique<assets_manager> create();
-
 	private:
-		std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>> m_assets;
+		std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>> s_assets;
 	};
 }

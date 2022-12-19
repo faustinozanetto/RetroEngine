@@ -1,6 +1,6 @@
 #version 460
 
-#define SAMPLES_COUNT 128
+#define SAMPLES_COUNT 64
 
 layout (location = 0) in vec2 vTexCoord;
 

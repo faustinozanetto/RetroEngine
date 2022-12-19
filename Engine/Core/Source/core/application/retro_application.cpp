@@ -2,7 +2,10 @@
 
 #include "retro_application.h"
 
+#include "core/assets/assets_manager.h"
+#include "core/interfaces/interfaces_layer_manager.h"
 #include "core/interfaces/interface_layer.h"
+#include "core/layers/layer_manager.h"
 #include "renderer/renderer/renderer.h"
 
 namespace retro
@@ -22,25 +25,29 @@ namespace retro
 		// Initialize Logger.
 		logger::initialize();
 		logger::line();
+		assets_manager::initialize();
+		layer_manager::initialize();
+		interfaces_layer_manager::initialize();
+		scene_manager::initialize();
 		// Create window.
 		const auto windowSpecification = renderer::window_specification(
 			"Retro Engine", 1920, 1080, false);
 		m_window = renderer::window::create(windowSpecification);
 		// Initialize Renderer
 		renderer::renderer::initialize(renderer::renderer_api_type::open_gl, *m_window.get());
-		// Initialize Layers and SubSystems.
-		m_assets_manager = assets_manager::create();
-		m_layers_manager = layer_manager::create("LayersManager");
-		m_interface_layers_manager = layer_manager::create("InterfaceLayersManager");
+		// Initialize Interfaces subsystem
 		m_interfaces_subsystem = interface_subsystem::create();
 		m_interfaces_subsystem->on_sub_system_start();
-		m_scene_manager = scene_manager::create("SceneManager");
 	}
 
 	retro_application::~retro_application()
 	{
-		m_layers_manager->shutdown();
-		m_assets_manager->shutdown();
+		layer_manager::get().shutdown();
+
+		assets_manager::release();
+		layer_manager::release();
+		interfaces_layer_manager::release();
+		scene_manager::release();
 	};
 
 	void retro_application::run_application() const
@@ -52,8 +59,8 @@ namespace retro
 			// Main Render Loop.
 			{
 				// Update layers.
-				for (auto it = m_layers_manager->get_layer_stack().begin(); it <
-					m_layers_manager->get_layer_stack().end();
+				for (auto it = layer_manager::get().get_layer_stack().begin(); it <
+					layer_manager::get().get_layer_stack().end();
 					++it)
 				{
 					it->get()->on_layer_updated();
@@ -63,8 +70,8 @@ namespace retro
 			// Main Interfaces Loop.
 			{
 				// Update interface layer.
-				for (auto it = m_interface_layers_manager->get_layer_stack().begin(); it <
-					m_interface_layers_manager->get_layer_stack().end();
+				for (auto it = interfaces_layer_manager::get().get_interface_layer_stack().begin(); it <
+					interfaces_layer_manager::get().get_interface_layer_stack().end();
 					++it)
 				{
 					const auto interfaceLayer = dynamic_cast<interface_layer*>(it->get());
@@ -81,26 +88,6 @@ namespace retro
 	const unique<renderer::window>& retro_application::get_window() const
 	{
 		return m_window;
-	}
-
-	const unique<layer_manager>& retro_application::get_layers_manager() const
-	{
-		return m_layers_manager;
-	}
-
-	const unique<layer_manager>& retro_application::get_interfaces_layer_manager() const
-	{
-		return m_interface_layers_manager;
-	}
-
-	const unique<assets_manager>& retro_application::get_assets_manager() const
-	{
-		return m_assets_manager;
-	}
-
-	const unique<scene_manager>& retro_application::get_scene_manager() const
-	{
-		return m_scene_manager;
 	}
 
 	retro_application& retro_application::get_application()

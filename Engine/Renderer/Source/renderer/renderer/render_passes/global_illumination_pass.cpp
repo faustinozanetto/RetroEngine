@@ -10,13 +10,14 @@
 #include "renderer/renderer/renderer.h"
 #include <glm/ext/matrix_transform.hpp>
 
+#include "core/assets/assets_manager.h"
 #include "renderer/renderer/scene_renderer.h"
 
 namespace retro::renderer
 {
 	global_illumination_pass::global_illumination_pass()
 	{
-		m_voxel_model = retro_application::get_application().get_assets_manager()->create_model({ "Assets/Models/Cube.obj" });
+		m_voxel_model = assets_manager::get().create_model({ "Assets/Models/Cube.obj" });
 		texture_specification vox_tex_spec = {
 			glm::uvec2(1920, 1080),
 			texture_filtering::linear,
@@ -60,7 +61,7 @@ namespace retro::renderer
 		glUniform1i(glGetUniformLocation(m_voxelization_shader->get_object_handle(), "gVoxelizationTexture"), 0);
 		glBindImageTexture(0, m_voxelization_texture->get_object_handle(), 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_RGBA8);
 
-		entt::registry& actors_registry = retro_application::get_application().get_scene_manager()->get_active_scene()->get_actor_registry();
+		entt::registry& actors_registry = scene_manager::get_active_scene()->get_actor_registry();
 		const auto view = actors_registry.group<model_renderer_component>(
 			entt::get<name_component, transform_component>);
 
@@ -123,18 +124,16 @@ namespace retro::renderer
 
 	void global_illumination_pass::load_shaders()
 	{
-		m_voxelization_shader = retro_application::get_application().
-			get_assets_manager()->create_shader({ "Assets/Shaders/GlobalIllumination/Voxelize.vert",
+		m_voxelization_shader = assets_manager::get().create_shader({ "Assets/Shaders/GlobalIllumination/Voxelize.vert",
 				"Assets/Shaders/GlobalIllumination/Voxelize.frag","Assets/Shaders/GlobalIllumination/Voxelize.geom" });
 
-		m_voxelization_visualize_shader = retro_application::get_application().
-			get_assets_manager()->create_shader({ "Assets/Shaders/GlobalIllumination/VoxelVisualize.vert" ,
+		m_voxelization_visualize_shader = assets_manager::get().create_shader({ "Assets/Shaders/GlobalIllumination/VoxelVisualize.vert" ,
 "Assets/Shaders/GlobalIllumination/VoxelVisualize.frag" });
 	}
 
 	void global_illumination_pass::create_textures()
 	{
-		m_voxelization_texture = retro_application::get_application().get_assets_manager()->
+		m_voxelization_texture = assets_manager::get().
 			create_texture_3d({ glm::uvec2(VOXEL_SIZE,VOXEL_SIZE), texture_filtering::linear_mipmap_linear,
 				texture_wrapping::clamp_border, GL_RGBA8, GL_RGBA });
 		m_voxelization_texture->set_filtering(texture_filtering_type::min, texture_filtering::linear_mipmap_linear);

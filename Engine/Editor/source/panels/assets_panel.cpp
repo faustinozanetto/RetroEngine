@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "../editor_interface_utils.h"
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 
 namespace retro::editor
 {
@@ -26,7 +27,7 @@ namespace retro::editor
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		ImGui::Text("Loaded assets");
 		ImGui::Separator();
-		for (const auto& asset_type : application.get_assets_manager()->get_assets())
+		for (const auto& asset_type : assets_manager::get().get_assets())
 		{
 			if (ImGui::TreeNodeEx(
 				reinterpret_cast<void*>(static_cast<uint64_t>(static_cast<uint32_t>(asset_type.first))),

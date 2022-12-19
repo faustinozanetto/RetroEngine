@@ -8,7 +8,7 @@
 
 namespace retro
 {
-	assets_manager::assets_manager() : manager("AssetsManager")
+	assets_manager::assets_manager()
 	{
 	}
 
@@ -16,15 +16,11 @@ namespace retro
 	{
 	}
 
-	void assets_manager::shutdown()
-	{
-	}
-
 	shared<renderer::texture_3d> assets_manager::create_texture_3d(
 		const renderer::texture_specification& texture_specification)
 	{
 		auto texture = renderer::texture_3d::create(texture_specification);
-		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
+		s_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
@@ -34,7 +30,7 @@ namespace retro
 		const renderer::texture_specification& texture_specification)
 	{
 		auto texture = renderer::texture_2d::create(texture_specification);
-		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
+		s_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
@@ -43,7 +39,7 @@ namespace retro
 	shared<renderer::texture_2d> assets_manager::create_texture_2d(uint32_t width, uint32_t height, const unsigned char* data)
 	{
 		auto texture = renderer::texture_2d::create(width, height, data);
-		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
+		s_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
@@ -52,7 +48,7 @@ namespace retro
 	shared<renderer::texture_2d> assets_manager::create_texture_2d(uint32_t width, uint32_t height, const void* pixels)
 	{
 		auto texture = renderer::texture_2d::create(width, height, pixels);
-		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
+		s_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
@@ -62,7 +58,7 @@ namespace retro
 		const unsigned char* data)
 	{
 		auto texture = renderer::texture_2d::create(width, height, channels, data);
-		m_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
+		s_assets[asset_type::texture].insert(std::make_pair(texture->get_uuid(), texture));
 		RETRO_CORE_ASSERT(texture, "Failed to create texture.");
 
 		return texture;
@@ -96,7 +92,7 @@ namespace retro
 		const renderer::material_specification& material_specification)
 	{
 		auto material = renderer::material::create(material_specification);
-		m_assets[asset_type::material].insert(std::make_pair(material->get_uuid(), material));
+		s_assets[asset_type::material].insert(std::make_pair(material->get_uuid(), material));
 		RETRO_CORE_ASSERT(material, "Failed to create material.");
 
 		return material;
@@ -105,7 +101,7 @@ namespace retro
 	shared<renderer::model> assets_manager::create_model(const renderer::model_specification& model_specification)
 	{
 		auto model = renderer::model::create(model_specification);
-		m_assets[asset_type::model].insert(std::make_pair(model->get_uuid(), model));
+		s_assets[asset_type::model].insert(std::make_pair(model->get_uuid(), model));
 		RETRO_CORE_ASSERT(model, "Failed to create model.");
 
 		return model;
@@ -114,7 +110,7 @@ namespace retro
 	shared<renderer::shader> assets_manager::create_shader(const renderer::shader_specification& shader_specification)
 	{
 		auto shader = renderer::shader::create(shader_specification);
-		m_assets[asset_type::model].insert(std::make_pair(shader->get_uuid(), shader));
+		s_assets[asset_type::model].insert(std::make_pair(shader->get_uuid(), shader));
 		RETRO_CORE_ASSERT(shader, "Failed to create shader.");
 
 		return shader;
@@ -122,11 +118,6 @@ namespace retro
 
 	std::unordered_map<shared<uuid>, shared<asset>>& assets_manager::get_assets_by_type(asset_type type)
 	{
-		return m_assets[type];
-	}
-
-	unique<assets_manager> assets_manager::create()
-	{
-		return create_unique<assets_manager>();
+		return s_assets[type];
 	}
 }

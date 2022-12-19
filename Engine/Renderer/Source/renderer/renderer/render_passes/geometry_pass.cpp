@@ -5,6 +5,7 @@
 #include "glad/glad.h"
 
 #include "core/application/retro_application.h"
+#include "core/assets/assets_manager.h"
 #include "core/scene/components.h"
 #include "renderer/renderer/renderer_api.h"
 #include "renderer/renderer/renderer.h"
@@ -29,7 +30,7 @@ namespace retro::renderer
 		m_geometry_shader->bind();
 		renderer::clear_screen();
 
-		entt::registry& actors_registry = retro_application::get_application().get_scene_manager()->get_active_scene()->get_actor_registry();
+		entt::registry& actors_registry = scene_manager::get_active_scene()->get_actor_registry();
 		const auto view = actors_registry.group<model_renderer_component>(
 			entt::get<name_component, transform_component>);
 
@@ -106,7 +107,7 @@ namespace retro::renderer
 
 	void geometry_pass::load_shaders()
 	{
-		m_geometry_shader = retro_application::get_application().get_assets_manager()->create_shader({ "Assets/Shaders/Geometry/Geometry.vert",
+		m_geometry_shader = assets_manager::get().create_shader({ "Assets/Shaders/Geometry/Geometry.vert",
 																														 "Assets/Shaders/Geometry/Geometry.frag" });
 	}
 }
