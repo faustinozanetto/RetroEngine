@@ -6,7 +6,7 @@
 
 namespace retro
 {
-	showcase_app::showcase_app() : retro_application({ "showcase_app" })
+	showcase_app::showcase_app() : retro_application({ "showcase_app", "../" })
 	{
 		layer_manager::get().register_layer(retro::create_shared<showcase_layer>("showcase_layer"));
 	}

@@ -56,11 +56,45 @@ namespace retro
 		 * \return A map of shared pointers of textures and identifiers.
 		 */
 		std::map<int, shared<renderer::texture_2d>> create_textures_2d(const std::map<int, std::string>& texture_paths);
+
+		/**
+		 * \brief Creates a material by a given specification of it.
+		 * \param material_specification The material specification containing all the details about the material.
+		 * \return A shared pointer containing the material.
+		 */
 		shared<renderer::material> create_material(const renderer::material_specification& material_specification);
+
+		/**
+		 * \brief Creates a model by a given specification of it.
+		 * \param model_specification The model specification containing all the details about the model.
+		 * \return A shared pointer containing the model.
+		 */
 		shared<renderer::model> create_model(const renderer::model_specification& model_specification);
+
+		/**
+		 * \brief Creates a shader by a given specification of it.
+		 * \param shader_specification The shader specification containing all the details about the shader.
+		 * \return A shared pointer containing the shader.
+		 */
 		shared<renderer::shader> create_shader(const renderer::shader_specification& shader_specification);
 
-		std::unordered_map<shared<uuid>, shared<asset>>& get_assets_by_type(asset_type type);
+		/*
+		template <typename T, typename... Args>
+		shared<T> create_asset(asset_type type, Args &&...args)
+		{
+			shared<T> asset = create_shared<T>(std::forward<Args>(args)...);
+			s_assets[type].insert(std::make_pair(asset->get_uuid(), asset));
+			RETRO_CORE_ASSERT(asset, "Failed to create asset.");
+			return asset;
+		}
+		*/
+
+		/**
+		 * \brief Get the map containing the assets of a given type.
+		 * \param type The type of assets to get.
+		 * \return The map containing the assets of that type.
+		 */
+		const std::unordered_map<shared<uuid>, shared<asset>>& get_assets_by_type(asset_type type);
 
 		const std::unordered_map<asset_type, std::unordered_map<shared<uuid>, shared<asset>>>& get_assets()
 		{

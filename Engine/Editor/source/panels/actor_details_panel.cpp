@@ -159,7 +159,7 @@ namespace retro::editor
 							1.0f,
 						};
 						const shared<renderer::material>& material = assets_manager::get().create_material(material_specification);
-						int new_mat_index = material_component.materials.size();
+						auto new_mat_index = material_component.materials.size();
 						material_component.materials.insert(std::pair(new_mat_index, material));
 					}
 					ImGui::TreePop();

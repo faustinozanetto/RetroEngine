@@ -40,7 +40,7 @@ namespace retro::renderer
 		const glm::quat& get_orientation() const { return m_orientation; }
 		void set_orientation(const glm::quat& orientation);
 
-		float get_fov() { return m_fov; }
+		float get_fov() const { return m_fov; }
 
 		void set_fov(float fov)
 		{

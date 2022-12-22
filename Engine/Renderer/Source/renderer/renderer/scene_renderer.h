@@ -14,10 +14,10 @@
 #include "renderer/rendereables/model/model.h"
 #include "renderer/shader/shader.h"
 
-#include "glad/glad.h"
 #include "render_passes/fxaa_pass.h"
 #include "render_passes/geometry_pass.h"
 #include "render_passes/global_illumination_pass.h"
+#include "render_passes/lighting_pass.h"
 #include "render_passes/shadow_map_pass.h"
 #include "render_passes/ssao_pass.h"
 
@@ -59,11 +59,7 @@ namespace retro::renderer
 		shared<uniform_buffer> m_camera_ubo;
 		shared<uniform_buffer> m_lights_ubo;
 
-		shared<shader> m_lighting_shader;
-		shared<shader> m_shadow_shader;
 		shared<shader> m_screen_shader;
-
-		shared<frame_buffer> m_final_frame_buffer;
 
 		shared<vertex_array_buffer> m_screen_vao;
 		shared<lighting_environment> m_lighting_environment;
@@ -73,6 +69,7 @@ namespace retro::renderer
 		shared<global_illumination_pass> global_illumination_pass;
 		shared<ssao_pass> ssao_pass;
 		shared<fxaa_pass> fxaa_pass;
+		shared<lighting_pass> lighting_pass;
 	};
 
 	class scene_renderer
@@ -88,7 +85,11 @@ namespace retro::renderer
 		static shared<frame_buffer>& get_depth_frame_buffer();
 		static shared<frame_buffer>& get_final_frame_buffer();
 		static shared<lighting_environment>& get_lighting_environment();
+		static shared<shader>& get_screen_shader();
 		static shared<camera>& get_camera();
+
+		static shared<vertex_array_buffer>& get_screen_vao();
+
 		static scene_renderer_data& get_data();
 		static uint32_t get_final_texture();
 
@@ -98,8 +99,6 @@ namespace retro::renderer
 		static shared<fxaa_pass>& get_fxaa_pass();
 
 		static void resize(uint32_t width, uint32_t height);
-
-		static GLuint generate_random_angles_texture_3d(uint32_t size);
 
 	private:
 		/* Loads essential shaders needeed for the renderer. */
