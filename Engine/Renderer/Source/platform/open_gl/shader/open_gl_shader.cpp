@@ -19,11 +19,13 @@ namespace retro::renderer
 			// Assign shader sources.
 			m_shader_sources = process_shader_sources(vertexSource, fragmentSource, geometry_source);
 		}
+		/*
 		else if (!shader_specification.compute_path.empty())
 		{
 			const std::string& compute_source = parse_shader_contents_from_file(shader_specification.compute_path);
 			m_shader_sources = process_shader_sources(compute_source);
 		}
+		*/
 		else
 		{
 			// Assign shader sources.

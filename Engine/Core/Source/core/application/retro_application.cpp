@@ -18,20 +18,22 @@ namespace retro
 
 	retro_application::retro_application(const retro_application_specification& retro_application_specification)
 	{
-		std::filesystem::current_path("../../");
+		// Set working directory.
+		std::filesystem::current_path(retro_application_specification.working_directory);
 		// Update variables.
 		s_instance = this;
 		m_application_specification = retro_application_specification;
 		// Initialize Logger.
 		logger::initialize();
 		logger::line();
+		// Initialize managers.
 		assets_manager::initialize();
 		layer_manager::initialize();
 		interfaces_layer_manager::initialize();
 		scene_manager::initialize();
 		// Create window.
-		const auto windowSpecification = renderer::window_specification(
-			"Retro Engine", 1920, 1080, false);
+		const renderer::window_specification windowSpecification = renderer::window_specification(
+			"Retro Engine", 1920, 1080, true);
 		m_window = renderer::window::create(windowSpecification);
 		// Initialize Renderer
 		renderer::renderer::initialize(renderer::renderer_api_type::open_gl, *m_window.get());

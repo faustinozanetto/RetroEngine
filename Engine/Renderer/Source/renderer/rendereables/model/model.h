@@ -17,7 +17,7 @@ namespace retro::renderer
 
 		model_specification() = default;
 
-		model_specification(const std::string& file_path) : file_path(file_path)
+		model_specification(std::string file_path) : file_path(std::move(file_path))
 		{
 		}
 	};
@@ -42,7 +42,7 @@ namespace retro::renderer
 	private:
 		void load_model_from_path(const std::string& path);
 		void parse_model_node(const aiNode* node);
-		shared<renderable> parse_renderable(const aiMesh* mesh, int index);
+		shared<renderable> parse_renderable(const aiMesh* mesh, int index) const;
 		std::vector<renderable_texture>
 			parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
 

@@ -26,7 +26,7 @@ namespace retro::renderer
 		m_fxaa_frame_buffer->bind();
 		m_fxaa_shader->bind();
 		m_fxaa_shader->set_vec_float2("RCPFrame",
-			{ float(1.0 / float(m_fxaa_frame_buffer->get_width())),
+			{ static_cast<float>(1.0 / static_cast<float>(m_fxaa_frame_buffer->get_width())),
 			 float(1.0 / float(m_fxaa_frame_buffer->get_height())) });
 		renderer::bind_texture(scene_renderer::get_final_texture(), 0);
 		renderer::submit_command({ m_fxaa_shader, m_fxaa_vao, nullptr });
@@ -46,7 +46,7 @@ namespace retro::renderer
 
 	void fxaa_pass::load_shaders()
 	{
-		m_fxaa_shader = assets_manager::get().create_shader({ "Assets/Shaders/Screen/Screen.vert",
+		m_fxaa_shader = assets_manager::get().create_shader({ "Assets/Shaders/FXAA/FXAA.vert",
 			"Assets/Shaders/FXAA/FXAA.frag" });
 	}
 

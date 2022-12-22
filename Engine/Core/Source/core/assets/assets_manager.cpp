@@ -116,7 +116,7 @@ namespace retro
 		return shader;
 	}
 
-	std::unordered_map<shared<uuid>, shared<asset>>& assets_manager::get_assets_by_type(asset_type type)
+	const std::unordered_map<shared<uuid>, shared<asset>>& assets_manager::get_assets_by_type(asset_type type)
 	{
 		return s_assets[type];
 	}

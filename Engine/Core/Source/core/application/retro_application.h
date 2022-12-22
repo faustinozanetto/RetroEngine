@@ -19,8 +19,9 @@ namespace retro
 	struct retro_application_specification
 	{
 		std::string name;
+		std::string working_directory;
 
-		retro_application_specification(std::string name = "Retro Application") : name(std::move(name))
+		retro_application_specification(std::string name = "Retro Application", std::string working_directory = "../../") : name(std::move(name)), working_directory(std::move(working_directory))
 		{
 		}
 	};

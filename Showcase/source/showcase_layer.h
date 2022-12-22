@@ -21,11 +21,13 @@ namespace retro
 		void on_layer_updated() override;
 
 		void create_screen_vao();
+		void create_showcase_model();
 
 	private:
 		shared<renderer::camera> m_camera;
-		shared<renderer::shader> m_primes_shader;
+		shared<renderer::shader> m_shader;
 		shared<renderer::vertex_array_buffer> m_screen_vao;
-		shared<renderer::frame_buffer> m_fbo;
+		bool m_is_mouse_move = false;
+		glm::vec2 m_mouse_pressed_position;
 	};
 }

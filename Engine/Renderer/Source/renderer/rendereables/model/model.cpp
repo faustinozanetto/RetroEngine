@@ -47,7 +47,7 @@ namespace retro::renderer
 		m_directory_path = path.substr(0, path.find_last_of('/'));
 		// Process the root node recursively.
 		parse_model_node(m_assimp_scene->mRootNode);
-		parse_model_materials();
+		//parse_model_materials();
 	}
 
 	void model::parse_model_node(const aiNode* node)
@@ -66,7 +66,7 @@ namespace retro::renderer
 		}
 	}
 
-	shared<renderable> model::parse_renderable(const aiMesh* mesh, int index)
+	shared<renderable> model::parse_renderable(const aiMesh* mesh, int index) const
 	{
 		// Create temp vectors.
 		std::vector<renderable_vertex> vertices;
@@ -127,6 +127,7 @@ namespace retro::renderer
 			"Mesh has " + std::to_string(mesh->mNumVertices) + " vertices and " + std::to_string(mesh->mNumFaces) +
 			" faces.");
 
+		/*
 		if (m_assimp_scene->HasMaterials())
 		{
 			aiMaterial* assimp_mat = m_assimp_scene->mMaterials[mesh->mMaterialIndex];
@@ -158,6 +159,7 @@ namespace retro::renderer
 			}
 			m_material_textures.insert(std::pair(mesh->mMaterialIndex, textures));
 		}
+		*/
 
 		shared<renderable> model_renderable = create_shared<renderable>(vertices, indices, textures);
 		model_renderable->set_name(mesh->mName.C_Str());

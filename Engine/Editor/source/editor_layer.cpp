@@ -295,6 +295,8 @@ namespace retro::editor
 
 		auto ww2city = scene_manager::get_active_scene()->
 			create_actor();
+		auto model_specs =
+			renderer::model_specification("Assets/Models/NightCity/scene.gltf");
 		const shared<renderer::model>& ww2city_model = assets_manager::get().create_model(
 			{ "Assets/Models/NightCity/scene.gltf" });
 		ww2city->add_component<name_component>("Bistro");
