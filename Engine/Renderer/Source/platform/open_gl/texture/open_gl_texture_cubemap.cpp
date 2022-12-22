@@ -72,8 +72,4 @@ namespace retro::renderer
 	{
 		glBindTexture(m_object_handle, 0);
 	}
-
-	void open_gl_texture_cubemap::serialize()
-	{
-	}
 }

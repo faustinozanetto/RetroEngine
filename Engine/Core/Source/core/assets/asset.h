@@ -24,8 +24,6 @@ namespace retro
 		shared<uuid>& get_uuid();
 		asset_type get_asset_type() const { return m_asset_type; }
 
-		virtual void serialize() = 0;
-		
 		static std::string get_asset_to_string(asset_type asset_type);
 
 	private:

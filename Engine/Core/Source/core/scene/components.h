@@ -2,9 +2,6 @@
 
 #include <glm/glm.hpp>
 
-#include <cereal/types/map.hpp>
-#include "cereal/types/memory.hpp"
-
 #include "renderer/lighting/light.h"
 #include "renderer/materials/material.h"
 #include "renderer/rendereables/model/model.h"
