@@ -34,7 +34,6 @@ namespace retro
 	{
 		return translate(glm::mat4(1.0f), position) * toMat4(glm::quat(rotation)) * glm::scale(glm::mat4(1.0f), scale);
 	}
-
 	model_renderer_component::model_renderer_component(const shared<renderer::model>& model)
 	{
 		this->model = model;
@@ -43,11 +42,6 @@ namespace retro
 	model_renderer_component::model_renderer_component(const std::string& model_path)
 	{
 		model = renderer::model::create(model_path);
-	}
-
-	material_component::material_component(const shared<renderer::material>& material)
-	{
-		this->material = material;
 	}
 
 	light_renderer_component::light_renderer_component()
@@ -64,13 +58,14 @@ namespace retro
 			const auto point_light = reinterpret_cast<renderer::point_light*>(other.light.get());
 			light = create_shared<renderer::point_light>();
 			light->set_color(point_light->get_color());
-			light->set_position(point_light->get_position());
-		} else if (type == light_type::directional)
+			point_light->set_position(point_light->get_position());
+		}
+		else if (type == light_type::directional)
 		{
 			const auto directional_light = reinterpret_cast<renderer::directional_light*>(other.light.get());
 			light = create_shared<renderer::directional_light>();
 			light->set_color(directional_light->get_color());
-			light->set_position(directional_light->get_position());
+			light->set_intensity(directional_light->get_intensity());
 		}
 	}
 

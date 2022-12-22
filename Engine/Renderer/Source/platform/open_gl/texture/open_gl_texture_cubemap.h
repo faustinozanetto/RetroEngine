@@ -18,13 +18,11 @@ namespace retro::renderer
 		void bind(int slot) override;
 		void un_bind() override;
 
+		/* Asset */
+
 	protected:
 		texture_specification m_texture_specification;
 		int m_MipMapLevels;
 		int m_Channels;
-		int m_Width;
-		int m_Height;
-		GLenum m_InternalFormat;
-		GLenum m_DataFormat;
 	};
 }

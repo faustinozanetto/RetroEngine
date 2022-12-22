@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "asset.h"
-#include "core/application/retro_application.h"
 
 namespace retro
 {
@@ -9,17 +8,19 @@ namespace retro
 	{
 		m_uuid = create_shared<uuid>();
 		m_asset_type = asset_type::none;
-		retro_application::get_application().get_assets_manager()->register_asset(shared<asset>(this));
 	}
 
 	asset::asset(asset_type asset_type)
 	{
 		m_uuid = create_shared<uuid>();
 		m_asset_type = asset_type;
-		retro_application::get_application().get_assets_manager()->register_asset(shared<asset>(this));
 	}
 
-	const shared<uuid> &asset::get_uuid() const
+	asset::~asset()
+	{
+	}
+
+	shared<uuid>& asset::get_uuid()
 	{
 		return m_uuid;
 	}
@@ -36,12 +37,9 @@ namespace retro
 			return "Texture";
 		case asset_type::shader:
 			return "Shader";
+		case asset_type::material:
+			return "Material";
+		default: return "Unknown";
 		}
-		return "";
-	}
-
-	shared<asset> asset::create(asset_type asset_type)
-	{
-		return create_shared<asset>(asset_type);
 	}
 }

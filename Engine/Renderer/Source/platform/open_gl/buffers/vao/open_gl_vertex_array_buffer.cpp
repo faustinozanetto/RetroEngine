@@ -53,52 +53,52 @@ namespace retro::renderer
 			case FloatVec2:
 			case FloatVec3:
 			case FloatVec4:
-				{
-					glEnableVertexAttribArray(index);
-					glVertexAttribPointer(index,
-					                      vboElement.calculate_element_count(),
-						open_gl_vertex_object_buffer::get_open_gl_layout_element_type(vboElement.type),
-					                      GL_FALSE,
-					                      vboLayout.get_stride(),
-					                      reinterpret_cast<const void*>(vboElement.offset));
-					// Increment the index
-					index++;
-					break;
-				}
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribPointer(index,
+					vboElement.calculate_element_count(),
+					open_gl_vertex_object_buffer::get_open_gl_layout_element_type(vboElement.type),
+					GL_FALSE,
+					vboLayout.get_stride(),
+					reinterpret_cast<const void*>(vboElement.offset));
+				// Increment the index
+				index++;
+				break;
+			}
 			case Int:
 			case IntVec2:
 			case IntVec3:
 			case IntVec4:
-				{
-					glEnableVertexAttribArray(index);
-					glVertexAttribIPointer(index,
-					                       vboElement.calculate_element_count(),
-						open_gl_vertex_object_buffer::get_open_gl_layout_element_type(vboElement.type),
-					                       vboLayout.get_stride(),
-					                       reinterpret_cast<const void*>(vboElement.offset));
-					// Increment the index
-					index++;
-					break;
-				}
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribIPointer(index,
+					vboElement.calculate_element_count(),
+					open_gl_vertex_object_buffer::get_open_gl_layout_element_type(vboElement.type),
+					vboLayout.get_stride(),
+					reinterpret_cast<const void*>(vboElement.offset));
+				// Increment the index
+				index++;
+				break;
+			}
 			case Mat3:
 			case Mat4:
+			{
+				// Get count and loop
+				const uint32_t size = vboElement.calculate_element_count();
+				for (uint8_t i = 0; i < size; i++)
 				{
-					// Get count and loop
-					const uint32_t size = vboElement.calculate_element_count();
-					for (uint8_t i = 0; i < size; i++)
-					{
-						// Enable the attribute
-						glEnableVertexAttribArray(index);
-						glVertexAttribPointer(index, size,
-							open_gl_vertex_object_buffer::get_open_gl_layout_element_type(vboElement.type),
-						                      GL_FALSE, vboLayout.get_stride(),
-						                      reinterpret_cast<const void*>(sizeof(float) * size * i));
-						glVertexAttribDivisor(index, 1);
-						// Increment the index
-						index++;
-					}
-					break;
+					// Enable the attribute
+					glEnableVertexAttribArray(index);
+					glVertexAttribPointer(index, size,
+						open_gl_vertex_object_buffer::get_open_gl_layout_element_type(vboElement.type),
+						GL_FALSE, vboLayout.get_stride(),
+						reinterpret_cast<const void*>(sizeof(float) * size * i));
+					glVertexAttribDivisor(index, 1);
+					// Increment the index
+					index++;
 				}
+				break;
+			}
 			}
 		}
 

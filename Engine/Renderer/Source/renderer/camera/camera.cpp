@@ -7,11 +7,11 @@
 
 namespace retro::renderer
 {
-	camera::camera(float fov, float near_plane, float far_plane)
+	camera::camera(camera_specification& camera_specification)
 	{
-		m_fov = fov;
-		m_near_plane = near_plane;
-		m_far_plane = far_plane;
+		m_fov = camera_specification.fov;
+		m_near_plane = camera_specification.near_plane;
+		m_far_plane = camera_specification.far_plane;
 
 		// Setup projection matrix
 		setup_projection_matrix();
@@ -20,9 +20,18 @@ namespace retro::renderer
 		update_view_matrix();
 	}
 
+	void camera::update()
+	{
+		if (m_dirty)
+		{
+			update_view_matrix();
+			m_dirty = false;
+		}
+	}
+
 	void camera::set_viewport_size(int width, int height)
 	{
-		m_view_size = {width, height};
+		m_view_size = { width, height };
 		setup_projection_matrix();
 	}
 
@@ -36,33 +45,32 @@ namespace retro::renderer
 	void camera::update_view_matrix()
 	{
 		// Update view matrix.
-		m_position = calculate_position();
-		m_view_matrix = translate(glm::mat4(1.0f), m_position) * toMat4(get_orientation());
-		m_view_matrix = inverse(m_view_matrix);
+		glm::mat4 R = glm::mat4_cast(m_orientation);
+		glm::mat4 T = glm::translate(glm::mat4(1.0f), -m_position);
+		m_view_matrix = R * T;
 	}
 
-	const glm::vec3& camera::calculate_position() const
+	void camera::move(const glm::vec3& position, const glm::vec3& dir, float amount)
 	{
-		return m_focal_point - get_forward_direction() * m_distance;
+		set_position(position + (dir * amount));
 	}
 
-	const glm::quat& camera::get_orientation() const
+	void camera::set_position(const glm::vec3& position)
 	{
-		return glm::quat(glm::vec3(-m_pitch, -m_yaw, 0.0f));
+		m_position = position;
+		m_dirty = true;
 	}
 
-	const glm::vec3& camera::get_up_direction() const
+	void camera::set_direction(const glm::vec3& direction)
 	{
-		return rotate(get_orientation(), glm::vec3(0.0f, 1.0f, 0.0f));
+		m_direction = direction;
+		m_dirty = true;
 	}
 
-	const glm::vec3& camera::get_right_direction() const
+	void camera::set_orientation(const glm::quat& orientation)
 	{
-		return rotate(get_orientation(), glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-
-	const glm::vec3& camera::get_forward_direction() const
-	{
-		return rotate(get_orientation(), glm::vec3(0.0f, 0.0f, -1.0f));
+		m_orientation = orientation;
+		m_direction = glm::normalize(glm::conjugate(m_orientation) * glm::vec3(0.0f, 0.0f, 1.0f));
+		m_dirty = true;
 	}
 }

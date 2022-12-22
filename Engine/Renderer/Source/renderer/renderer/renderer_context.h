@@ -18,6 +18,6 @@ namespace retro::renderer
 		virtual bool should_close() = 0;
 
 		/* Instantiate */
-		static unique<renderer_context> create(void * window_handle);
+		static unique<renderer_context> create(void* window_handle);
 	};
 }

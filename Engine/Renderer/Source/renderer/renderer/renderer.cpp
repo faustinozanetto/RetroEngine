@@ -3,6 +3,7 @@
 #include "renderer/renderer/renderer.h"
 #include "core/base.h"
 #include "core/assert.h"
+#include "renderer/rendereables/renderable.h"
 
 namespace retro::renderer
 {
@@ -10,7 +11,7 @@ namespace retro::renderer
 	unique<renderer_context> renderer::s_renderer_context = nullptr;
 	std::queue<render_command> renderer::s_command_queue = {};
 
-	bool renderer::initialize(renderer_api_type renderer_api_type, const window &window)
+	bool renderer::initialize(renderer_api_type renderer_api_type, const window& window)
 	{
 		logger::info("renderer::initialize | Initializing renderer.");
 
@@ -93,7 +94,7 @@ namespace retro::renderer
 		poll_input();
 	}
 
-	void renderer::submit_command(const render_command &command)
+	void renderer::submit_command(const render_command& command)
 	{
 		// s_CommandQueue.push(command);
 		process_render_command(command);
@@ -109,7 +110,7 @@ namespace retro::renderer
 		return s_renderer_api->get_time();
 	}
 
-	void renderer::process_render_command(const render_command &command)
+	void renderer::process_render_command(const render_command& command)
 	{
 		if (command.c_material)
 			command.c_material->bind();

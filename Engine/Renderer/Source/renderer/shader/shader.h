@@ -1,13 +1,29 @@
 #pragma once
 
 #include "core/base.h"
+#include "core/assets/asset.h"
 #include "renderer/renderer/graphics_object.h"
 
 #include "glm/glm.hpp"
 
 namespace retro::renderer
 {
-	class shader : public graphics_object
+	struct shader_specification
+	{
+		std::string vertex_path;
+		std::string fragment_path;
+		std::string geometry_path;
+		std::string compute_path;
+
+		shader_specification(const std::string& compute_path) : compute_path(compute_path) {}
+
+		shader_specification(const std::string& vertex_path, const std::string& fragment_path) : vertex_path(vertex_path),
+			fragment_path(fragment_path), geometry_path("") {}
+
+		shader_specification(const std::string& vertex_path, const std::string& fragment_path, const std::string& geometry_path) : vertex_path(vertex_path),
+			fragment_path(fragment_path), geometry_path(geometry_path) {}
+	};
+	class shader : public graphics_object, public asset
 	{
 	public:
 		/* Destructor */
@@ -28,7 +44,6 @@ namespace retro::renderer
 		virtual int get_uniform_location(const std::string& uniform) = 0;
 
 		/* Instantiate */
-		static shared<shader> create(const std::string& vertex_path, const std::string& fragment_path);
-		static shared<shader> create(const std::string& vertex_path, const std::string& fragment_path, const std::string& geometry_path);
+		static shared<shader> create(const shader_specification& shader_specification);
 	};
 }

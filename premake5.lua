@@ -19,14 +19,17 @@ IncludeDir["GLAD"] = "%{wks.location}/ThirdParty/GLAD/include"
 IncludeDir["GLM"] = "%{wks.location}/ThirdParty/GLM"
 IncludeDir["SPDLOG"] = "%{wks.location}/ThirdParty/SPDLOG/include"
 IncludeDir["IMGUI"] = "%{wks.location}/ThirdParty/IMGUI"
+IncludeDir["IMGUIBROWSER"] = "%{wks.location}/ThirdParty/IMGUIBROWSER"
 IncludeDir["STB"] = "%{wks.location}/ThirdParty/STB"
 IncludeDir["ASSIMP"] = "%{wks.location}/ThirdParty/ASSIMP/include"
 IncludeDir["ENTT"] = "%{wks.location}/ThirdParty/ENTT/include"
+IncludeDir["CEREAL"] = "%{wks.location}/ThirdParty/CEREAL/include"
 
 group "Dependencies"
     include "ThirdParty/GLFW"
     include "ThirdParty/GLAD"
     include "ThirdParty/IMGUI"
+    include "ThirdParty/IMGUIBROWSER"
     include "ThirdParty/STB"
 group ""
 
@@ -62,12 +65,16 @@ project "EngineCore"
     includedirs {
         "%{wks.location}/Engine/Core/source",
         "%{wks.location}/Engine/Renderer/source",
-        "%{IncludeDir.GLM}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.GLAD}",
+        "%{IncludeDir.GLM}",    
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     filter "system:windows"
@@ -129,8 +136,10 @@ project "EngineRenderer"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",  
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     links {
@@ -188,8 +197,10 @@ project "EngineEditor"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     libdirs {
@@ -252,8 +263,10 @@ project "Showcase"
         "%{IncludeDir.STB}",
         "%{IncludeDir.SPDLOG}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.IMGUIBROWSER}",
         "%{IncludeDir.ASSIMP}",
-        "%{IncludeDir.ENTT}"
+        "%{IncludeDir.ENTT}",
+        "%{IncludeDir.CEREAL}"
     }
 
     libdirs {

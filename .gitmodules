@@ -23,3 +23,9 @@
 [submodule "ThirdParty/ENTT"]
 	path = ThirdParty/ENTT
 	url = https://github.com/skypjack/entt
+[submodule "ThirdParty/IMGUIBROWSER"]
+	path = ThirdParty/IMGUIBROWSER
+	url = https://github.com/AirGuanZ/imgui-filebrowser
+[submodule "ThirdParty/CEREAL"]
+	path = ThirdParty/CEREAL
+	url = https://github.com/USCiLab/cereal

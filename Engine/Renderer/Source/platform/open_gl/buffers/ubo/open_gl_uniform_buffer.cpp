@@ -8,7 +8,7 @@ namespace retro::renderer
 	open_gl_uniform_buffer::open_gl_uniform_buffer(uint32_t size, uint32_t binding)
 	{
 		glCreateBuffers(1, &m_object_handle);
-		glNamedBufferData(m_object_handle, size, nullptr, GL_STATIC_DRAW);
+		glNamedBufferData(m_object_handle, size, nullptr, GL_DYNAMIC_DRAW);
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_object_handle);
 	}
 
