@@ -6,7 +6,7 @@
 
 namespace retro::renderer
 {
-	unique<renderer_context> renderer_context::create(void *window_handle)
+	unique<renderer_context> renderer_context::create(void* window_handle)
 	{
 		switch (renderer::get_renderer_api_type())
 		{
@@ -17,7 +17,7 @@ namespace retro::renderer
 		}
 		case renderer_api_type::open_gl:
 		{
-			return create_unique<open_gl_renderer_context>(static_cast<GLFWwindow *>(window_handle));
+			return create_unique<open_gl_renderer_context>(static_cast<GLFWwindow*>(window_handle));
 		}
 		}
 		return {};

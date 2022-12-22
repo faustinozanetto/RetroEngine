@@ -56,8 +56,8 @@ namespace retro::renderer
 		// Creating the window
 		m_open_gl_window = glfwCreateWindow(m_window_specification.width,
 			m_window_specification.height, m_window_specification.window_title.c_str(),
-		                                  nullptr,
-		                                  nullptr);
+			nullptr,
+			nullptr);
 
 		// Set user pointer, used in callbacks.
 		glfwSetWindowUserPointer(m_open_gl_window, &m_window_specification);
@@ -92,18 +92,14 @@ namespace retro::renderer
 	void open_gl_window::setup_window_callbacks()
 	{
 		glfwSetWindowSizeCallback(m_open_gl_window, [](GLFWwindow* window, int width, int height)
-		{
-			window_specification& windowSpecification = *static_cast<window_specification*>(
-			glfwGetWindowUserPointer(window));
-			windowSpecification.width = width;
-			windowSpecification.height = height;
+			{
+				window_specification& windowSpecification = *static_cast<window_specification*>(
+					glfwGetWindowUserPointer(window));
+		windowSpecification.width = width;
+		windowSpecification.height = height;
 
-			std::stringstream ss;
-			ss << "WindowResizeEvent: " << width << ", " << height;
-			renderer::set_viewport(0, 0, width, height);
-			scene_renderer::get_final_frame_buffer()->resize(width, height);
-			scene_renderer::get_geometry_frame_buffer()->resize(width,height);
-			logger::info(ss.str());
-		});
+		renderer::set_viewport(0, 0, width, height);
+		scene_renderer::resize(width, height);
+			});
 	}
 }

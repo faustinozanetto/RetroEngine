@@ -3,25 +3,20 @@
 #include <stack>
 
 #include "layer.h"
-#include "core/managers/manager.h"
+#include "core/utils/singleton.h"
 
 namespace retro
 {
-	class layer_manager : public manager
+	class layer_manager : public singleton<layer_manager>
 	{
 	public:
-		/* Constructor & Destructor */
-		layer_manager(const std::string &layer_manager_name);
-		~layer_manager() override;
+		layer_manager();
+		~layer_manager();
 
-		/* Methods */
-		void shutdown() override;
-		void register_layer(const shared<layer> &layer);
-		const std::deque<shared<layer>> &get_layer_stack() const;
+		void register_layer(const shared<layer>& layer);
+		void shutdown();
 
-		/* Instantiate */
-		static unique<layer_manager> create(const std::string &layer_manager_name);
-
+		std::deque<shared<layer>>& get_layer_stack();
 	private:
 		std::deque<shared<layer>> m_layer_stack;
 	};

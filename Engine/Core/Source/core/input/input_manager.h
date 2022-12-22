@@ -3,10 +3,11 @@
 #include <glm/vec2.hpp>
 
 #include "core/input/input_key.h"
+#include "core/utils/singleton.h"
 
 namespace retro::input
 {
-	class input_manager
+	class input_manager : public singleton<input_manager>
 	{
 	public:
 		static bool is_key_pressed(key_code key);

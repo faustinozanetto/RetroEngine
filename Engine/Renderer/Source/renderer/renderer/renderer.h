@@ -15,7 +15,7 @@ namespace retro::renderer
 	{
 	public:
 		/* Methods */
-		static bool initialize(renderer_api_type renderer_api_type, const window &window);
+		static bool initialize(renderer_api_type renderer_api_type, const window& window);
 
 		static void set_clear_color(glm::vec4 color);
 		static void clear_screen();
@@ -30,14 +30,14 @@ namespace retro::renderer
 		static void begin();
 		static void end();
 
-		static void submit_command(const render_command &command);
+		static void submit_command(const render_command& command);
 
 		/* Getters */
 		static renderer_api_type get_renderer_api_type();
 		static double get_time();
 
 	private:
-		static void process_render_command(const render_command &command);
+		static void process_render_command(const render_command& command);
 
 		static unique<renderer_api> s_renderer_api;
 		static unique<renderer_context> s_renderer_context;

@@ -17,14 +17,14 @@ namespace retro::renderer
 		switch (renderer::get_renderer_api_type())
 		{
 		case renderer_api_type::none:
-			{
-				logger::error("index_buffer::create | Unknown renderer api!.");
-				return {};
-			}
+		{
+			logger::error("index_buffer::create | Unknown renderer api!.");
+			return {};
+		}
 		case renderer_api_type::open_gl:
-			{
-				return create_shared<open_gl_index_buffer>(data, size);
-			}
+		{
+			return create_shared<open_gl_index_buffer>(data, size);
+		}
 		}
 		return {};
 	}

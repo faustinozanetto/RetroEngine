@@ -12,7 +12,6 @@ namespace retro::renderer
 {
 	struct renderable_texture
 	{
-		unsigned int id;
 		std::string type;
 		std::string path;
 	};
@@ -25,30 +24,28 @@ namespace retro::renderer
 		glm::vec3 tangent;
 		glm::vec3 bitangent;
 
-		renderable_vertex(): position(), texcoords(), normal(), tangent(), bitangent()
+		renderable_vertex() : position(), texcoords(), normal(), tangent(), bitangent()
 		{
 		}
 
-		renderable_vertex(const glm::vec3& position, const glm::vec2& texCoord) : position(position), texcoords(texCoord)
+		renderable_vertex(const glm::vec3 &position, const glm::vec2 &texCoord) : position(position), texcoords(texCoord)
 		{
 		}
 
-		renderable_vertex(const glm::vec3& position, const glm::vec2& texcoords, const glm::vec3& normal,
-		                 const glm::vec3& tangent, const glm::vec3& bitangent) : position(position), texcoords(texcoords),
-			normal(normal), tangent(tangent), bitangent(bitangent)
+		renderable_vertex(const glm::vec3 &position, const glm::vec2 &texcoords, const glm::vec3 &normal,
+											const glm::vec3 &tangent, const glm::vec3 &bitangent) : position(position), texcoords(texcoords),
+																																							normal(normal), tangent(tangent), bitangent(bitangent)
 		{
 		}
 	};
 
-	class renderable : public graphics_object
+	class renderable final : public graphics_object
 	{
 	public:
 		/* Constructor & Destructor */
-		renderable(const std::vector<renderable_vertex>& vertices, const std::vector<uint32_t>& indices,
-		           const std::vector<renderable_texture>& textures);
-		~renderable() override = default;
-		renderable(const renderable&) = delete;
-		renderable& operator=(const renderable&) = delete;
+		renderable(const std::vector<renderable_vertex> &vertices, const std::vector<uint32_t> &indices,
+							 const std::vector<renderable_texture> &textures);
+		~renderable() override;
 
 		/* Methods */
 		void bind() override;
@@ -56,17 +53,23 @@ namespace retro::renderer
 
 		void construct_renderable();
 
-		const shared<vertex_array_buffer>& get_vertex_array_buffer() const;
-		const shared<vertex_object_buffer>& get_vertex_object_buffer() const;
-		const shared<index_buffer>& get_index_buffer() const;
-		const std::vector<renderable_vertex>& get_vertices() const;
-		const std::vector<uint32_t>& get_indices() const;
-		const std::vector<renderable_texture> get_textures() const { return m_renderable_textures; }
+		const shared<vertex_array_buffer> &get_vertex_array_buffer() const;
+		const shared<vertex_object_buffer> &get_vertex_object_buffer() const;
+		const shared<index_buffer> &get_index_buffer() const;
+		const std::vector<renderable_vertex> &get_vertices() const;
+		const std::vector<uint32_t> &get_indices() const;
+		std::vector<renderable_texture> get_textures() const;
+
+		int get_material_index() const;
+		void set_material_index(int material_index);
+
+		const std::string &get_name() const { return m_name; }
+		void set_name(const std::string &name) { m_name = name; }
 
 		/* Instantiate */
-		static shared<renderable> create(const std::vector<renderable_vertex>& vertices,
-		                              const std::vector<uint32_t>& indices,
-		                              const std::vector<renderable_texture>& textures);
+		static shared<renderable> create(const std::vector<renderable_vertex> &vertices,
+																		 const std::vector<uint32_t> &indices,
+																		 const std::vector<renderable_texture> &textures);
 
 	private:
 		shared<vertex_array_buffer> m_vao;
@@ -75,5 +78,7 @@ namespace retro::renderer
 		std::vector<renderable_texture> m_renderable_textures;
 		std::vector<renderable_vertex> m_vertices;
 		std::vector<uint32_t> m_indices;
+		std::string m_name;
+		int m_material_index;
 	};
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/base.h"
-#include "renderer/texture/texture.h"
+#include "renderer/texture/texture_base.h"
 #include "renderer/renderer/graphics_object.h"
 
 namespace retro::renderer

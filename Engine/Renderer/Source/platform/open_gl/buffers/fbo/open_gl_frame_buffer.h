@@ -31,10 +31,9 @@ namespace retro::renderer
 	private:
 		void reconstruct();
 
-		void generate_color_texture(uint32_t texture_handle, int index, uint32_t width, uint32_t height, GLenum format,
-		                          GLenum dataFormat);
-
-		void generate_depth_texture(uint32_t texture_handle, uint32_t width, uint32_t height);
+		void generate_color_texture(uint32_t texture_handle, int index, const frame_buffer_texture_specification&
+			texture_specification) const;
+		void generate_depth_texture(uint32_t texture_handle, frame_buffer_texture_specification texture_specification) const;
 
 	private:
 		frame_buffer_specification m_frame_buffer_specification;

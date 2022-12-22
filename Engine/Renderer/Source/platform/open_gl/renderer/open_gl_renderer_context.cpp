@@ -8,7 +8,7 @@ namespace retro::renderer
 	open_gl_renderer_context::open_gl_renderer_context(GLFWwindow* window_handle)
 	{
 		RETRO_CORE_ASSERT(window_handle, "open_gl_renderer_context::open_gl_renderer_context | Window handle invalid!.")
-		m_window_handle = window_handle;
+			m_window_handle = window_handle;
 		logger::info("open_gl_renderer_context::open_gl_renderer_context | Created renderer context.");
 	}
 

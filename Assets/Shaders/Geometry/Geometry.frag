@@ -1,8 +1,9 @@
 ﻿#version 460
 
 struct GeometryOutput {
-    vec2 texCoords;
+    vec3 viewPos;
     vec3 position;
+    vec2 texCoords;
     vec3 normal;
     mat3 tbn;
 };
@@ -35,10 +36,12 @@ layout(binding = 4) uniform sampler2D uAmbientOcclusionMap;
 layout(location = 0) out vec3 gPosistion;	
 layout(location = 1) out vec4 gAlbedo;
 layout(location = 2) out vec3 gNormal;	
-layout(location = 3) out vec3 gRoughMetalAO;	
+layout(location = 3) out vec3 gRoughMetalAO;
+layout(location = 4) out vec3 gViewPosition;
 
 void main() {
     gPosistion = geometryInput.position;
+    gViewPosition = geometryInput.viewPos;
 
     /* Albedo */
     vec4 albedo = vec4(1.0);
@@ -47,7 +50,8 @@ void main() {
     } else {
         albedo = material.albedo;
     }
-    gAlbedo = albedo;
+
+    gAlbedo =  albedo;
 
     /* Normal */
     vec3 normal = vec3(1.0);
