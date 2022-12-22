@@ -42,30 +42,30 @@ namespace retro::renderer
 
 		float get_fov() const { return m_fov; }
 
-		void set_fov(float fov)
-		{
-			m_fov = fov;
-			setup_projection_matrix();
-		}
+        void set_fov(float fov)
+        {
+            m_fov = fov;
+            setup_projection_matrix();
+        }
 
-		float get_near_plane() const { return m_near_plane; }
+        float get_near_plane() const { return m_near_plane; }
 
-		void set_near_plane(float near_plane)
-		{
-			m_near_plane = near_plane;
-			setup_projection_matrix();
-		}
+        void set_near_plane(float near_plane)
+        {
+            m_near_plane = near_plane;
+            setup_projection_matrix();
+        }
 
-		float get_far_plane() const { return m_far_plane; }
+        float get_far_plane() const { return m_far_plane; }
 
-		void set_far_plane(float far_plane)
-		{
-			m_far_plane = far_plane;
-			setup_projection_matrix();
-		}
+        void set_far_plane(float far_plane)
+        {
+            m_far_plane = far_plane;
+            setup_projection_matrix();
+        }
 
-		float get_aspect_ratio() const { return m_aspect_ratio; }
-		void set_aspect_ratio(float aspect_ratio) { m_aspect_ratio = aspect_ratio; }
+        float get_aspect_ratio() const { return m_aspect_ratio; }
+        void set_aspect_ratio(float aspect_ratio) { m_aspect_ratio = aspect_ratio; }
 
 	private:
 		glm::mat4 m_projection_matrix{};

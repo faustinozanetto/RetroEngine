@@ -9,12 +9,12 @@ namespace retro
 	static std::uniform_int_distribution<uint64_t> s_uniform_distribution;
 
 	uuid::uuid()
-			: m_uuid(s_uniform_distribution(s_engine))
+		: m_uuid(s_uniform_distribution(s_engine))
 	{
 	}
 
 	uuid::uuid(uint64_t uuid)
-			: m_uuid(uuid)
+		: m_uuid(uuid)
 	{
 	}
 }

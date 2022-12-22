@@ -39,12 +39,11 @@ namespace retro::renderer
 		/* Instantiate */
 		static shared<model> create(const model_specification& model_specification);
 
-	private:
 		void load_model_from_path(const std::string& path);
 		void parse_model_node(const aiNode* node);
-		shared<renderable> parse_renderable(const aiMesh* mesh, int index) const;
+		shared<renderable> parse_renderable(const aiMesh* mesh, int index);
 		std::vector<renderable_texture>
-			parse_material_texture(aiMaterial* mat, aiTextureType type, std::string type_name);
+			parse_mat_texture(aiMaterial* mat, aiTextureType type, const std::string& type_name);
 
 	private:
 		const aiScene* m_assimp_scene{};
