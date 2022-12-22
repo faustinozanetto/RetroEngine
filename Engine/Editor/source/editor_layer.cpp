@@ -467,6 +467,7 @@ namespace retro::editor
 
 	void editor_layer::serialize_material()
 	{
+		/*
 		{
 			std::ofstream file("Assets/materials.rmat");
 			cereal::JSONOutputArchive  oarchive(file); // Create an output archive
@@ -474,6 +475,7 @@ namespace retro::editor
 			snapshot.entities(oarchive).component<name_component, material_component>(oarchive);
 			file.close();
 		} // archive goes out of scope, ensuring all contents are flushed
+		*/
 	}
 
 	void editor_layer::initialize_editor_scene()

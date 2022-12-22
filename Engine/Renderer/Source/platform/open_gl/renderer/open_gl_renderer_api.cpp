@@ -71,13 +71,13 @@ namespace retro::renderer
 	}
 
 	void OpenGLMessageCallback(
-		unsigned source,
-		unsigned type,
-		unsigned id,
-		unsigned severity,
-		int length,
-		const char* message,
-		const void* userParam)
+			unsigned source,
+			unsigned type,
+			unsigned id,
+			unsigned severity,
+			int length,
+			const char *message,
+			const void *userParam)
 	{
 		logger::error("Message: " + std::string(message));
 		logger::error("Type: " + GetStringForType(type));

@@ -47,7 +47,7 @@ namespace retro::renderer
 		m_directory_path = path.substr(0, path.find_last_of('/'));
 		// Process the root node recursively.
 		parse_model_node(m_assimp_scene->mRootNode);
-		//parse_model_materials();
+		parse_model_materials();
 	}
 
 	void model::parse_model_node(const aiNode* node)
@@ -66,7 +66,7 @@ namespace retro::renderer
 		}
 	}
 
-	shared<renderable> model::parse_renderable(const aiMesh* mesh, int index) const
+	shared<renderable> model::parse_renderable(const aiMesh* mesh, int index)
 	{
 		// Create temp vectors.
 		std::vector<renderable_vertex> vertices;
@@ -127,21 +127,20 @@ namespace retro::renderer
 			"Mesh has " + std::to_string(mesh->mNumVertices) + " vertices and " + std::to_string(mesh->mNumFaces) +
 			" faces.");
 
-		/*
 		if (m_assimp_scene->HasMaterials())
 		{
 			aiMaterial* assimp_mat = m_assimp_scene->mMaterials[mesh->mMaterialIndex];
 
-			std::vector<renderable_texture> albedo_maps = parse_material_texture(
+			std::vector<renderable_texture> albedo_maps = parse_mat_texture(
 				assimp_mat, aiTextureType_DIFFUSE, "texture_diffuse");
 
-			std::vector<renderable_texture> normal_maps = parse_material_texture(
+			std::vector<renderable_texture> normal_maps = parse_mat_texture(
 				assimp_mat, aiTextureType_NORMALS, "texture_normal");
 
-			std::vector<renderable_texture> roughness_maps = parse_material_texture(
+			std::vector<renderable_texture> roughness_maps = parse_mat_texture(
 				assimp_mat, aiTextureType_DIFFUSE_ROUGHNESS, "texture_roughness");
 
-			std::vector<renderable_texture> ao_maps = parse_material_texture(
+			std::vector<renderable_texture> ao_maps = parse_mat_texture(
 				assimp_mat, aiTextureType_AMBIENT_OCCLUSION, "texture_ao");
 
 			std::map<material_texture_type, std::string> textures{};
@@ -157,17 +156,16 @@ namespace retro::renderer
 			if (!ao_maps.empty()) {
 				textures.insert(std::pair(material_texture_type::ambient_occlusion, ao_maps[0].path));
 			}
-			m_material_textures.insert(std::pair(mesh->mMaterialIndex, textures));
+			std::pair<int, std::map<material_texture_type, std::string>> texts = std::pair(mesh->mMaterialIndex, textures);
+			m_material_textures.insert(texts);
 		}
-		*/
 
 		shared<renderable> model_renderable = create_shared<renderable>(vertices, indices, textures);
 		model_renderable->set_name(mesh->mName.C_Str());
 		return model_renderable;
 	}
 
-	std::vector<renderable_texture> model::parse_material_texture(aiMaterial* mat, aiTextureType type,
-		std::string type_name)
+	std::vector<renderable_texture> model::parse_mat_texture(aiMaterial* mat, aiTextureType type, const std::string& type_name)
 	{
 		std::vector<renderable_texture> textures;
 		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
